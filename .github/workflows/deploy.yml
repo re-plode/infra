@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.CLOUDFLARE_R2_KEY }}
+          aws-secret-access-key: ${{ secrets.CLOUDFLARE_R2_SECRET }}
+          aws-region: auto
+        continue-on-error: true
       - run: |
           wget -q -O /usr/local/bin/butane \
             https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu
@@ -18,8 +24,17 @@ jobs:
           curl -s https://fedoraproject.org/fedora.gpg | gpg --import
           gpg --verify butane-x86_64-unknown-linux-gnu.asc /usr/local/bin/butane
           chmod +x /usr/local/bin/butane
+      - run: |
+          aws s3api get-object --bucket infra --key terraform.tfstate \
+            --endpoint-url https://caeb00f77be16017a6c4cb5a0b158202.eu.r2.cloudflarestorage.com \
+            terraform.tfstate
+        continue-on-error: true
       - run: tofu fmt -check
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan
       - run: tofu apply -auto-approve
+      - run: |
+          aws s3api put-object --bucket infra --key terraform.tfstate --body terraform.tfstate \
+            --endpoint-url https://caeb00f77be16017a6c4cb5a0b158202.eu.r2.cloudflarestorage.com \
+            --checksum-algorithm CRC32
