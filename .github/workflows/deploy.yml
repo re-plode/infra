@@ -26,7 +26,7 @@ jobs:
           chmod +x /usr/local/bin/butane
       - run: |
           aws s3api get-object --bucket infra --key terraform.tfstate \
-            --endpoint-url $CLOUDFLARE_R2_ENDPOINT \
+            --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
             terraform.tfstate
         continue-on-error: true
       - run: tofu fmt -check
@@ -36,5 +36,5 @@ jobs:
       - run: tofu apply -auto-approve
       - run: |
           aws s3api put-object --bucket infra --key terraform.tfstate --body terraform.tfstate \
-            --endpoint-url $CLOUDFLARE_R2_ENDPOINT \
+            --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
             --checksum-algorithm CRC32
