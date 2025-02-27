@@ -8,6 +8,11 @@ passwd:
 
 storage:
   files:
+    - path: /etc/sysctl.d/10-podman.conf
+      contents:
+        inline: |
+          net.ipv4.ip_unprivileged_port_start=80
+
     - path: /etc/containers/systemd/pangolin.container
       contents:
         inline: |
