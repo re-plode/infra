@@ -39,7 +39,7 @@ storage:
           [Container]
           ContainerName=gerbil
           Image=docker.io/fosrl/gerbil:1.0.0-beta.3
-          Exec= --reachableAt=http://gerbil:3003 --generateAndSaveKeyTo=/var/config/key --remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth
+          Exec=--reachableAt=http://gerbil:3003 --generateAndSaveKeyTo=/tmp/key --remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth
           AddCapability=NET_ADMIN SYS_MODULE
           PublishPort=51820:51820/udp
           PublishPort=443:443
