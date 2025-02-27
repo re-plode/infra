@@ -20,6 +20,30 @@ storage:
           ContainerName=pangolin
           Image=docker.io/fosrl/pangolin:1.0.0-beta.14
           PublishPort=443:443
+          HealthCmd=curl -f http://localhost:3001/api/v1/
+          HealthInterval=3s
+          HealthTimeout=3s
+          HealthRetries=5
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - path: /etc/containers/systemd/gerbil.container
+      contents:
+        inline: |
+          [Unit]
+          Description=Gerbil
+          Wants=pangolin.container
+          After=pangolin.container
+
+          [Container]
+          ContainerName=gerbil
+          Image=docker.io/fosrl/gerbil:1.0.0-beta.3
+          Exec= --reachableAt=http://gerbil:3003 --generateAndSaveKeyTo=/var/config/key --remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth
+          AddCapability=NET_ADMIN SYS_MODULE
+          PublishPort=51820:51820/udp
+          PublishPort=443:443
+          PublishPort=80:80
 
           [Install]
           WantedBy=multi-user.target
