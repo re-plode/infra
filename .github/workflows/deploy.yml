@@ -6,11 +6,20 @@ on:
 jobs:
   tofu:
     runs-on: ubuntu-latest
+    env:
+      HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
+      - run: |
+          wget -q -O /usr/local/bin/butane \
+            https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu
+          wget -q https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu.asc
+          curl -s https://fedoraproject.org/fedora.gpg | gpg --import
+          gpg --verify butane-x86_64-unknown-linux-gnu.asc /usr/local/bin/butane
+          chmod +x /usr/local/bin/butane
       - run: tofu fmt -check
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan
-      - run: tofu apply
+      - run: tofu apply -auto-approve
