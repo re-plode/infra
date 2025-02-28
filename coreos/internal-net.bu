@@ -1,5 +1,5 @@
 variant: fcos
-version: 1.5.0
+version: 1.6.0
 passwd:
   users:
     - name: core
@@ -14,6 +14,7 @@ storage:
       partitions:
         - size_mib: 0
           start_mib: 0
+          number: 0
           label: containers
 
   filesystems:
