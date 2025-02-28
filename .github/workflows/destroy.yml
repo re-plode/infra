@@ -29,8 +29,8 @@ jobs:
         continue-on-error: true
       - run: tofu init
       - run: tofu validate -no-color
-      - run: tofu plan -destroy -exclude=hcloud_volume.internal_net_vol
-      - run: tofu destroy -auto-approve -exclude=hcloud_volume.internal_net_vol
+      - run: tofu plan -destroy -exclude=hcloud_volume.internal_net_vol -out=out.tfplan
+      - run: tofu apply -auto-approve out.tfplan
       - run: |
           aws s3api put-object --bucket infra --key terraform.tfstate --body terraform.tfstate \
             --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
