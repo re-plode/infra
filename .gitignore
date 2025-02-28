@@ -1,5 +1,7 @@
 .envrc
 
+*.ign
+
 **/.terraform/*
 *.tfstate
 *.tfstate.*
