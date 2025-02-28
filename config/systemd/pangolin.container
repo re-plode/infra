@@ -1,0 +1,17 @@
+[Unit]
+Description=Pangolin
+Wants=pangolin.network
+After=pangolin.network
+
+[Container]
+ContainerName=pangolin
+Image=docker.io/fosrl/pangolin:1.0.0-beta.14
+Network=pangolin.network
+HealthCmd=curl -f http://localhost:3001/api/v1/
+HealthInterval=3s
+HealthTimeout=3s
+HealthRetries=5
+Volume=/var/lib/containers/pangolin/config:/app/config:z
+
+[Install]
+WantedBy=multi-user.target

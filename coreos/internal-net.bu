@@ -36,63 +36,16 @@ storage:
         local: config/traefik/dynamic_config.yml
     - path: /etc/sysctl.d/10-podman.conf
       contents:
-        inline: |
-          net.ipv4.ip_unprivileged_port_start=80
+        local: config/sysctl.d/10-podman.conf
+    - path: /etc/containers/systemd/pangolin.network
+      contents:
+        local: config/systemd/pangolin.network
     - path: /etc/containers/systemd/pangolin.container
       contents:
-        inline: |
-          [Unit]
-          Description=Pangolin
-          Wants=network-online.target
-          After=network-online.target
-
-          [Container]
-          ContainerName=pangolin
-          Image=docker.io/fosrl/pangolin:1.0.0-beta.14
-          HealthCmd=curl -f http://localhost:3001/api/v1/
-          HealthInterval=3s
-          HealthTimeout=3s
-          HealthRetries=5
-          Volume=/var/lib/containers/pangolin/config:/app/config:z
-
-          [Install]
-          WantedBy=multi-user.target
+        local: config/systemd/pangolin.container
     - path: /etc/containers/systemd/gerbil.container
       contents:
-        inline: |
-          [Unit]
-          Description=Gerbil
-          Wants=pangolin.container
-          After=pangolin.container
-
-          [Container]
-          ContainerName=gerbil
-          Image=docker.io/fosrl/gerbil:1.0.0-beta.3
-          Exec=--reachableAt=http://gerbil:3003 --generateAndSaveKeyTo=/tmp/key --remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth
-          AddCapability=NET_ADMIN SYS_MODULE
-          PublishPort=51820:51820/udp
-          PublishPort=443:443
-          PublishPort=80:80
-          Volume=/var/lib/containers/gerbil/config:/var/config:z
-
-          [Install]
-          WantedBy=multi-user.target
+        local: config/systemd/gerbil.container
     - path: /etc/containers/systemd/traefik.container
       contents:
-        inline: |
-          [Unit]
-          Description=Traefik
-          Wants=pangolin.container
-          After=pangolin.container
-
-          [Container]
-          ContainerName=traefik
-          Image=docker.io/library/traefik:v3.3
-          Exec=--configFile=/etc/traefik/traefik_config.yml
-          AddCapability=NET_ADMIN SYS_MODULE
-          Network=container:gerbil
-          Volume=/var/lib/containers/traefik/etc:/etc/traefik:ro
-          Volume=/var/lib/containers/traefik/letsencrypt:/letsencrypt:z
-
-          [Install]
-          WantedBy=multi-user.target
+        local: config/systemd/traefik.container

@@ -1,0 +1,10 @@
+[Unit]
+Description=Pangolin
+Wants=network-online.target
+After=network-online.target
+
+[Network]
+NetworkName=pangolin
+
+[Install]
+WantedBy=multi-user.target

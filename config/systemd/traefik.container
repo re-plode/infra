@@ -1,0 +1,16 @@
+[Unit]
+Description=Traefik
+Requires=gerbil.service
+After=gerbil.service
+
+[Container]
+ContainerName=traefik
+Image=docker.io/library/traefik:v3.3
+Exec=--configFile=/etc/traefik/traefik_config.yml
+AddCapability=NET_ADMIN SYS_MODULE
+Network=container:gerbil
+Volume=/var/lib/containers/traefik/etc:/etc/traefik:ro
+Volume=/var/lib/containers/traefik/letsencrypt:/letsencrypt:z
+
+[Install]
+WantedBy=multi-user.target
