@@ -12,7 +12,7 @@ resource "hcloud_ssh_key" "fedora" {
   public_key = file("ssh/id_ed25519_fedora.pub")
 }
 resource "hcloud_ssh_key" "ipadpro" {
-  name       = "russellc@fedora"
+  name       = "russellc@ipadpro"
   public_key = file("ssh/id_ed25519_ipadpro.pub")
 }
 
