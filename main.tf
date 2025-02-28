@@ -22,7 +22,7 @@ data "hcloud_image" "coreos_snapshot" {
 }
 
 data "external" "ignition" {
-  program = ["./coreos/butane.sh", "--strict", "coreos/internal-net.bu"]
+  program = ["./coreos/butane.sh", "--strict", "--files-dir", ".", "coreos/internal-net.bu"]
 }
 
 resource "hcloud_server" "internal_net" {

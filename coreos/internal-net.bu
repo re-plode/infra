@@ -4,8 +4,8 @@ passwd:
   users:
     - name: core
       ssh_authorized_keys_local:
-        - ../ssh/id_ed25519_fedora.pub
-        - ../ssh/id_ed25519_ipadpro.pub
+        - ssh/id_ed25519_fedora.pub
+        - ssh/id_ed25519_ipadpro.pub
 
 storage:
   files:
