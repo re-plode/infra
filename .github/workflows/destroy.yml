@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
     steps:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
@@ -15,23 +16,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.CLOUDFLARE_R2_SECRET }}
           aws-region: auto
         continue-on-error: true
-      - run: |
-          wget -q -O /usr/local/bin/butane \
-            https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu
-          wget -q https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu.asc
-          curl -s https://fedoraproject.org/fedora.gpg | gpg --import
-          gpg --verify butane-x86_64-unknown-linux-gnu.asc /usr/local/bin/butane
-          chmod +x /usr/local/bin/butane
-      - run: |
-          aws s3api get-object --bucket infra --key terraform.tfstate \
-            --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
-            terraform.tfstate
+      - run: ./bin/get-tfstate.sh
         continue-on-error: true
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan -destroy -exclude=hcloud_volume.internal_net_vol -out=out.tfplan
       - run: tofu apply -auto-approve out.tfplan
-      - run: |
-          aws s3api put-object --bucket infra --key terraform.tfstate --body terraform.tfstate \
-            --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
-            --checksum-algorithm CRC32
+      - run: ./bin/put-tfstate.sh
