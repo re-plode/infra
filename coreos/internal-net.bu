@@ -23,6 +23,16 @@ storage:
       format: ext4
       with_mount_unit: true
 
+  directories:
+    - path: /var/lib/containers/pangolin/config
+      mode: 0700
+    - path: /var/lib/containers/gerbil/config
+      mode: 0700
+    - path: /var/lib/containers/traefik/etc
+      mode: 0700
+    - path: /var/lib/containers/traefik/letsencrypt
+      mode: 0700
+
   files:
     - path: /etc/sysctl.d/10-podman.conf
       contents:
