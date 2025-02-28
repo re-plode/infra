@@ -14,7 +14,7 @@ storage:
       partitions:
         - size_mib: 0
           start_mib: 0
-          number: 0
+          number: 1
           label: containers
 
   filesystems:
