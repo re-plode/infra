@@ -8,6 +8,19 @@ passwd:
         - ssh/id_ed25519_ipadpro.pub
 
 storage:
+  disks:
+    - device: /dev/disk/by-id/scsi-0HC_Volume_102197546
+      wipe_table: false
+      partitions:
+        - size_mib: 0
+          start_mib: 0
+          label: containers
+  filesystems:
+    - path: /var/lib/containers
+      device: /dev/disk/by-partlabel/containers
+      format: ext4
+      with_mount_unit: true
+
   files:
     - path: /etc/sysctl.d/10-podman.conf
       contents:

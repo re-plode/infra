@@ -39,9 +39,14 @@ resource "hcloud_server" "internal_net" {
 }
 
 resource "hcloud_volume" "internal_net_vol" {
-  name      = "internal-net-vol"
-  size      = 10
-  server_id = hcloud_server.internal_net.id
-  automount = true
-  format    = "ext4"
+  name              = "internal-net-vol"
+  size              = 10
+  server_id         = hcloud_server.internal_net.id
+  automount         = true
+  format            = "ext4"
+  delete_protection = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
