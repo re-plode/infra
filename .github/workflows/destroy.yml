@@ -1,7 +1,5 @@
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -29,11 +27,9 @@ jobs:
             --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
             terraform.tfstate
         continue-on-error: true
-      - run: tofu fmt -check
       - run: tofu init
       - run: tofu validate -no-color
-      - run: tofu plan
-      - run: tofu apply -auto-approve
+      - run: tofu destroy -auto-approve -exclude=hcloud_volume.internal_net_vol
       - run: |
           aws s3api put-object --bucket infra --key terraform.tfstate --body terraform.tfstate \
             --endpoint-url ${{ vars.CLOUDFLARE_R2_ENDPOINT }} \
