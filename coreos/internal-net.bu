@@ -25,13 +25,9 @@ storage:
 
   directories:
     - path: /var/lib/containers/pangolin/config
-      mode: 0700
     - path: /var/lib/containers/gerbil/config
-      mode: 0700
     - path: /var/lib/containers/traefik/etc
-      mode: 0700
     - path: /var/lib/containers/traefik/letsencrypt
-      mode: 0700
 
   files:
     - path: /etc/sysctl.d/10-podman.conf
@@ -54,7 +50,7 @@ storage:
           HealthInterval=3s
           HealthTimeout=3s
           HealthRetries=5
-          Volume=/var/lib/containers/pangolin/config:/app/config
+          Volume=/var/lib/containers/pangolin/config:/app/config:z
 
           [Install]
           WantedBy=multi-user.target
@@ -75,7 +71,7 @@ storage:
           PublishPort=51820:51820/udp
           PublishPort=443:443
           PublishPort=80:80
-          Volume=/var/lib/containers/gerbil/config:/var/config
+          Volume=/var/lib/containers/gerbil/config:/var/config:z
 
           [Install]
           WantedBy=multi-user.target
@@ -95,7 +91,7 @@ storage:
           AddCapability=NET_ADMIN SYS_MODULE
           Network=container:gerbil
           Volume=/var/lib/containers/traefik/etc:/etc/traefik:ro
-          Volume=/var/lib/containers/traefik/letsencrypt:/letsencrypt
+          Volume=/var/lib/containers/traefik/letsencrypt:/letsencrypt:z
 
           [Install]
           WantedBy=multi-user.target
