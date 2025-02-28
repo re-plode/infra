@@ -4,8 +4,8 @@ passwd:
   users:
     - name: core
       ssh_authorized_keys_local:
-        - ssh/id_ed25519_fedora.pub
-        - ssh/id_ed25519_ipadpro.pub
+        - config/ssh/id_ed25519_fedora.pub
+        - config/ssh/id_ed25519_ipadpro.pub
 storage:
   disks:
     - device: /dev/disk/by-id/scsi-0HC_Volume_102197546
@@ -26,6 +26,12 @@ storage:
     - path: /var/lib/containers/traefik/etc
     - path: /var/lib/containers/traefik/letsencrypt
   files:
+    - path: /var/lib/containers/traefik/traefik_config.yml
+      contents:
+        local: config/traefik/traefik_config.yml
+    - path: /var/lib/containers/traefik/dynamic_config.yml
+      contents:
+        local: config/traefik/dynamic_config.yml
     - path: /etc/sysctl.d/10-podman.conf
       contents:
         inline: |
@@ -78,8 +84,8 @@ storage:
           After=pangolin.container
 
           [Container]
-          ContainerName=gerbil
-          Image=docker.io/fosrl/gerbil:1.0.0-beta.3
+          ContainerName=traefik
+          Image=docker.io/library/traefik:v3.3
           Exec=--configFile=/etc/traefik/traefik_config.yml
           AddCapability=NET_ADMIN SYS_MODULE
           Network=container:gerbil

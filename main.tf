@@ -9,11 +9,11 @@ terraform {
 
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
-  public_key = file("ssh/id_ed25519_fedora.pub")
+  public_key = file("config/ssh/id_ed25519_fedora.pub")
 }
 resource "hcloud_ssh_key" "ipadpro" {
   name       = "russellc@ipadpro"
-  public_key = file("ssh/id_ed25519_ipadpro.pub")
+  public_key = file("config/ssh/id_ed25519_ipadpro.pub")
 }
 
 data "hcloud_image" "coreos_snapshot" {

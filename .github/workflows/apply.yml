@@ -4,17 +4,27 @@ on:
     branches:
       - main
 jobs:
-  apply:
+  lint:
     runs-on: ubuntu-latest
-    env:
-      HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-      CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
       - run: |
           go install github.com/google/yamlfmt/cmd/yamlfmt@latest
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
+      - uses: opentofu/setup-opentofu@v1
+      - run: tofu fmt -check
+      - run: shfmt -d bin/*.sh
+      - run: yamlfmt -lint coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}
+
+  apply:
+    runs-on: ubuntu-latest
+    needs: lint
+    env:
+      HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
+    steps:
+      - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -24,9 +34,6 @@ jobs:
         continue-on-error: true
       - run: ./bin/get-tfstate.sh
         continue-on-error: true
-      - run: tofu fmt -check
-      - run: shfmt -d bin/*.sh
-      - run: yamlfmt -lint coreos/*.bu .github/actions/*.yml
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan -out=out.tfplan
