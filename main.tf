@@ -37,3 +37,11 @@ resource "hcloud_server" "internal_net" {
     ipv6_enabled = true
   }
 }
+
+resource "hcloud_volume" "internal_net_vol" {
+  name      = "internal-net-vol"
+  size      = 10
+  server_id = hcloud_server.internal_net.id
+  automount = true
+  format    = "ext4"
+}
