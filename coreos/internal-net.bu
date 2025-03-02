@@ -35,17 +35,22 @@ storage:
       contents:
         local: config/traefik/dynamic_config.yml
     - path: /etc/sysctl.d/10-podman.conf
+      overwrite: true
       contents:
         local: config/sysctl.d/10-podman.conf
     - path: /etc/containers/systemd/pangolin.network
+      overwrite: true
       contents:
         local: config/systemd/pangolin.network
     - path: /etc/containers/systemd/pangolin.container
+      overwrite: true
       contents:
         local: config/systemd/pangolin.container
     - path: /etc/containers/systemd/gerbil.container
+      overwrite: true
       contents:
         local: config/systemd/gerbil.container
     - path: /etc/containers/systemd/traefik.container
+      overwrite: true
       contents:
         local: config/systemd/traefik.container
