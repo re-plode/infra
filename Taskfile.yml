@@ -1,5 +1,4 @@
 version: '3'
-
 tasks:
   install:
     desc: Install dev dependencies
@@ -11,10 +10,14 @@ tasks:
     cmds:
       - tofu fmt -check
       - shfmt -d bin/*.sh
-      - yamlfmt -lint coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}
+      - yamlfmt -lint coreos/*.bu .github/actions/*.yml *.yml
   lint-fix:
     desc: Lint (fix)
     cmds:
       - tofu fmt
       - shfmt -w bin/*.sh
-      - yamlfmt coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}
+      - yamlfmt coreos/*.bu .github/actions/*.yml *.yml
+  clean:
+    desc: Clean workspace
+    cmds:
+      - rm -R build
