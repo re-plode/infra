@@ -1,1 +1,1 @@
-export TF_VAR_hcloud_token=
+export HCLOUD_TOKEN=
