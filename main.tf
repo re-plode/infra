@@ -4,9 +4,14 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
+    mailgun = {
+      source  = "wgebis/mailgun"
+      version = "~> 0.7.7"
+    }
   }
 }
 
+# Hetzner
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
   public_key = file("config/ssh/id_ed25519_fedora.pub")
@@ -54,4 +59,17 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
+}
+
+# Mailgun
+provider "mailgun" {
+  api_key = var.mailgun_api_key
+}
+
+resource "mailgun_domain" "replode" {
+  name          = "replo.de"
+  region        = "eu"
+  spam_action   = "disabled"
+  smtp_password = var.mailgun_smtp_password
+  dkim_key_size = 1024
 }

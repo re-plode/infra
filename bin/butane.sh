@@ -4,6 +4,7 @@ set -e
 
 download_butane() {
   BUTANE="$PWD/build/butane"
+  VERSION="v0.23.0"
   BUTANE_PATH="$(dirname $BUTANE)"
 
   if [ -f "$BUTANE" ]; then
@@ -15,10 +16,10 @@ download_butane() {
   fi
 
   wget -q -O $BUTANE \
-    https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu
-  wget -q https://github.com/coreos/butane/releases/download/v0.23.0/butane-x86_64-unknown-linux-gnu.asc
-  curl -s https://fedoraproject.org/fedora.gpg | gpg --import
-  gpg --verify butane-x86_64-unknown-linux-gnu.asc $BUTANE
+    https://github.com/coreos/butane/releases/download/$VERSION/butane-x86_64-unknown-linux-gnu
+  wget -q https://github.com/coreos/butane/releases/download/$VERSION/butane-x86_64-unknown-linux-gnu.asc
+  curl -s https://fedoraproject.org/fedora.gpg | gpg -q --import
+  gpg -q --verify butane-x86_64-unknown-linux-gnu.asc $BUTANE
   chmod +x $BUTANE
   rm butane-x86_64-unknown-linux-gnu.asc
 }
@@ -28,10 +29,10 @@ wrap_ignition() {
   jq -nc --arg ign "$1" '{"ign":$ign}'
 }
 
-BUTANE=$(which butane)
+BUTANE=$(which butane || true)
 
 if [ ! -z "$BUTANE" ]; then
-  wrap_ignition "$($BUTANE $@)"
+  echo $BUTANE
   exit 0
 fi
 

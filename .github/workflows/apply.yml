@@ -23,6 +23,8 @@ jobs:
     env:
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
+      TF_VAR_mailgun_api_key: ${{ secrets.MAILGUN_API_KEY }}
+      TF_VAR_mailgun_smtp_password: ${{ secrets.MAILGUN_SMTP_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
