@@ -1,6 +1,6 @@
 [Unit]
 Description=Gerbil
-Requires=pangolin.service
+Wants=pangolin.service
 After=pangolin.service
 
 [Container]

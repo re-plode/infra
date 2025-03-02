@@ -1,6 +1,6 @@
 [Unit]
 Description=Traefik
-Requires=gerbil.service
+Wants=gerbil.service
 After=gerbil.service
 
 [Container]
