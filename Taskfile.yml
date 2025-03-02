@@ -1,0 +1,20 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install dev dependencies
+    cmds:
+      - go install mvdan.cc/sh/v3/cmd/shfmt@latest
+      - go install github.com/google/yamlfmt/cmd/yamlfmt@latest
+  lint-check:
+    desc: Lint (check only)
+    cmds:
+      - tofu fmt -check
+      - shfmt -d bin/*.sh
+      - yamlfmt -lint coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}
+  lint-fix:
+    desc: Lint (fix)
+    cmds:
+      - tofu fmt
+      - shfmt -w bin/*.sh
+      - yamlfmt coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}

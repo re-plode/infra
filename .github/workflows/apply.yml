@@ -10,13 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-      - run: |
-          go install github.com/google/yamlfmt/cmd/yamlfmt@latest
-          go install mvdan.cc/sh/v3/cmd/shfmt@latest
+      - uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: opentofu/setup-opentofu@v1
-      - run: tofu fmt -check
-      - run: shfmt -d bin/*.sh
-      - run: yamlfmt -lint coreos/*.bu .github/actions/*.yml **/*.{yml,yaml}
+      - run: task install
+      - run: task lint-check
 
   apply:
     runs-on: ubuntu-latest
