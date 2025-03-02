@@ -26,11 +26,11 @@ storage:
     - path: /var/lib/containers/traefik/etc
     - path: /var/lib/containers/traefik/letsencrypt
   files:
-    - path: /var/lib/containers/traefik/traefik_config.yml
+    - path: /etc/traefik/traefik_config.yml
       overwrite: true
       contents:
         local: config/traefik/traefik_config.yml
-    - path: /var/lib/containers/traefik/dynamic_config.yml
+    - path: /etc/traefik/dynamic_config.yml
       overwrite: true
       contents:
         local: config/traefik/dynamic_config.yml
