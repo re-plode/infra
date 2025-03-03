@@ -24,7 +24,12 @@ storage:
     - path: /var/lib/containers/pangolin/config
     - path: /var/lib/containers/gerbil/config
     - path: /var/lib/containers/traefik/etc
+    - path: /var/lib/containers/traefik/logs
     - path: /var/lib/containers/traefik/letsencrypt
+    - path: /var/lib/containers/crowdsec/etc
+    - path: /var/lib/containers/crowdsec/db
+    - path: /var/lib/containers/crowdsec/logs/syslog
+    - path: /var/lib/containers/crowdsec/logs/traefik
   files:
     - path: /var/lib/containers/traefik/etc/traefik_config.yml
       overwrite: true
