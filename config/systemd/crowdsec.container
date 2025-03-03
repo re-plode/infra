@@ -8,17 +8,18 @@ ContainerName=crowdsec
 Image=docker.io/crowdsecurity/crowdsec:latest
 Exec=-t
 Environment=GID=1000
-Environment=COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+Environment="COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules"
 Environment=ENROLL_INSTANCE_NAME=pangolin-crowdsec
 Environment=PARSERS=crowdsecurity/whitelists
 Environment=ACQUIRE_FILES=/var/log/traefik/*.log
 Environment=ENROLL_TAGS=docker
+HealthCmd=cscli capi status
 Volume=/var/lib/containers/crowdsec/etc:/etc/crowdsec:z
 Volume=/var/lib/containers/crowdsec/db:/var/lib/crowdsec/data:z
-Volume=/var/lib/containers/crowdsec/logs/auth.log:/var/log/auth.log:z
-Volume=/var/lib/containers/crowdsec/logs/syslog:/var/log/syslog:z
-Volume=/var/lib/containers/crowdsec/logs/traefik:/var/log/traefik:z
+Volume=/var/lib/containers/crowdsec/logs/auth.log:/var/log/auth.log:ro,z
+Volume=/var/lib/containers/crowdsec/logs/syslog:/var/log/syslog:ro,z
 Volume=/var/lib/containers/crowdsec/logs:/var/log:z
+Volume=/var/lib/containers/traefik/logs:/var/log/traefik:z
 PublishPort=9090:9090
 PublishPort=6060:6060
 ExposeHostPort=7422

@@ -29,7 +29,6 @@ storage:
     - path: /var/lib/containers/crowdsec/etc
     - path: /var/lib/containers/crowdsec/db
     - path: /var/lib/containers/crowdsec/logs/syslog
-    - path: /var/lib/containers/crowdsec/logs/traefik
   files:
     - path: /var/lib/containers/traefik/etc/traefik_config.yml
       overwrite: true
@@ -39,6 +38,18 @@ storage:
       overwrite: true
       contents:
         local: config/traefik/dynamic_config.yml
+    - path: /var/lib/containers/crowdsec/etc/profiles.yaml
+      overwrite: true
+      contents:
+        local: config/crowdsec/profiles.yaml
+    - path: /var/lib/containers/crowdsec/etc/acquis.yaml
+      overwrite: true
+      contents:
+        local: config/crowdsec/acquis.yaml
+    - path: /var/lib/containers/crowdsec/logs/auth.log
+      overwrite: true
+      contents:
+        local: config/empty.log
     - path: /etc/sysctl.d/10-podman.conf
       overwrite: true
       contents:
@@ -59,3 +70,7 @@ storage:
       overwrite: true
       contents:
         local: config/systemd/traefik.container
+    - path: /etc/containers/systemd/crowdsec.container
+      overwrite: true
+      contents:
+        local: config/systemd/crowdsec.container
