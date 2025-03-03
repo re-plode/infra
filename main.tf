@@ -29,6 +29,11 @@ resource "hcloud_firewall" "internal_net_firewall" {
   name = "internal-net-firewall"
   rule {
     direction  = "in"
+    protocol   = "icmp"
+    source_ips = local.cloudflare_ips
+  }
+  rule {
+    direction  = "in"
     protocol   = "tcp"
     port       = "80"
     source_ips = local.cloudflare_ips
