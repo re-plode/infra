@@ -31,7 +31,7 @@ resource "hcloud_firewall" "internal_net_firewall" {
     direction  = "in"
     protocol   = "icmp"
     source_ips = local.all_ips
-  } 
+  }
   rule {
     direction  = "in"
     protocol   = "tcp"
