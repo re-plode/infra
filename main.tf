@@ -25,6 +25,28 @@ data "external" "ignition" {
   program = ["./bin/butane.sh", "--files-dir", ".", "coreos/internal-net.bu"]
 }
 
+resource "hcloud_firewall" "internal_net_firewall" {
+  name = "internal-net-firewall"
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "80"
+    source_ips = local.cloudflare_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "443"
+    source_ips = local.cloudflare_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "udp"
+    port       = "51820"
+    source_ips = local.cloudflare_ips
+  }
+}
+
 resource "hcloud_server" "internal_net" {
   name        = "internal-net-coreos-2gb-nbg1-1"
   image       = data.hcloud_image.coreos_snapshot.id
@@ -48,6 +70,11 @@ resource "hcloud_volume" "internal_net_vol" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
+  firewall_id = hcloud_firewall.internal_net_firewall.id
+  server_ids  = [hcloud_server.internal_net.id]
 }
 
 resource "hcloud_volume_attachment" "internal_net_vol_attachment" {

@@ -32,7 +32,7 @@ wrap_ignition() {
 BUTANE=$(which butane || true)
 
 if [ ! -z "$BUTANE" ]; then
-  echo $BUTANE
+  wrap_ignition "$($BUTANE $@)"
   exit 0
 fi
 
