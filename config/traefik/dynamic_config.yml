@@ -42,10 +42,7 @@ http:
             - "0.0.0.0/0" # All IP addresses are trusted for forwarded headers (CHANGE MADE HERE)
           clientTrustedIPs: # Client trusted IPs (CHANGE MADE HERE)
             # Internal LAN IP addresses
-            - "10.0.0.0/8" 
-            - "172.16.0.0/12"
-            - "192.168.0.0/16"
-            - "100.89.137.0/20"
+            - "10.89.0.0/24"
 
   routers:
     # HTTP to HTTPS redirect router
