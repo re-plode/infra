@@ -1,0 +1,9 @@
+[Unit]
+Description=Set the default backend for iptables
+
+[Service]
+ExecStart=/usr/sbin/alternatives --set iptables /usr/sbin/iptables-legacy
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
