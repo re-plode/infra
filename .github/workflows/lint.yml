@@ -1,0 +1,17 @@
+on:
+  pull_request:
+
+name: lint
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: opentofu/setup-opentofu@v1
+      - run: task install
+      - run: task lint-check

@@ -3,11 +3,51 @@ http:
     redirect-to-https:
       redirectScheme:
         scheme: https
+    security-headers:
+      headers:
+        customResponseHeaders:
+          Server: "" # Remove server header
+          X-Powered-By: "" # Remove powered by header
+          X-Forwarded-Proto: "https"  # Set forwarded proto to https
+        sslProxyHeaders: # SSL proxy headers
+          X-Forwarded-Proto: "https" # Set forwarded proto to https
+        hostsProxyHeaders: # Hosts proxy headers
+          - "X-Forwarded-Host" # Set forwarded host
+        contentTypeNosniff: true # Prevent MIME sniffing
+        customFrameOptionsValue: "SAMEORIGIN" # Set frame options
+        referrerPolicy: "strict-origin-when-cross-origin" # Set referrer policy
+        forceSTSHeader: true # Force STS header
+        stsIncludeSubdomains: true # Include subdomains
+        stsSeconds: 63072000 # STS seconds
+        stsPreload: true # Preload STS
+    # CrowdSec configuration with proper IP forwarding
+    crowdsec:
+      plugin:
+        crowdsec:
+          enabled: true
+          logLevel: INFO # Log level
+          updateIntervalSeconds: 15 # Update interval
+          updateMaxFailure: 0 # Update max failure
+          defaultDecisionSeconds: 15 # Default decision seconds
+          httpTimeoutSeconds: 10 # HTTP timeout
+          crowdsecMode: live # CrowdSec mode
+          crowdsecAppsecEnabled: true # Enable AppSec
+          crowdsecAppsecHost: crowdsec:7422 # CrowdSec IP address which you noted down later
+          crowdsecAppsecFailureBlock: true # Block on failure
+          crowdsecAppsecUnreachableBlock: true # Block on unreachable
+          crowdsecLapiKey: "PUT_YOUR_BOUNCER_KEY_HERE_OR_IT_WILL_NOT_WORK" # CrowdSec API key which you noted down later
+          crowdsecLapiHost: crowdsec:8080 # CrowdSec
+          crowdsecLapiScheme: http # CrowdSec API scheme
+          forwardedHeadersTrustedIPs: # Forwarded headers trusted IPs
+            - "0.0.0.0/0" # All IP addresses are trusted for forwarded headers (CHANGE MADE HERE)
+          clientTrustedIPs: # Client trusted IPs (CHANGE MADE HERE)
+            # Internal LAN IP addresses
+            - "10.89.0.0/24"
 
   routers:
     # HTTP to HTTPS redirect router
     main-app-router-redirect:
-      rule: "Host(`replo.de`)" # REPLACE THIS WITH YOUR DOMAIN
+      rule: "Host(`replo.de`)"
       service: next-service
       entryPoints:
         - web
@@ -16,28 +56,34 @@ http:
 
     # Next.js router (handles everything except API and WebSocket paths)
     next-router:
-      rule: "Host(`replo.de`) && !PathPrefix(`/api/v1`)" # REPLACE THIS WITH YOUR DOMAIN
+      rule: "Host(`replo.de`) && !PathPrefix(`/api/v1`)"
       service: next-service
       entryPoints:
         - websecure
+      middlewares:
+        - security-headers
       tls:
         certResolver: letsencrypt
 
     # API router (handles /api/v1 paths)
     api-router:
-      rule: "Host(`replo.de`) && PathPrefix(`/api/v1`)" # REPLACE THIS WITH YOUR DOMAIN
+      rule: "Host(`replo.de`) && PathPrefix(`/api/v1`)"
       service: api-service
       entryPoints:
         - websecure
+      middlewares:
+        - security-headers
       tls:
         certResolver: letsencrypt
 
     # WebSocket router
     ws-router:
-      rule: "Host(`replo.de`)" # REPLACE THIS WITH YOUR DOMAIN
+      rule: "Host(`replo.de`)"
       service: api-service
       entryPoints:
         - websecure
+      middlewares:
+        - security-headers
       tls:
         certResolver: letsencrypt
 

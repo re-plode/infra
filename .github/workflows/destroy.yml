@@ -1,6 +1,8 @@
 on:
   workflow_dispatch:
+
 name: destroy
+
 jobs:
   destroy:
     runs-on: ubuntu-latest
