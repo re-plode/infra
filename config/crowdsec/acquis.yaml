@@ -1,6 +1,11 @@
 filenames:
- - /var/log/auth.log
- - /var/log/syslog
+  - /var/log/syslog
+labels:
+  type: syslog
+---
+source: journalctl
+journalctl_filter:
+  - "--directory=/var/log/host/"
 labels:
   type: syslog
 ---
