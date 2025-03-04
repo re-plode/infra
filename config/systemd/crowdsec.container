@@ -5,10 +5,10 @@ After=gerbil.service
 
 [Container]
 ContainerName=crowdsec
-Image=docker.io/crowdsecurity/crowdsec:latest
+Image=docker.io/crowdsecurity/crowdsec:latest-debian
 Exec=-t
 Environment=GID=1000
-Environment="COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules"
+Environment="COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/sshd"
 Environment=ENROLL_INSTANCE_NAME=pangolin-crowdsec
 Environment=PARSERS=crowdsecurity/whitelists
 Environment=ACQUIRE_FILES=/var/log/traefik/*.log
@@ -17,8 +17,8 @@ HealthCmd=cscli capi status
 Network=pangolin.network
 Volume=/var/lib/containers/crowdsec/etc:/etc/crowdsec:z
 Volume=/var/lib/containers/crowdsec/db:/var/lib/crowdsec/data:z
-Volume=/var/lib/containers/crowdsec/logs/auth.log:/var/log/auth.log:ro,z
 Volume=/var/lib/containers/crowdsec/logs/syslog:/var/log/syslog:ro,z
+Volume=/var/log/journal:/var/log/host:ro,z
 Volume=/var/lib/containers/crowdsec/logs:/var/log:z
 Volume=/var/lib/containers/traefik/logs:/var/log/traefik:z
 PublishPort=9090:9090

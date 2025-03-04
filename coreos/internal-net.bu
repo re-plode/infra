@@ -46,10 +46,6 @@ storage:
       overwrite: true
       contents:
         local: config/crowdsec/acquis.yaml
-    - path: /var/lib/containers/crowdsec/logs/auth.log
-      overwrite: true
-      contents:
-        local: config/empty.log
     - path: /etc/sysctl.d/10-podman.conf
       overwrite: true
       contents:

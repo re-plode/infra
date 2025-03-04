@@ -82,6 +82,8 @@ entryPoints:
         certResolver: "letsencrypt"
       middlewares:
         - crowdsec@file
+  tcp-5022:
+    address: ":5022/tcp"
 
 serversTransport:
   insecureSkipVerify: true

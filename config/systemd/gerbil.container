@@ -12,6 +12,7 @@ Network=pangolin.network
 PublishPort=51820:51820/udp
 PublishPort=443:443
 PublishPort=80:80
+PublishPort=5022:5022/tcp
 Volume=/var/lib/containers/gerbil/config:/var/config:z
 
 [Install]
