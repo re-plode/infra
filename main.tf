@@ -4,6 +4,10 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
 }
 
@@ -92,4 +96,13 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
+}
+
+resource "cloudflare_dns_record" "replo_de_dns_a_record" {
+  zone_id = "866a9591267d97262251a392a85dbd7c"
+  content = hcloud_server.internal_net.ipv4_address
+  name    = "@"
+  proxied = false
+  ttl     = 1
+  type    = "A"
 }

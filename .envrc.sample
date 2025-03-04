@@ -1,1 +1,4 @@
 export HCLOUD_TOKEN=
+export TF_VAR_mailgun_api_key=
+export TF_VAR_mailgun_smtp_password=
+export CLOUDFLARE_API_TOKEN=
