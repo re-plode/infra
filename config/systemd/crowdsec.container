@@ -14,6 +14,7 @@ Environment=PARSERS=crowdsecurity/whitelists
 Environment=ACQUIRE_FILES=/var/log/traefik/*.log
 Environment=ENROLL_TAGS=docker
 HealthCmd=cscli capi status
+Network=pangolin.network
 Volume=/var/lib/containers/crowdsec/etc:/etc/crowdsec:z
 Volume=/var/lib/containers/crowdsec/db:/var/lib/crowdsec/data:z
 Volume=/var/lib/containers/crowdsec/logs/auth.log:/var/log/auth.log:ro,z

@@ -3,13 +3,6 @@ http:
     redirect-to-https:
       redirectScheme:
         scheme: https
-    default-whitelist:
-      ipWhiteList:
-        sourceRange:
-          # Internal IP addresses
-          - "10.0.0.0/8"
-          - "192.168.0.0/16"
-          - "172.16.0.0/12"
     security-headers:
       headers:
         customResponseHeaders:
