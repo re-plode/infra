@@ -19,6 +19,6 @@ blacklists_ipv4: crowdsec-blacklists
 #blacklists_ipv6: crowdsec6-blacklists
 #if present, insert rule in those chains
 iptables_chains:
-#  - INPUT
-#  - FORWARD
+  - INPUT
+  - FORWARD
   - DOCKER-USER
