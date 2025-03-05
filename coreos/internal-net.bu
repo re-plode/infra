@@ -68,5 +68,4 @@ storage:
 systemd:
   units:
     - name: custom-iptables-default.service
-      enabled: true
       contents_local: config/systemd/custom-iptables-default.service
