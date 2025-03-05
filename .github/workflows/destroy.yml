@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
     steps:
       - uses: actions/checkout@v4
