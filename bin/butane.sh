@@ -31,7 +31,7 @@ wrap_ignition() {
 
 BUTANE=$(which butane || true)
 
-if [ ! -z "$BUTANE" ]; then
+if [ -z "$BUTANE" ]; then
   download_butane
 fi
 
