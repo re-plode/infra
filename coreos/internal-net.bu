@@ -32,41 +32,34 @@ storage:
   files:
     - path: /var/lib/containers/traefik/etc/traefik_config.yml
       overwrite: true
-      contents:
-        local: config/traefik/traefik_config.yml
     - path: /var/lib/containers/traefik/etc/dynamic_config.yml
       overwrite: true
-      contents:
-        local: config/traefik/dynamic_config.yml
     - path: /var/lib/containers/crowdsec/etc/profiles.yaml
       overwrite: true
-      contents:
-        local: config/crowdsec/profiles.yaml
     - path: /var/lib/containers/crowdsec/etc/acquis.yaml
       overwrite: true
-      contents:
-        local: config/crowdsec/acquis.yaml
+    - path: /var/lib/containers/crowdsec-firewall-bouncer/crowdsec-firewall-bouncer.yaml
+      overwrite: true
+    - path: /var/lib/containers/crowdsec-firewall-bouncer/Dockerfile
+      overwrite: true
     - path: /etc/sysctl.d/10-podman.conf
       overwrite: true
-      contents:
-        local: config/sysctl.d/10-podman.conf
+    - path: /etc/modules-load.d/iptables.conf
+      overwrite: true
     - path: /etc/containers/systemd/pangolin.network
       overwrite: true
-      contents:
-        local: config/systemd/pangolin.network
     - path: /etc/containers/systemd/pangolin.container
       overwrite: true
-      contents:
-        local: config/systemd/pangolin.container
     - path: /etc/containers/systemd/gerbil.container
       overwrite: true
-      contents:
-        local: config/systemd/gerbil.container
     - path: /etc/containers/systemd/traefik.container
       overwrite: true
-      contents:
-        local: config/systemd/traefik.container
     - path: /etc/containers/systemd/crowdsec.container
       overwrite: true
-      contents:
-        local: config/systemd/crowdsec.container
+    - path: /etc/containers/systemd/crowdsec-firewall-bouncer.build
+      overwrite: true
+    - path: /etc/containers/systemd/crowdsec-firewall-bouncer.container
+      overwrite: true
+  trees:
+    - local: root
+      path: /

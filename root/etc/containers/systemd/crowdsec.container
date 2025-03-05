@@ -22,6 +22,7 @@ Volume=/var/log/journal:/var/log/host:ro,z
 Volume=/var/lib/containers/crowdsec/logs:/var/log:z
 Volume=/var/lib/containers/traefik/logs:/var/log/traefik:z
 PublishPort=9090:9090
+PublishPort=8080:8080
 PublishPort=6060:6060
 ExposeHostPort=7422
 Label="traefik.enable=false"

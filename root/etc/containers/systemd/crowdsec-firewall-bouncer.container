@@ -1,0 +1,20 @@
+[Unit]
+Description=Crowdsec Firewall Bouncer
+Requires=crowdsec-firewall-bouncer.build crowdsec.service
+After=crowdsec-firewall-bouncer.build crowdsec.service
+
+[Container]
+ContainerName=crowdsec-firewall-bouncer
+Image=localhost/crowdsec-firewall-bouncer
+Environment=TZ=Europe/Berlin
+AddCapability=NET_ADMIN NET_RAW
+Network=host
+Volume=/var/lib/containers/crowdsec-firewall-bouncer/crowdsec-firewall-bouncer.yaml:/crowdsec-firewall-bouncer.yaml:z
+Volume=/var/lib/containers/crowdsec-firewall-bouncer/crowdsec-firewall-bouncer.log:/var/log/crowdsec-firewall-bouncer.log:z
+Label="traefik.enable=false"
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

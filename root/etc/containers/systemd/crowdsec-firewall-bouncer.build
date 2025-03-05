@@ -1,0 +1,9 @@
+[Unit]
+Description=Crowdsec
+
+[Build]
+ImageTag=crowdsec-firewall-bouncer
+SetWorkingDirectory=/var/lib/containers/crowdsec-firewall-bouncer
+
+[Install]
+WantedBy=multi-user.target
