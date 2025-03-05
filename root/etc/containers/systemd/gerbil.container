@@ -5,7 +5,7 @@ After=pangolin.service
 
 [Container]
 ContainerName=gerbil
-Image=docker.io/fosrl/gerbil:1.0.0-beta.3
+Image=docker.io/fosrl/gerbil:1.0.0
 Exec=--reachableAt=http://gerbil:3003 --generateAndSaveKeyTo=/var/config/key --remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth
 AddCapability=NET_ADMIN SYS_MODULE
 Network=pangolin.network
