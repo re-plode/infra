@@ -15,9 +15,9 @@ download_butane() {
     mkdir -p "$BUTANE_PATH"
   fi
 
-  wget -q -O $BUTANE \
+  curl -Ls -o $BUTANE \
     https://github.com/coreos/butane/releases/download/$VERSION/butane-x86_64-unknown-linux-gnu
-  wget -q https://github.com/coreos/butane/releases/download/$VERSION/butane-x86_64-unknown-linux-gnu.asc
+  curl -Ls -O https://github.com/coreos/butane/releases/download/$VERSION/butane-x86_64-unknown-linux-gnu.asc
   curl -s https://fedoraproject.org/fedora.gpg | gpg -q --import
   gpg -q --verify butane-x86_64-unknown-linux-gnu.asc $BUTANE
   chmod +x $BUTANE
@@ -32,9 +32,8 @@ wrap_ignition() {
 BUTANE=$(which butane || true)
 
 if [ ! -z "$BUTANE" ]; then
-  wrap_ignition "$($BUTANE $@)"
-  exit 0
+  download_butane
 fi
 
-download_butane
-wrap_ignition "$($BUTANE $@)"
+RES="$($BUTANE $@)"
+wrap_ignition "$RES"

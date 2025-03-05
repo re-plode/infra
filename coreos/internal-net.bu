@@ -46,8 +46,6 @@ storage:
       overwrite: true
     - path: /etc/modules-load.d/iptables.conf
       overwrite: true
-    - path: /etc/containers/systemd/custom-iptables-default.service
-      overwrite: true
     - path: /etc/containers/systemd/pangolin.network
       overwrite: true
     - path: /etc/containers/systemd/pangolin.container
