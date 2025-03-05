@@ -63,7 +63,3 @@ storage:
   trees:
     - local: root
       path: /
-systemd:
-  units:
-    - name: custom-iptables-default.service
-      contents_local: config/systemd/custom-iptables-default.service
