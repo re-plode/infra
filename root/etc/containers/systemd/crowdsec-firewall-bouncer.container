@@ -1,7 +1,8 @@
 [Unit]
 Description=Crowdsec Firewall Bouncer
-Wants=crowdsec-firewall-bouncer.build crowdsec.service
-After=crowdsec-firewall-bouncer.build crowdsec.service
+Requires=crowdsec-firewall-bouncer.build
+Wants=crowdsec.service
+After=crowdsec.service
 
 [Container]
 ContainerName=crowdsec-firewall-bouncer
