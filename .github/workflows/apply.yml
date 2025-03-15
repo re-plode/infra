@@ -34,7 +34,7 @@ jobs:
       TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
       TF_VAR_dsm_otp_secret: ${{ secrets.DSM_OTP_SECRET }}
     steps:
-      - run: timedatectl set-timezone Europe/Berlin
+      - run: sudo timedatectl set-timezone Europe/Berlin
       - uses: actions/checkout@v4
       - uses: tailscale/github-action@v3
         with:
