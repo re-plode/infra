@@ -16,9 +16,9 @@ terraform {
 }
 
 provider "synology" {
-  host            = vars.dsm_host
-  user            = vars.dsm_user
-  password        = vars.dsm_password
+  host            = var.dsm_host
+  user            = var.dsm_user
+  password        = var.dsm_password
   skip_cert_check = true
 }
 
