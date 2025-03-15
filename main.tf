@@ -106,10 +106,7 @@ resource "synology_container_project" "whoami" {
   name = "whoami"
   services = {
     "whoami" = {
-      image = {
-        name = "traefik/whoami"
-        tag  = "latest"
-      }
+      image = "traefik/whoami:latest"
     }
   }
 }
