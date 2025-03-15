@@ -103,7 +103,7 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 }
 
 resource "synology_container_project" "whoami" {
-  name     = "whoami"
+  name = "whoami"
   services = {
     "whoami" = {
       image = {
@@ -111,7 +111,7 @@ resource "synology_container_project" "whoami" {
         tag  = "latest"
       }
     }
-  } 
+  }
 }
 
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {
