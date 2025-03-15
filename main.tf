@@ -15,7 +15,9 @@ terraform {
   }
 }
 
-provider "synology" {}
+provider "synology" {
+  skip_cert_check = true
+}
 
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
