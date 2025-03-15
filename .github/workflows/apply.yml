@@ -31,6 +31,11 @@ jobs:
       CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
     steps:
       - uses: actions/checkout@v4
+      - uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:github
       - uses: opentofu/setup-opentofu@v1
       - uses: aws-actions/configure-aws-credentials@v4
         with:
