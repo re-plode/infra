@@ -102,6 +102,18 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   automount = true
 }
 
+resource "synology_container_project" "whoami" {
+  name = "whoami"
+  services = {
+    "whoami" = {
+      image = {
+        name = "traefik/whoami"
+        tag  = "latest"
+      }
+    }
+  } 
+}
+
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {
   zone_id = "866a9591267d97262251a392a85dbd7c"
   content = hcloud_server.internal_net.ipv4_address
