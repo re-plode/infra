@@ -19,6 +19,7 @@ provider "synology" {
   host            = var.dsm_host
   user            = var.dsm_user
   password        = var.dsm_password
+  otp_secret      = var.dsm_otp_secret
   skip_cert_check = true
 }
 
