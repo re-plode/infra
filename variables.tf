@@ -8,10 +8,6 @@ variable "dsm_password" {
   type      = string
   sensitive = true
 }
-variable "dsm_otp_secret" {
-  type      = string
-  sensitive = true
-}
 
 locals {
   cloudflare_ips = [
