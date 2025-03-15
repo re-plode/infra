@@ -15,6 +15,8 @@ terraform {
   }
 }
 
+provider "synology" {}
+
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
   public_key = file("config/ssh/id_ed25519_fedora.pub")
