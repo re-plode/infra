@@ -4,6 +4,10 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
+    synology = {
+      source = "synology-community/synology"
+      version = "~> 0.4"
+    }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
