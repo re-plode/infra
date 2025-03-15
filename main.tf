@@ -103,7 +103,7 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 }
 
 resource "synology_container_project" "whoami" {
-  name = "whoami"
+  name     = "whoami"
   services = {
     "whoami" = {
       image = {
