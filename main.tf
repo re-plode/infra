@@ -109,17 +109,43 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   automount = true
 }
 
-resource "synology_container_project" "nginx" {
-  name = "nginx"
+resource "synology_container_project" "audiobookshelf" {
+  name = "audiobookshelf"
   run  = true
   services = {
-    nginx = {
-      name           = "nginx"
-      container_name = "nginx"
+    audiobookshelf = {
+      name           = "audiobookshelf"
+      container_name = "audiobookshelf"
       user           = "root"
       restart        = "unless-stopped"
       replicas       = 1
-      image          = "nginx:latest"
+      image          = "advplyr/audiobookshelf:latest"
+
+      ports = [
+        {
+          target    = 80
+          published = "13378"
+        }
+      ]
+
+      volumes = [
+        {
+          source = "/volume2/projects/audiobookshelf/config"
+          target = "/config"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        },
+        {
+          source = "/volume2/projects/audiobookshelf/metadata"
+          target = "/metadata"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        }
+      ]
     }
   }
 }
