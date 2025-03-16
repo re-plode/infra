@@ -119,7 +119,7 @@ resource "synology_container_project" "audiobookshelf" {
       user           = "root"
       restart        = "unless-stopped"
       replicas       = 1
-      image          = "nginx:latest"
+      image          = "advplyr/audiobookshelf:latest"
     }
   }
 }
