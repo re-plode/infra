@@ -132,7 +132,7 @@ resource "synology_container_project" "audiobookshelf" {
         {
           source = "/volume2/docker/audiobookshelf/config"
           target = "/config"
-          bind {
+          bind = {
             create_host_path = true
           }
         },
