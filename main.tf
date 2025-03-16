@@ -120,13 +120,13 @@ resource "synology_container_project" "audiobookshelf" {
       restart        = "unless-stopped"
       replicas       = 1
       image          = "ghcr.io/advplyr/audiobookshelf:latest"
-      
+
       ports = [
         {
           target    = 80
           published = 13378
         }
-      ] 
+      ]
 
       volumes = [
         {
@@ -143,7 +143,7 @@ resource "synology_container_project" "audiobookshelf" {
             create_host_path = true
           }
         }
-      ] 
+      ]
     }
   }
 }
