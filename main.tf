@@ -112,8 +112,10 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 resource "synology_container_project" "whoami" {
   name = "whoami"
   services = {
-    "whoami" = {
-      image = "traefik/whoami:latest"
+    whoami = {
+      name     = "whoami"
+      replicas = 1
+      image    = "traefik/whoami:latest"
     }
   }
 }
