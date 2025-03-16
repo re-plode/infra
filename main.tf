@@ -109,13 +109,13 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   automount = true
 }
 
-resource "synology_container_project" "whoami" {
-  name = "whoami"
+resource "synology_container_project" "nginx" {
+  name = "nginx"
   services = {
     whoami = {
-      name     = "whoami"
+      name     = "nginx"
       replicas = 1
-      image    = "traefik/whoami:latest"
+      image    = "nginx"
     }
   }
 }
