@@ -4,11 +4,22 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
+    synology = {
+      source  = "synology-community/synology"
+      version = "~> 0.4"
+    }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
     }
   }
+}
+
+provider "synology" {
+  host            = var.dsm_host
+  user            = var.dsm_user
+  password        = var.dsm_password
+  skip_cert_check = true
 }
 
 resource "hcloud_ssh_key" "fedora" {
@@ -96,6 +107,21 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
+}
+
+resource "synology_container_project" "nginx" {
+  name = "nginx"
+  run  = true
+  services = {
+    nginx = {
+      name           = "nginx"
+      container_name = "nginx"
+      user           = "root"
+      restart        = "unless-stopped"
+      replicas       = 1
+      image          = "nginx:latest"
+    }
+  }
 }
 
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {

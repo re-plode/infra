@@ -29,8 +29,18 @@ jobs:
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
+      TF_VAR_dsm_host: ${{ vars.DSM_HOST }}
+      TF_VAR_dsm_user: ${{ vars.DSM_USER }}
+      TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
     steps:
+      - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
+        if: runner.debug == '1'
       - uses: actions/checkout@v4
+      - uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:github
       - uses: opentofu/setup-opentofu@v1
       - uses: aws-actions/configure-aws-credentials@v4
         with:
