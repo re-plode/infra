@@ -119,10 +119,7 @@ resource "synology_container_project" "nginx" {
       user           = "root"
       restart        = "unless-stopped"
       replicas       = 1
-      image {
-        name = "nginx"
-        tag  = "latest"
-      }
+      image          = "nginx:latest"
     }
   }
 }
