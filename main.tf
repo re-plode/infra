@@ -6,7 +6,7 @@ terraform {
     }
     synology = {
       source  = "synology-community/synology"
-      version = "~> 0.3.3"
+      version = "~> 0.4"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
