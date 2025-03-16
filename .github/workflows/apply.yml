@@ -55,6 +55,6 @@ jobs:
           sed -i 's/PUT_YOUR_BOUNCER_KEY_HERE_OR_IT_WILL_NOT_WORK/${{ secrets.CROWDSEC_API_KEY }}/g' root/var/lib/containers/crowdsec-firewall-bouncer/crowdsec-firewall-bouncer.yaml
       - run: tofu init
       - run: tofu validate -no-color
-      - run: tofu plan -out=out.tfplan -exclude=synology_container_project.nginx
+      - run: tofu plan -out=out.tfplan
       - run: tofu apply -auto-approve out.tfplan
       - run: ./bin/put-tfstate.sh
