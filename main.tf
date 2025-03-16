@@ -127,25 +127,6 @@ resource "synology_container_project" "audiobookshelf" {
           published = 13378
         }
       ]
-
-      volumes = [
-        {
-          source = "/volume2/projects/audiobookshelf/config"
-          target = "/config"
-          type   = "bind"
-          bind = {
-            create_host_path = true
-          }
-        },
-        {
-          source = "/volume2/projects/audiobookshelf/metadata"
-          target = "/metadata"
-          type   = "bind"
-          bind = {
-            create_host_path = true
-          }
-        }
-      ]
     }
   }
 }
