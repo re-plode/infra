@@ -109,13 +109,13 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   automount = true
 }
 
-resource "synology_container_project" "audiobookshelf" {
-  name = "audiobookshelf"
+resource "synology_container_project" "abs" {
+  name = "abs"
   run  = true
   services = {
-    audiobookshelf = {
-      name           = "audiobookshelf"
-      container_name = "audiobookshelf"
+    abs = {
+      name           = "abs"
+      container_name = "abs"
       user           = "root"
       restart        = "unless-stopped"
       replicas       = 1
