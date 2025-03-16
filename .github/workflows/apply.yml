@@ -33,7 +33,7 @@ jobs:
       TF_VAR_dsm_user: ${{ vars.DSM_USER }}
       TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
     steps:
-      - run: export TF_LOG=DEBUG
+      - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
       - uses: actions/checkout@v4
       - uses: tailscale/github-action@v3
