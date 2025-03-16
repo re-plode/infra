@@ -112,15 +112,17 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 resource "synology_container_project" "nginx" {
   name = "nginx"
   run  = true
-  service {
-    name           = "nginx"
-    container_name = "nginx"
-    user           = "root"
-    restart        = "unless-stopped"
-    replicas       = 1
-    image {
-      name = "nginx"
-      tag  = "latest"
+  services = {
+    nginx = {
+      name           = "nginx"
+      container_name = "nginx"
+      user           = "root"
+      restart        = "unless-stopped"
+      replicas       = 1
+      image {
+        name = "nginx"
+        tag  = "latest"
+      }
     }
   }
 }
