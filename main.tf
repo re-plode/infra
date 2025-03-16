@@ -110,7 +110,7 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 }
 
 resource "synology_container_project" "nginx" {
-  name     = "nginx"
+  name = "nginx"
   service {
     image {
       name = "nginx"
