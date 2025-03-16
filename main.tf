@@ -112,6 +112,9 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 resource "synology_container_project" "nginx" {
   name = "nginx"
   service {
+    name    = "nginx"
+    user    = "root"
+    restart = "unless-stopped"
     image {
       name = "nginx"
       tag  = "latest"
