@@ -6,7 +6,7 @@ terraform {
     }
     synology = {
       source  = "synology-community/synology"
-      version = "~> 0.4"
+      version = "~> 0.3.3"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
@@ -111,8 +111,12 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 
 resource "synology_container_project" "nginx" {
   name     = "nginx"
-  replicas = 1
-  image    = "nginx"
+  service {
+    image {
+      name = "nginx"
+      tag  = "latest"
+    }
+  }
 }
 
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {
