@@ -130,7 +130,7 @@ resource "synology_container_project" "audiobookshelf" {
 
       volumes = [
         {
-          source = "/volume2/docker/audiobookshelf/config"
+          source = "/volume2/projects/audiobookshelf/config"
           target = "/config"
           type   = "bind"
           bind = {
@@ -138,7 +138,7 @@ resource "synology_container_project" "audiobookshelf" {
           }
         },
         {
-          source = "/volume2/docker/audiobookshelf/metadata"
+          source = "/volume2/projects/audiobookshelf/metadata"
           target = "/metadata"
           type   = "bind"
           bind = {
