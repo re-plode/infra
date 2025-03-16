@@ -121,25 +121,29 @@ resource "synology_container_project" "audiobookshelf" {
       replicas       = 1
       image          = "ghcr.io/advplyr/audiobookshelf:latest"
       
-      port {
-        target    = 80
-        published = 13378
-      }
+      ports = [
+        {
+          target    = 80
+          published = 13378
+        }
+      ] 
 
-      volume {
-        source = "/volume2/docker/audiobookshelf/config"
-        target = "/config"
-        bind {
-          create_host_path = true
+      volumes = [
+        {
+          source = "/volume2/docker/audiobookshelf/config"
+          target = "/config"
+          bind {
+            create_host_path = true
+          }
+        },
+        {
+          source = "/volume2/docker/audiobookshelf/metadata"
+          target = "/metadata"
+          bind {
+            create_host_path = true
+          }
         }
-      }
-      volume {
-        source = "/volume2/docker/audiobookshelf/metadata"
-        target = "/metadata"
-        bind {
-          create_host_path = true
-        }
-      }
+      ] 
     }
   }
 }
