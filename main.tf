@@ -120,6 +120,25 @@ resource "synology_container_project" "audiobookshelf" {
       restart        = "unless-stopped"
       replicas       = 1
       image          = "advplyr/audiobookshelf:latest"
+
+      volumes = [
+        {
+          source = "/volume2/projects/audiobookshelf/config"
+          target = "/config"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        },
+        {
+          source = "/volume2/projects/audiobookshelf/metadata"
+          target = "/metadata"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        }
+      ]
     }
   }
 }
