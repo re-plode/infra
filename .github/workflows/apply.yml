@@ -32,7 +32,7 @@ jobs:
       TF_VAR_dsm_host: ${{ vars.DSM_HOST }}
       TF_VAR_dsm_user: ${{ vars.DSM_USER }}
       TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
-      TF_LOG: DEBUG
+      TF_LOG: ${{ runner.debug == "1" && "DEBUG" || "INFO" }}
     steps:
       - uses: actions/checkout@v4
       - uses: tailscale/github-action@v3
