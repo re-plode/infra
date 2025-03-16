@@ -121,13 +121,6 @@ resource "synology_container_project" "audiobookshelf" {
       replicas       = 1
       image          = "advplyr/audiobookshelf:latest"
 
-      ports = [
-        {
-          target    = 80
-          published = "13378"
-        }
-      ]
-
       volumes = [
         {
           source = "/volume2/projects/audiobookshelf/config"
