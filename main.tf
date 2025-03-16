@@ -124,7 +124,7 @@ resource "synology_container_project" "audiobookshelf" {
       ports = [
         {
           target    = 80
-          published = 13378
+          published = "13378"
         }
       ]
 
