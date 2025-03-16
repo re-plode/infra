@@ -109,6 +109,47 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   automount = true
 }
 
+resource "synology_container_project" "audiobookshelf" {
+  name = "audiobookshelf"
+  run  = true
+  services = {
+    audiobookshelf = {
+      name           = "audiobookshelf"
+      container_name = "audiobookshelf"
+      user           = "root"
+      restart        = "unless-stopped"
+      replicas       = 1
+      image          = "advplyr/audiobookshelf:latest"
+
+      ports = [
+        {
+          target    = 80
+          published = "13378"
+        }
+      ]
+
+      volumes = [
+        {
+          source = "/volume2/projects/audiobookshelf/config"
+          target = "/config"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        },
+        {
+          source = "/volume2/projects/audiobookshelf/metadata"
+          target = "/metadata"
+          type   = "bind"
+          bind = {
+            create_host_path = true
+          }
+        }
+      ]
+    }
+  }
+}
+
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {
   zone_id = "866a9591267d97262251a392a85dbd7c"
   content = hcloud_server.internal_net.ipv4_address
