@@ -110,14 +110,9 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
 }
 
 resource "synology_container_project" "nginx" {
-  name = "nginx"
-  services = {
-    whoami = {
-      name     = "nginx"
-      replicas = 1
-      image    = "nginx"
-    }
-  }
+  name     = "nginx"
+  replicas = 1
+  image    = "nginx"
 }
 
 resource "cloudflare_dns_record" "replo_de_dns_a_record" {
