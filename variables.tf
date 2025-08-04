@@ -1,14 +1,3 @@
-variable "dsm_host" {
-  type = string
-}
-variable "dsm_user" {
-  type = string
-}
-variable "dsm_password" {
-  type      = string
-  sensitive = true
-}
-
 locals {
   cloudflare_ips = [
     "173.245.48.0/20",

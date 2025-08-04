@@ -5,7 +5,7 @@ After=pangolin.network
 
 [Container]
 ContainerName=pangolin
-Image=docker.io/fosrl/pangolin:1.0.0
+Image=docker.io/fosrl/pangolin:1.0.1
 Network=pangolin.network
 HealthCmd=curl -f http://localhost:3001/api/v1/
 HealthInterval=3s
