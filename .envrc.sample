@@ -1,4 +1,14 @@
 export HCLOUD_TOKEN=
+export CLOUDFLARE_API_TOKEN=
+
+export CLOUDFLARE_R2_ENDPOINT=
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+
 export TF_VAR_mailgun_api_key=
 export TF_VAR_mailgun_smtp_password=
-export CLOUDFLARE_API_TOKEN=
+export TF_VAR_dsm_host=
+export TF_VAR_dsm_user=
+export TF_VAR_dsm_password=
+
+use_nix

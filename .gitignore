@@ -1,9 +1,5 @@
 .envrc
 
-*.ign
-
 **/.terraform/*
 *.tfstate
 *.tfstate.*
-build/
-butane-*.asc

@@ -1,3 +1,7 @@
+variable "ssh_identity" {
+  type = string
+}
+
 variable "dsm_host" {
   type = string
 }

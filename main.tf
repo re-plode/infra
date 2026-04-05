@@ -6,11 +6,15 @@ terraform {
     }
     synology = {
       source  = "synology-community/synology"
-      version = "~> 0.4"
+      version = "~> 0.4.0"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
+    }
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 4.0.0"
     }
   }
 }
@@ -22,6 +26,15 @@ provider "synology" {
   skip_cert_check = true
 }
 
+provider "docker" {
+  host = "ssh://root@replo.de"
+  ssh_opts = [
+    "-i",
+    "~/.ssh/${var.ssh_identity}"
+  ]
+  disable_docker_daemon_check = true
+}
+
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
   public_key = file("config/ssh/id_ed25519_fedora.pub")
@@ -30,14 +43,9 @@ resource "hcloud_ssh_key" "ipadpro" {
   name       = "russellc@ipadpro"
   public_key = file("config/ssh/id_ed25519_ipadpro.pub")
 }
-
-data "hcloud_image" "coreos_snapshot" {
-  with_selector = "os_family=fedora,os_flavor=coreos,os_arch=x86_64"
-  most_recent   = true
-}
-
-data "external" "ignition" {
-  program = ["./bin/butane.sh", "--files-dir", ".", "coreos/internal-net.bu"]
+resource "hcloud_ssh_key" "github" {
+  name       = "russellc@github"
+  public_key = file("config/ssh/id_ed25519_github.pub")
 }
 
 resource "hcloud_firewall" "internal_net_firewall" {
@@ -50,7 +58,7 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
-    port       = "5022"
+    port       = "22"
     source_ips = local.all_ips
   }
   rule {
@@ -74,16 +82,20 @@ resource "hcloud_firewall" "internal_net_firewall" {
 }
 
 resource "hcloud_server" "internal_net" {
-  name        = "internal-net-coreos-2gb-nbg1-1"
-  image       = data.hcloud_image.coreos_snapshot.id
-  server_type = "cpx11"
+  name        = "internal-net"
+  image       = "docker-ce"
+  server_type = "cax11"
   location    = "nbg1"
   backups     = false
-  user_data   = data.external.ignition.result.ign
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true
   }
+  ssh_keys = [
+    hcloud_ssh_key.fedora.id,
+    hcloud_ssh_key.ipadpro.id,
+    hcloud_ssh_key.github.id
+  ]
 }
 
 resource "hcloud_volume" "internal_net_vol" {
@@ -107,6 +119,20 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
+}
+
+resource "docker_image" "nginx" {
+  name = "nginx:latest"
+}
+
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  name  = "nginx"
+
+  ports {
+    internal = "80"
+    external = "80"
+  }
 }
 
 resource "synology_container_project" "nginx" {
