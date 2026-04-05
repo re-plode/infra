@@ -27,7 +27,11 @@ provider "synology" {
 }
 
 provider "docker" {
-  host = "ssh://internal-net"
+  host = "ssh://root@${hcloud_server.internal_net.ipv4_address}"
+  ssh_opts = [
+    "-i",
+    "~/.ssh/id_ed25519_github"
+  ]
 }
 
 resource "hcloud_ssh_key" "fedora" {
@@ -37,6 +41,10 @@ resource "hcloud_ssh_key" "fedora" {
 resource "hcloud_ssh_key" "ipadpro" {
   name       = "russellc@ipadpro"
   public_key = file("config/ssh/id_ed25519_ipadpro.pub")
+}
+resource "hcloud_ssh_key" "github" {
+  name       = "russellc@github"
+  public_key = file("config/ssh/id_ed25519_github.pub")
 }
 
 resource "hcloud_firewall" "internal_net_firewall" {
@@ -84,7 +92,8 @@ resource "hcloud_server" "internal_net" {
   }
   ssh_keys = [
     hcloud_ssh_key.fedora.id,
-    hcloud_ssh_key.ipadpro.id
+    hcloud_ssh_key.ipadpro.id,
+    hcloud_ssh_key.github.id
   ]
 }
 
@@ -118,6 +127,10 @@ resource "docker_image" "nginx" {
 resource "docker_container" "nginx" {
   image = docker_image.nginx.image_id
   name  = "nginx"
+ 
+  ports {
+    internal = "80"
+  }
 }
 
 resource "synology_container_project" "nginx" {

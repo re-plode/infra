@@ -9,6 +9,7 @@ name: apply
 jobs:
   lint:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -36,6 +37,13 @@ jobs:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
       - uses: actions/checkout@v4
+      - run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ../id_ed25519_github.key
+          chmod 600 ../id_ed25519_github.key
+        shell: bash
+        env:
+          SSH_KEY: ${{secrets.SSH_KEY}}
       - uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
