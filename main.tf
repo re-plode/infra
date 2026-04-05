@@ -75,7 +75,7 @@ resource "hcloud_firewall" "internal_net_firewall" {
 resource "hcloud_server" "internal_net" {
   name        = "internal-net-coreos-2gb-nbg1-1"
   image       = "docker-ce"
-  server_type = "cpx11"
+  server_type = "cax11"
   location    = "nbg1"
   backups     = false
   public_net {
