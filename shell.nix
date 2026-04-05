@@ -1,4 +1,6 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 pkgs.mkShell {
   nativeBuildInputs = with pkgs.buildPackages; [
     go
@@ -7,6 +9,7 @@ pkgs.mkShell {
     shfmt
     opentofu
     butane
+    awscli
     awscli2
   ];
 }

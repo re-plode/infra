@@ -6,7 +6,7 @@ terraform {
     }
     synology = {
       source  = "synology-community/synology"
-      version = "~> 0.4"
+      version = "~> 0.4.0"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
@@ -27,7 +27,7 @@ provider "synology" {
 }
 
 provider "docker" {
-  host = "ssh://root@${hcloud_server.internal_net.ipv4_address}"
+  host = "ssh://internal-net"
 }
 
 resource "hcloud_ssh_key" "fedora" {
@@ -73,7 +73,7 @@ resource "hcloud_firewall" "internal_net_firewall" {
 }
 
 resource "hcloud_server" "internal_net" {
-  name        = "internal-net-coreos-2gb-nbg1-1"
+  name        = "internal-net"
   image       = "docker-ce"
   server_type = "cax11"
   location    = "nbg1"
