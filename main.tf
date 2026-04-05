@@ -49,7 +49,7 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
-    port       = "5022"
+    port       = "22"
     source_ips = local.all_ips
   }
   rule {
