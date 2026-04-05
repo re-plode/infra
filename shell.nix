@@ -8,7 +8,6 @@ pkgs.mkShell {
     yamlfmt
     shfmt
     opentofu
-    butane
     awscli
     awscli2
   ];

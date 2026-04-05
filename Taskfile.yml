@@ -17,7 +17,3 @@ tasks:
       - tofu fmt
       - shfmt -w bin/*.sh
       - yamlfmt coreos/*.bu .github/actions/*.yml *.yml
-  clean:
-    desc: Clean workspace
-    cmds:
-      - rm -R build
