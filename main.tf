@@ -32,6 +32,7 @@ provider "docker" {
     "-i",
     "~/.ssh/${var.ssh_identity}"
   ]
+  disable_docker_daemon_check = true
 }
 
 resource "hcloud_ssh_key" "fedora" {
