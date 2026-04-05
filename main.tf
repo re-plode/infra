@@ -14,7 +14,7 @@ terraform {
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3"
+      version = "~> 4.0.0"
     }
   }
 }
@@ -27,10 +27,10 @@ provider "synology" {
 }
 
 provider "docker" {
-  host = "ssh://root@${hcloud_server.internal_net.ipv4_address}"
+  host = "ssh://root@replo.de"
   ssh_opts = [
     "-i",
-    "~/.ssh/id_ed25519_github"
+    "~/.ssh/${var.ssh_identity}"
   ]
 }
 
@@ -127,9 +127,10 @@ resource "docker_image" "nginx" {
 resource "docker_container" "nginx" {
   image = docker_image.nginx.image_id
   name  = "nginx"
- 
+
   ports {
     internal = "80"
+    external = "80"
   }
 }
 

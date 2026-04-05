@@ -39,9 +39,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ../id_ed25519_github.key
-          chmod 600 ../id_ed25519_github.key
-        shell: bash
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
+          chmod 600 ~/.ssh/id_ed25519_github
         env:
           SSH_KEY: ${{secrets.SSH_KEY}}
       - uses: tailscale/github-action@v3
