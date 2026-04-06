@@ -5,22 +5,16 @@
 * [direnv](https://direnv.net/)
 * [taskfile](https://taskfile.dev/installation)
 * [OpenTofu](https://opentofu.org/)
-* [Fedora CoreOS Hetzner image](https://github.com/nightspotlight/coreos-hcloud-packer)
 
 ## Getting started
 
 ```bash
-# Fedora
-$ go-task
-
-# Others
 $ task
-
 $ cp .envrc.sample .envrc
-
 $ direnv allow .
-
 $ tofu init
-
+$ ./bin/get-tfstate.sh
 $ tofu plan
+$ tofu apply
+$ ./bin/put-tfstate.sh
 ```

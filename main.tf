@@ -161,13 +161,11 @@ resource "cloudflare_dns_record" "wildcard_replo_de_dns_cname_record" {
   type    = "CNAME"
 }
 
-# Network equivalent to `networks: default: name: pangolin`
 resource "docker_network" "pangolin" {
   name   = "pangolin"
   driver = "bridge"
 }
 
-# Pull images
 resource "docker_image" "pangolin" {
   name = "fosrl/pangolin:latest"
 }
@@ -180,19 +178,16 @@ resource "docker_image" "traefik" {
   name = "traefik:v3.6"
 }
 
-# Pangolin container with healthcheck and config volume
 resource "docker_container" "pangolin" {
   name    = "pangolin"
   image   = docker_image.pangolin.image_id
   restart = "unless-stopped"
 
-  # mount config volume into /app/config as in compose
   volumes {
     container_path = "/app/config"
     host_path      = "/var/lib/containers/pangolin/config"
   }
 
-  # healthcheck
   healthcheck {
     test     = ["CMD", "curl", "-f", "http://localhost:3001/api/v1/"]
     interval = "10s"
@@ -205,27 +200,22 @@ resource "docker_container" "pangolin" {
   }
 }
 
-# Gerbil container that depends on pangolin (Terraform depends_on ensures create order,
-# but note it doesn't enforce Docker service health status)
 resource "docker_container" "gerbil" {
   name    = "gerbil"
   image   = docker_image.gerbil.image_id
   restart = "unless-stopped"
 
-  # command on container (list form)
   command = [
     "--reachableAt=http://gerbil:3004",
     "--generateAndSaveKeyTo=/var/config/key",
     "--remoteConfig=http://pangolin:3001/api/v1/"
   ]
 
-  # mount same config volume at /var/config
   volumes {
     container_path = "/var/config"
     host_path      = "/var/lib/containers/gerbil/config"
   }
 
-  # Capabilities
   capabilities {
     add = ["NET_ADMIN", "SYS_MODULE"]
   }
@@ -256,11 +246,9 @@ resource "docker_container" "gerbil" {
     name = docker_network.pangolin.name
   }
 
-  # ensure gerbil is created after pangolin (note: this doesn't wait for pangolin HEALTHY state)
   depends_on = [docker_container.pangolin]
 }
 
-# Traefik: uses the network namespace of gerbil (network_mode: service:gerbil)
 resource "docker_container" "traefik" {
   name    = "traefik"
   image   = docker_image.traefik.image_id
@@ -294,6 +282,5 @@ resource "docker_container" "traefik" {
     host_path      = "/var/lib/containers/traefik/logs"
   }
 
-  # Make sure Traefik is created after services it depends on
   depends_on = [docker_container.pangolin, docker_container.gerbil]
 }
