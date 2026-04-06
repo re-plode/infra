@@ -45,11 +45,12 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519_github
         env:
           SSH_KEY: ${{secrets.SSH_KEY}}
-      - uses: tailscale/github-action@v3
+      - uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           tags: tag:github
+          ping: s920p.replo
       - uses: opentofu/setup-opentofu@v1
       - uses: aws-actions/configure-aws-credentials@v4
         with:
