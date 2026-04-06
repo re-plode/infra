@@ -30,7 +30,11 @@ provider "docker" {
   host = "ssh://root@replo.de"
   ssh_opts = [
     "-i",
-    "~/.ssh/${var.ssh_identity}"
+    "~/.ssh/${var.ssh_identity}",
+    "-o",
+    "StrictHostKeyChecking=no",
+    "-o",
+    "UserKnownHostsFile=/dev/null"
   ]
   disable_docker_daemon_check = true
 }
