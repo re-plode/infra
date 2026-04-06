@@ -62,8 +62,6 @@ jobs:
         continue-on-error: true
       - run: tofu init
       - run: tofu validate -no-color
-      - run: tofu plan
+      - run: tofu plan -out=out.tfplan
       - run: tofu apply -auto-approve out.tfplan
-        if: false
       - run: ./bin/put-tfstate.sh
-        if: false
