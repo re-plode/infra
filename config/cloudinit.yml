@@ -1,0 +1,3 @@
+#cloud-config
+mounts:
+- [/dev/disk/by-partlabel/containers, /var/lib/containers, ext4]
