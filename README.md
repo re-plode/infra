@@ -8,7 +8,7 @@
 
 ## Getting started
 
-```bash
+```sh
 $ task
 $ cp .envrc.sample .envrc
 $ direnv allow .
