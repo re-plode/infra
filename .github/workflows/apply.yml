@@ -64,6 +64,4 @@ jobs:
       - run: tofu validate -no-color
       - run: tofu plan
       - run: tofu apply -auto-approve out.tfplan
-        if: false
       - run: ./bin/put-tfstate.sh
-        if: false

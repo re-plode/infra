@@ -25,6 +25,4 @@ jobs:
       - run: tofu validate -no-color
       - run: tofu plan -destroy -exclude=hcloud_volume.internal_net_vol
       - run: tofu apply -auto-approve out.tfplan
-        if: false
       - run: ./bin/put-tfstate.sh
-        if: false
