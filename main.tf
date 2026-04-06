@@ -167,15 +167,15 @@ resource "docker_network" "pangolin" {
 }
 
 resource "docker_image" "pangolin" {
-  name = "fosrl/pangolin:latest"
+  name = "fosrl/pangolin:1.0.1"
 }
 
 resource "docker_image" "gerbil" {
-  name = "fosrl/gerbil:latest"
+  name = "fosrl/gerbil:1.0.0"
 }
 
 resource "docker_image" "traefik" {
-  name = "traefik:v3.6"
+  name = "traefik:v3.3"
 }
 
 resource "docker_container" "pangolin" {
