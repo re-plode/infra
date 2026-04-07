@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: stable
           cache: false
-      - uses: arduino/setup-task@v2
+      - uses: go-task/setup-task@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: opentofu/setup-opentofu@v1
+      - uses: opentofu/setup-opentofu@v2
       - run: task install
       - run: task lint-check
 
@@ -38,7 +38,7 @@ jobs:
     steps:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
@@ -51,8 +51,8 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           tags: tag:github
           ping: s920p.replo
-      - uses: opentofu/setup-opentofu@v1
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: opentofu/setup-opentofu@v2
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.CLOUDFLARE_R2_KEY }}
           aws-secret-access-key: ${{ secrets.CLOUDFLARE_R2_SECRET }}
