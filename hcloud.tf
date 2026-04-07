@@ -45,12 +45,6 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
-    port       = "3000"
-    source_ips = local.all_ips
-  }
-  rule {
-    direction  = "in"
-    protocol   = "tcp"
     port       = "443"
     source_ips = local.all_ips
   }
