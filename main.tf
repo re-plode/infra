@@ -250,17 +250,10 @@ resource "docker_container" "gerbil" {
 }
 
 resource "docker_container" "traefik" {
-  name    = "traefik"
-  image   = docker_image.traefik.image_id
-  restart = "unless-stopped"
-
-  # Use the service network mode so Traefik binds ports on gerbil's network namespace.
-  # This replicates Compose's `network_mode: service:gerbil`.
-  # network_mode = "container:${docker_container.gerbil.name}"
-
-  networks_advanced {
-    name = docker_network.pangolin.name
-  }
+  name         = "traefik"
+  image        = docker_image.traefik.image_id
+  restart      = "unless-stopped"
+  network_mode = "container:${docker_container.gerbil.name}"
 
   command = [
     "--configFile=/etc/traefik/traefik_config.yml"
