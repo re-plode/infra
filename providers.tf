@@ -28,7 +28,7 @@ provider "synology" {
 
 provider "docker" {
   alias = "internal-net"
-  host  = "ssh://root@replo.de"
+  host  = "ssh://root@${hcloud_server.internal_net.ipv4_address}"
   ssh_opts = [
     "-i",
     "~/.ssh/${var.ssh_identity}",

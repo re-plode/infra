@@ -27,7 +27,25 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
+    port       = "53"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "udp"
+    port       = "53"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
     port       = "80"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "3000"
     source_ips = local.all_ips
   }
   rule {
@@ -104,22 +122,15 @@ resource "docker_image" "pangolin" {
   provider = docker.internal-net
   name     = "fosrl/pangolin:latest"
 }
-
-resource "docker_image" "gerbil" {
-  provider = docker.internal-net
-  name     = "fosrl/gerbil:latest"
-}
-
-resource "docker_image" "traefik" {
-  provider = docker.internal-net
-  name     = "traefik:v3.6"
-}
-
 resource "docker_container" "pangolin" {
   provider = docker.internal-net
   name     = "pangolin"
   image    = docker_image.pangolin.image_id
   restart  = "unless-stopped"
+
+  networks_advanced {
+    name = docker_network.pangolin.name
+  }
 
   volumes {
     container_path = "/app/config"
@@ -132,12 +143,12 @@ resource "docker_container" "pangolin" {
     timeout  = "10s"
     retries  = 15
   }
-
-  networks_advanced {
-    name = docker_network.pangolin.name
-  }
 }
 
+resource "docker_image" "gerbil" {
+  provider = docker.internal-net
+  name     = "fosrl/gerbil:latest"
+}
 resource "docker_container" "gerbil" {
   provider = docker.internal-net
   name     = "gerbil"
@@ -150,13 +161,13 @@ resource "docker_container" "gerbil" {
     "--remoteConfig=http://pangolin:3001/api/v1/"
   ]
 
+  capabilities {
+    add = ["NET_ADMIN", "SYS_MODULE"]
+  }
+
   volumes {
     container_path = "/var/config"
     host_path      = "/var/lib/containers/gerbil/config"
-  }
-
-  capabilities {
-    add = ["NET_ADMIN", "SYS_MODULE"]
   }
 
   # Ports
@@ -188,6 +199,10 @@ resource "docker_container" "gerbil" {
   depends_on = [docker_container.pangolin]
 }
 
+resource "docker_image" "traefik" {
+  provider = docker.internal-net
+  name     = "traefik:v3.6"
+}
 resource "docker_container" "traefik" {
   provider     = docker.internal-net
   name         = "traefik"
@@ -195,25 +210,72 @@ resource "docker_container" "traefik" {
   restart      = "unless-stopped"
   network_mode = "container:${docker_container.gerbil.name}"
 
-  command = [
-    "--configFile=/etc/traefik/traefik_config.yml"
-  ]
+  command = ["--configFile=/etc/traefik/traefik_config.yml"]
 
   volumes {
     container_path = "/etc/traefik"
     host_path      = "/var/lib/containers/traefik/etc"
     read_only      = true
   }
-
   volumes {
     container_path = "/letsencrypt"
     host_path      = "/var/lib/containers/traefik/letsencrypt"
   }
-
   volumes {
     container_path = "/var/log/traefik"
     host_path      = "/var/lib/containers/traefik/logs"
   }
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
+}
+
+resource "docker_image" "adguardhome" {
+  provider = docker.internal-net
+  name     = "adguard/adguardhome:latest"
+}
+resource "docker_container" "adguardhome" {
+  provider = docker.internal-net
+  name     = "adguardhome"
+  image    = docker_image.adguardhome.image_id
+  restart  = "unless-stopped"
+
+  volumes {
+    container_path = "/opt/adguardhome/work"
+    host_path      = "/var/lib/containers/adguardhome/work"
+  }
+  volumes {
+    container_path = "/opt/adguardhome/conf"
+    host_path      = "/var/lib/containers/adguardhome/conf"
+  }
+
+  ports {
+    internal = 53
+    external = 53
+    protocol = "tcp"
+  }
+  ports {
+    internal = 53
+    external = 53
+    protocol = "udp"
+  }
+  # ports {
+  #   internal = 67
+  #   external = 67
+  #   protocol = "udp"
+  # }
+  # ports {
+  #   internal = 68
+  #   external = 68
+  #   protocol = "tcp"
+  # }
+  # ports {
+  #   internal = 68
+  #   external = 68
+  #   protocol = "udp"
+  # }
+  ports {
+    internal = 3000
+    external = 3000
+    protocol = "tcp"
+  }
 }
