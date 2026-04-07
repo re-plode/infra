@@ -80,6 +80,12 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "udp"
+    port       = "21820"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "udp"
     port       = "51820"
     source_ips = local.all_ips
   }
