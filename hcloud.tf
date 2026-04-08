@@ -244,10 +244,7 @@ resource "docker_container" "adguardhome" {
   image    = docker_image.adguardhome.image_id
   restart  = "unless-stopped"
 
-  networks_advanced {
-    name         = docker_network.netsvc.name
-    ipv4_address = "172.254.0.2"
-  }
+  network_mode = "host"
 
   volumes {
     container_path = "/opt/adguardhome/work"
@@ -258,37 +255,6 @@ resource "docker_container" "adguardhome" {
     container_path = "/opt/adguardhome/conf"
     host_path      = "/var/lib/containers/adguardhome/conf"
     read_only      = false
-  }
-
-  ports {
-    internal = 53
-    external = 53
-    protocol = "tcp"
-  }
-  ports {
-    internal = 53
-    external = 53
-    protocol = "udp"
-  }
-  # ports {
-  #   internal = 67
-  #   external = 67
-  #   protocol = "udp"
-  # }
-  # ports {
-  #   internal = 68
-  #   external = 68
-  #   protocol = "tcp"
-  # }
-  # ports {
-  #   internal = 68
-  #   external = 68
-  #   protocol = "udp"
-  # }
-  ports {
-    internal = 3000
-    external = 3000
-    protocol = "tcp"
   }
 }
 
@@ -333,7 +299,7 @@ resource "docker_container" "wg-easy" {
     "INIT_PASSWORD=${var.wg_easy_init_password}",
     "INIT_HOST=replo.de",
     "INIT_PORT=51821",
-    "INIT_DNS=172.254.0.2",
+    "INIT_DNS=172.254.0.1",
     "INIT_ALLOWED_IPS=172.254.0.0/24",
     "DISABLE_IPV6=true"
   ]
