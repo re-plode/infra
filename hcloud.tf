@@ -256,37 +256,6 @@ resource "docker_container" "adguardhome" {
     host_path      = "/var/lib/containers/adguardhome/conf"
     read_only      = false
   }
-
-  ports {
-    internal = 53
-    external = 53
-    protocol = "tcp"
-  }
-  ports {
-    internal = 53
-    external = 53
-    protocol = "udp"
-  }
-  # ports {
-  #   internal = 67
-  #   external = 67
-  #   protocol = "udp"
-  # }
-  # ports {
-  #   internal = 68
-  #   external = 68
-  #   protocol = "tcp"
-  # }
-  # ports {
-  #   internal = 68
-  #   external = 68
-  #   protocol = "udp"
-  # }
-  ports {
-    internal = 3000
-    external = 3000
-    protocol = "tcp"
-  }
 }
 
 resource "docker_image" "newt" {
