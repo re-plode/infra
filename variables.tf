@@ -15,6 +15,19 @@ variable "dsm_password" {
   sensitive = true
 }
 
+variable "hcloud_newt_id" {
+  type = string
+}
+
+variable "hcloud_newt_secret" {
+  type      = string
+  sensitive = true
+}
+variable "wg_easy_init_password" {
+  type      = string
+  sensitive = true
+}
+
 locals {
   cloudflare_ips = [
     "173.245.48.0/20",
