@@ -27,18 +27,6 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
-    port       = "53"
-    source_ips = local.all_ips
-  }
-  rule {
-    direction  = "in"
-    protocol   = "udp"
-    port       = "53"
-    source_ips = local.all_ips
-  }
-  rule {
-    direction  = "in"
-    protocol   = "tcp"
     port       = "80"
     source_ips = local.all_ips
   }
@@ -58,6 +46,12 @@ resource "hcloud_firewall" "internal_net_firewall" {
     direction  = "in"
     protocol   = "udp"
     port       = "51820"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "udp"
+    port       = "51821"
     source_ips = local.all_ips
   }
 }
@@ -111,6 +105,16 @@ resource "docker_network" "pangolin" {
   name     = "pangolin"
   driver   = "bridge"
 }
+resource "docker_network" "netsvc" {
+  provider = docker.internal-net
+  name     = "netsvc"
+  driver   = "bridge"
+
+  ipam_config {
+    gateway = "172.254.0.1"
+    subnet  = "172.254.0.0/16"
+  }
+}
 
 resource "docker_image" "pangolin" {
   provider = docker.internal-net
@@ -129,6 +133,7 @@ resource "docker_container" "pangolin" {
   volumes {
     container_path = "/app/config"
     host_path      = "/var/lib/containers/pangolin/config"
+    read_only      = false
   }
 
   healthcheck {
@@ -156,15 +161,23 @@ resource "docker_container" "gerbil" {
   ]
 
   capabilities {
-    add = ["NET_ADMIN", "SYS_MODULE"]
+    add = ["CAP_NET_ADMIN", "CAP_SYS_MODULE"]
+  }
+
+  networks_advanced {
+    name = docker_network.pangolin.name
+  }
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.4"
   }
 
   volumes {
     container_path = "/var/config"
     host_path      = "/var/lib/containers/gerbil/config"
+    read_only      = false
   }
 
-  # Ports
   ports {
     internal = 51820
     external = 51820
@@ -186,10 +199,6 @@ resource "docker_container" "gerbil" {
     protocol = "tcp"
   }
 
-  networks_advanced {
-    name = docker_network.pangolin.name
-  }
-
   depends_on = [docker_container.pangolin]
 }
 
@@ -202,7 +211,7 @@ resource "docker_container" "traefik" {
   name         = "traefik"
   image        = docker_image.traefik.image_id
   restart      = "unless-stopped"
-  network_mode = "container:${docker_container.gerbil.name}"
+  network_mode = "container:${docker_container.gerbil.id}"
 
   command = ["--configFile=/etc/traefik/traefik_config.yml"]
 
@@ -214,10 +223,12 @@ resource "docker_container" "traefik" {
   volumes {
     container_path = "/letsencrypt"
     host_path      = "/var/lib/containers/traefik/letsencrypt"
+    read_only      = false
   }
   volumes {
     container_path = "/var/log/traefik"
     host_path      = "/var/lib/containers/traefik/logs"
+    read_only      = false
   }
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
@@ -233,13 +244,20 @@ resource "docker_container" "adguardhome" {
   image    = docker_image.adguardhome.image_id
   restart  = "unless-stopped"
 
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.2"
+  }
+
   volumes {
     container_path = "/opt/adguardhome/work"
     host_path      = "/var/lib/containers/adguardhome/work"
+    read_only      = false
   }
   volumes {
     container_path = "/opt/adguardhome/conf"
     host_path      = "/var/lib/containers/adguardhome/conf"
+    read_only      = false
   }
 
   ports {
@@ -271,5 +289,90 @@ resource "docker_container" "adguardhome" {
     internal = 3000
     external = 3000
     protocol = "tcp"
+  }
+}
+
+resource "docker_image" "newt" {
+  provider = docker.internal-net
+  name     = "fosrl/newt:latest"
+}
+resource "docker_container" "newt" {
+  provider = docker.internal-net
+  name     = "newt"
+  image    = docker_image.newt.image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "PANGOLIN_ENDPOINT=https://replo.de",
+    "NEWT_ID=${var.hcloud_newt_id}",
+    "NEWT_SECRET=${var.hcloud_newt_secret}"
+  ]
+
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.5"
+  }
+}
+
+resource "docker_image" "wg-easy" {
+  provider = docker.internal-net
+  name     = "ghcr.io/wg-easy/wg-easy:15"
+}
+resource "docker_container" "wg-easy" {
+  provider = docker.internal-net
+  name     = "wg-easy"
+  image    = docker_image.wg-easy.image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "WG_HOST=replo.de",
+    "WG_PORT=51821",
+    "PORT=51822",
+    "INIT_ENABLED=true",
+    "INIT_USERNAME=root",
+    "INIT_PASSWORD=${var.wg_easy_init_password}",
+    "INIT_HOST=replo.de",
+    "INIT_PORT=51821",
+    "INIT_DNS=172.254.0.2",
+    "INIT_ALLOWED_IPS=172.254.0.0/24",
+    "DISABLE_IPV6=true"
+  ]
+
+  capabilities {
+    add = ["CAP_NET_ADMIN", "CAP_SYS_MODULE"]
+  }
+  sysctls = {
+    "net.ipv4.ip_forward"              = "1"
+    "net.ipv4.conf.all.src_valid_mark" = "1"
+    "net.ipv6.conf.all.disable_ipv6"   = "0"
+    "net.ipv6.conf.all.forwarding"     = "1"
+    "net.ipv6.conf.default.forwarding" = "1"
+  }
+
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.3"
+  }
+
+  ports {
+    internal = 51821
+    external = 51821
+    protocol = "udp"
+  }
+  ports {
+    internal = 51822
+    external = 51822
+    protocol = "tcp"
+  }
+
+  volumes {
+    container_path = "/etc/wireguard"
+    host_path      = "/var/lib/containers/wg-easy"
+    read_only      = false
+  }
+  volumes {
+    container_path = "/lib/modules"
+    host_path      = "/lib/modules"
+    read_only      = true
   }
 }
