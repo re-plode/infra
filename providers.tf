@@ -6,7 +6,7 @@ terraform {
     }
     synology = {
       source  = "synology-community/synology"
-      version = "~> 0.5.0"
+      version = "<= 0.6.7"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
@@ -24,6 +24,9 @@ provider "synology" {
   user            = var.dsm_user
   password        = var.dsm_password
   skip_cert_check = true
+  session_cache = {
+    mode = "memory"
+  }
 }
 
 provider "docker" {

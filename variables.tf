@@ -34,6 +34,11 @@ variable "wg_easy_init_password" {
   sensitive = true
 }
 
+variable "cloudflare_dns_api_token" {
+  type      = string
+  sensitive = true
+}
+
 locals {
   cloudflare_ips = [
     "173.245.48.0/20",
@@ -63,4 +68,11 @@ locals {
     "0.0.0.0/0",
     "::/0"
   ]
+  ext_dns = [
+    "9.9.9.9",
+    "149.112.112.112"
+  ]
+
+  s920p_media_uid = "1027"
+  s920p_media_gid = "65536"
 }
