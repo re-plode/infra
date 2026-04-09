@@ -56,7 +56,7 @@ jobs:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           tags: tag:github
-          ping: s920p.replo
+          ping: "10.42.20.78"
       - uses: opentofu/setup-opentofu@v2
       - uses: aws-actions/configure-aws-credentials@v6
         with:
