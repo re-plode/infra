@@ -36,11 +36,11 @@ resource "synology_container_project" "init" {
     }
   }
 
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.always_run
-    ]
-  }
+  # lifecycle {
+  #   replace_triggered_by = [
+  #     terraform_data.always_run
+  #   ]
+  # }
 }
 
 resource "synology_container_project" "netsvc" {
@@ -225,11 +225,11 @@ resource "synology_container_project" "netsvc" {
 
   depends_on = [synology_container_project.init]
 
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.always_run
-    ]
-  }
+  # lifecycle {
+  #   replace_triggered_by = [
+  #     terraform_data.always_run
+  #   ]
+  # }
 }
 
 resource "synology_container_project" "mediasvc" {
@@ -392,9 +392,9 @@ resource "synology_container_project" "mediasvc" {
 
   depends_on = [synology_container_project.init]
 
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.always_run
-    ]
-  }
+  # lifecycle {
+  #   replace_triggered_by = [
+  #    terraform_data.always_run
+  #   ]
+  # }
 }
