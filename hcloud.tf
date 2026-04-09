@@ -118,7 +118,7 @@ resource "docker_network" "netsvc" {
 
 resource "docker_image" "pangolin" {
   provider = docker.internal-net
-  name     = "fosrl/pangolin:latest"
+  name     = "fosrl/pangolin:1.17.0"
 }
 resource "docker_container" "pangolin" {
   provider = docker.internal-net
@@ -146,7 +146,7 @@ resource "docker_container" "pangolin" {
 
 resource "docker_image" "gerbil" {
   provider = docker.internal-net
-  name     = "fosrl/gerbil:latest"
+  name     = "fosrl/gerbil:1.3.1"
 }
 resource "docker_container" "gerbil" {
   provider = docker.internal-net
@@ -204,7 +204,7 @@ resource "docker_container" "gerbil" {
 
 resource "docker_image" "traefik" {
   provider = docker.internal-net
-  name     = "traefik:v3.6"
+  name     = "traefik:3.6.13"
 }
 resource "docker_container" "traefik" {
   provider     = docker.internal-net
@@ -236,7 +236,7 @@ resource "docker_container" "traefik" {
 
 resource "docker_image" "adguardhome" {
   provider = docker.internal-net
-  name     = "adguard/adguardhome:latest"
+  name     = "adguard/adguardhome:v0.107.73"
 }
 resource "docker_container" "adguardhome" {
   provider = docker.internal-net
@@ -260,7 +260,7 @@ resource "docker_container" "adguardhome" {
 
 resource "docker_image" "newt" {
   provider = docker.internal-net
-  name     = "fosrl/newt:latest"
+  name     = "fosrl/newt:1.11.0"
 }
 resource "docker_container" "newt" {
   provider = docker.internal-net
@@ -283,7 +283,7 @@ resource "docker_container" "newt" {
 
 resource "docker_image" "wg-easy" {
   provider = docker.internal-net
-  name     = "ghcr.io/wg-easy/wg-easy:15"
+  name     = "ghcr.io/wg-easy/wg-easy:15.2.2"
 }
 resource "docker_container" "wg-easy" {
   provider = docker.internal-net
