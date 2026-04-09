@@ -202,7 +202,8 @@ resource "synology_container_project" "netsvc" {
 
   lifecycle {
     replace_triggered_by = [
-      synology_container_project.init
+      synology_container_project.init,
+      synology_container_project.netsvc.networks
     ]
   }
 }
@@ -369,7 +370,8 @@ resource "synology_container_project" "mediasvc" {
 
   lifecycle {
     replace_triggered_by = [
-      synology_container_project.init
+      synology_container_project.init,
+      synology_container_project.mediasvc.networks
     ]
   }
 }
