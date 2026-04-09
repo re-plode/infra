@@ -199,6 +199,12 @@ resource "synology_container_project" "netsvc" {
   }
 
   depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      synology_container_project.init
+    ]
+  }
 }
 
 resource "synology_container_project" "mediasvc" {
@@ -360,4 +366,10 @@ resource "synology_container_project" "mediasvc" {
   }
 
   depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      synology_container_project.init
+    ]
+  }
 }
