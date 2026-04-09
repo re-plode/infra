@@ -206,7 +206,6 @@ resource "synology_container_project" "netsvc" {
 
   lifecycle {
     replace_triggered_by = [
-      synology_container_project.init,
       terraform_data.always_run
     ]
   }
@@ -374,7 +373,6 @@ resource "synology_container_project" "mediasvc" {
 
   lifecycle {
     replace_triggered_by = [
-      synology_container_project.init,
       terraform_data.always_run
     ]
   }
