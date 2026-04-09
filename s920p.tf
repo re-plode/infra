@@ -10,7 +10,7 @@ resource "terraform_data" "always_run" {
 # }
 resource "synology_container_project" "init" {
   name = "init"
-  run  = false
+  run  = true
 
   networks = {
     netsvc = {
