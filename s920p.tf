@@ -1,8 +1,47 @@
+resource "terraform_data" "always_run" {
+  input = timestamp()
+}
+
+# This doesn't work, so use a fake project to init
 # resource "synology_container_network" "netsvc" {
 #   name    = "netsvc"
 #   subnet  = "192.168.112.0/20"
 #   gateway = "192.168.112.1"
 # }
+resource "synology_container_project" "init" {
+  name = "init"
+  run  = true
+
+  networks = {
+    netsvc = {
+      name = "netsvc"
+    }
+    mediasvc = {
+      name = "mediasvc"
+    }
+  }
+
+  services = {
+    hello = {
+      image = "hello-world:latest"
+
+      networks = {
+        netsvc = {
+          name = "netsvc"
+        }
+        mediasvc = {
+          name = "mediasvc"
+        }
+      }
+    }
+  }
+
+  # lifecycle {
+  #   replace_triggered_by = [
+  #     terraform_data.always_run
+  #   ]
+  # }
+}
 
 resource "synology_container_project" "netsvc" {
   name = "netsvc"
@@ -10,7 +49,8 @@ resource "synology_container_project" "netsvc" {
 
   networks = {
     netsvc = {
-      name = "netsvc"
+      name     = "netsvc"
+      external = true
     }
     mediasvc = {
       name     = "mediasvc"
@@ -182,6 +222,14 @@ resource "synology_container_project" "netsvc" {
       }]
     }
   }
+
+  depends_on = [synology_container_project.init]
+
+  # lifecycle {
+  #   replace_triggered_by = [
+  #     terraform_data.always_run
+  #   ]
+  # }
 }
 
 resource "synology_container_project" "mediasvc" {
@@ -190,7 +238,8 @@ resource "synology_container_project" "mediasvc" {
 
   networks = {
     mediasvc = {
-      name = "mediasvc"
+      name     = "mediasvc"
+      external = true
     }
   }
 
@@ -340,4 +389,12 @@ resource "synology_container_project" "mediasvc" {
       }]
     }
   }
+
+  depends_on = [synology_container_project.init]
+
+  # lifecycle {
+  #   replace_triggered_by = [
+  #    terraform_data.always_run
+  #   ]
+  # }
 }
