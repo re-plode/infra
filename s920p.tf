@@ -24,7 +24,7 @@ resource "synology_container_project" "netsvc" {
 
   networks = {
     netsvc = {
-      name = "netsvc"
+      name     = "netsvc"
       external = true
     }
     mediasvc = {
@@ -207,7 +207,7 @@ resource "synology_container_project" "mediasvc" {
 
   networks = {
     mediasvc = {
-      name = "mediasvc"
+      name     = "mediasvc"
       external = true
     }
   }
@@ -359,5 +359,5 @@ resource "synology_container_project" "mediasvc" {
     }
   }
 
-  depends_on = [synology_container_project.init] 
+  depends_on = [synology_container_project.init]
 }
