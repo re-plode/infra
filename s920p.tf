@@ -20,6 +20,12 @@ resource "synology_container_project" "init" {
       name = "mediasvc"
     }
   }
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.always_run
+    ]
+  }
 }
 
 resource "synology_container_project" "netsvc" {
