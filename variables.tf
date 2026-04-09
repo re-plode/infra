@@ -5,11 +5,9 @@ variable "ssh_identity" {
 variable "dsm_host" {
   type = string
 }
-
 variable "dsm_user" {
   type = string
 }
-
 variable "dsm_password" {
   type      = string
   sensitive = true
@@ -18,11 +16,19 @@ variable "dsm_password" {
 variable "hcloud_newt_id" {
   type = string
 }
-
 variable "hcloud_newt_secret" {
   type      = string
   sensitive = true
 }
+
+variable "s920p_newt_id" {
+  type = string
+}
+variable "s920p_newt_secret" {
+  type      = string
+  sensitive = true
+}
+
 variable "wg_easy_init_password" {
   type      = string
   sensitive = true

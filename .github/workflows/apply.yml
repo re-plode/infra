@@ -37,6 +37,8 @@ jobs:
       TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
       TF_VAR_hcloud_newt_id: ${{ vars.HCLOUD_NEWT_ID }}
       TF_VAR_hcloud_newt_secret: ${{ secrets.HCLOUD_NEWT_SECRET }}
+      TF_VAR_s920p_newt_id: ${{ vars.S920P_NEWT_ID }}
+      TF_VAR_s920p_newt_secret: ${{ secrets.S920P_NEWT_SECRET }}
       TF_VAR_wg_easy_init_password: ${{ secrets.WG_EASY_INIT_PASSWORD }}
     steps:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
