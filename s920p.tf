@@ -1,3 +1,7 @@
+resource "terraform_data" "always_run" {
+  input = "${timestamp()}"
+}
+
 # This doesn't work, so use a fake project to init
 # resource "synology_container_network" "netsvc" {
 #   name    = "netsvc"
@@ -203,7 +207,8 @@ resource "synology_container_project" "netsvc" {
   lifecycle {
     replace_triggered_by = [
       synology_container_project.init,
-      synology_container_project.netsvc.networks
+      synology_container_project.netsvc.networks,
+      terraform_data.always_run
     ]
   }
 }
@@ -371,7 +376,8 @@ resource "synology_container_project" "mediasvc" {
   lifecycle {
     replace_triggered_by = [
       synology_container_project.init,
-      synology_container_project.mediasvc.networks
+      synology_container_project.mediasvc.networks,
+      terraform_data.always_run
     ]
   }
 }
