@@ -21,6 +21,12 @@ resource "synology_container_project" "init" {
     }
   }
 
+  services = {
+    hello = {
+      image = "hello-world:latest"
+    }
+  }
+
   lifecycle {
     replace_triggered_by = [
       terraform_data.always_run
