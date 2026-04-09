@@ -12,8 +12,8 @@ resource "synology_container_project" "init" {
     netsvc = {
       name = "netsvc"
     }
-    mediasvc = {
-      name = "mediasvc"
+    mmclients = {
+      name = "mmclients"
     }
   }
 
@@ -25,8 +25,8 @@ resource "synology_container_project" "init" {
         netsvc = {
           name = "netsvc"
         }
-        mediasvc = {
-          name = "mediasvc"
+        mmclients = {
+          name = "mmclients"
         }
       }
     }
@@ -48,8 +48,8 @@ resource "synology_container_project" "netsvc" {
       name     = "netsvc"
       external = true
     }
-    mediasvc = {
-      name     = "mediasvc"
+    mmclients = {
+      name     = "mmclients"
       external = true
     }
     media = {
@@ -76,8 +76,8 @@ resource "synology_container_project" "netsvc" {
         netsvc = {
           name = "netsvc"
         }
-        mediasvc = {
-          name = "mediasvc"
+        mmclients = {
+          name = "mmclients"
         }
         media = {
           name = "media_default"
@@ -228,13 +228,13 @@ resource "synology_container_project" "netsvc" {
   }
 }
 
-resource "synology_container_project" "mediasvc" {
-  name = "mediasvc"
+resource "synology_container_project" "mmclients" {
+  name = "mmclients"
   run  = true
 
   networks = {
-    mediasvc = {
-      name     = "mediasvc"
+    mmclients = {
+      name     = "mmclients"
       external = true
     }
   }
@@ -270,8 +270,8 @@ resource "synology_container_project" "mediasvc" {
       }
 
       networks = {
-        mediasvc = {
-          name = "mediasvc"
+        mmclients = {
+          name = "mmclients"
         }
       }
 
@@ -355,8 +355,8 @@ resource "synology_container_project" "mediasvc" {
       }
 
       networks = {
-        mediasvc = {
-          name = "mediasvc"
+        mmclients = {
+          name = "mmclients"
         }
       }
 
