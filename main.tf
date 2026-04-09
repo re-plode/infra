@@ -15,3 +15,12 @@ resource "cloudflare_dns_record" "wildcard_replo_de_dns_cname_record" {
   ttl     = 1
   type    = "CNAME"
 }
+
+resource "terraform_data" "force_run" {
+  input = timestamp()
+
+  # Comment this to force replacement
+  lifecycle {
+    ignore_changes = [input]
+  }
+}

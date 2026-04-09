@@ -1,14 +1,26 @@
 resource "hcloud_ssh_key" "fedora" {
   name       = "russellc@fedora"
   public_key = file("config/ssh/id_ed25519_fedora.pub")
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "hcloud_ssh_key" "ipadpro" {
   name       = "russellc@ipadpro"
   public_key = file("config/ssh/id_ed25519_ipadpro.pub")
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "hcloud_ssh_key" "github" {
   name       = "russellc@github"
   public_key = file("config/ssh/id_ed25519_github.pub")
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_firewall" "internal_net_firewall" {
@@ -54,6 +66,10 @@ resource "hcloud_firewall" "internal_net_firewall" {
     port       = "51821"
     source_ips = local.all_ips
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_server" "internal_net" {
@@ -75,6 +91,10 @@ resource "hcloud_server" "internal_net" {
     hcloud_ssh_key.ipadpro.id,
     hcloud_ssh_key.github.id
   ]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_volume" "internal_net_vol" {
@@ -92,12 +112,20 @@ resource "hcloud_volume" "internal_net_vol" {
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
   firewall_id = hcloud_firewall.internal_net_firewall.id
   server_ids  = [hcloud_server.internal_net.id]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "docker_network" "pangolin" {
@@ -141,6 +169,10 @@ resource "docker_container" "pangolin" {
     interval = "10s"
     timeout  = "10s"
     retries  = 15
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -200,6 +232,10 @@ resource "docker_container" "gerbil" {
   }
 
   depends_on = [docker_container.pangolin]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "docker_image" "traefik" {
@@ -232,6 +268,10 @@ resource "docker_container" "traefik" {
   }
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "docker_image" "adguardhome" {
@@ -256,6 +296,10 @@ resource "docker_container" "adguardhome" {
     host_path      = "/var/lib/containers/adguardhome/conf"
     read_only      = false
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "docker_image" "newt" {
@@ -278,6 +322,10 @@ resource "docker_container" "newt" {
   networks_advanced {
     name         = docker_network.netsvc.name
     ipv4_address = "172.254.0.5"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -341,5 +389,9 @@ resource "docker_container" "wg-easy" {
     container_path = "/lib/modules"
     host_path      = "/lib/modules"
     read_only      = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
