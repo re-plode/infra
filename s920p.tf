@@ -24,6 +24,15 @@ resource "synology_container_project" "init" {
   services = {
     hello = {
       image = "hello-world:latest"
+
+      networks = {
+        netsvc = {
+          name = "netsvc"
+        }
+        mediasvc = {
+          name = "mediasvc"
+        }
+      }
     }
   }
 
