@@ -16,7 +16,15 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "~> 4.0.0"
     }
+    mailgun = {
+      source  = "wgebis/mailgun"
+      version = "~> 0.9.0"
+    }
   }
+}
+
+provider "mailgun" {
+  api_key = var.mailgun_api_key
 }
 
 provider "synology" {

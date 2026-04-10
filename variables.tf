@@ -39,7 +39,22 @@ variable "cloudflare_dns_api_token" {
   sensitive = true
 }
 
+variable "mailgun_api_key" {
+  type      = string
+  sensitive = true
+}
+variable "mailgun_smtp_password" {
+  type      = string
+  sensitive = true
+}
+
 locals {
+  s920p_media_uid = "1027"
+  s920p_media_gid = "65536"
+
+  cloudflare_rcheung_com_zone_id = "e4edb9787160b70638898ebfd69c0fd0"
+  cloudflare_replo_de_zone_id    = "866a9591267d97262251a392a85dbd7c"
+
   cloudflare_ips = [
     "173.245.48.0/20",
     "103.21.244.0/22",
@@ -72,7 +87,4 @@ locals {
     "9.9.9.9",
     "149.112.112.112"
   ]
-
-  s920p_media_uid = "1027"
-  s920p_media_gid = "65536"
 }
