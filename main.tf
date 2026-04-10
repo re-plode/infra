@@ -16,11 +16,11 @@ resource "cloudflare_dns_record" "wildcard_replo_de_dns_cname_record" {
 }
 
 resource "mailgun_domain" "rcheung_com" {
-  name            = "mg.rcheung.com"
-  region          = "us"
-  spam_action     = "disabled"
-  smtp_password   = "${var.mailgun_smtp_password}"
-  dkim_key_size   = 1024
+  name          = "mg.rcheung.com"
+  region        = "us"
+  spam_action   = "disabled"
+  smtp_password = "${var.mailgun_smtp_password}"
+  dkim_key_size = 1024
 }
 
 resource "terraform_data" "force_run" {
