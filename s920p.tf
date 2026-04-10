@@ -77,8 +77,8 @@ resource "synology_container_project" "netsvc" {
       name     = "media"
       external = true
     }
-    gtd = {
-      name     = "gtd_default"
+    util = {
+      name     = "util"
       external = true
     }
   }
@@ -99,8 +99,8 @@ resource "synology_container_project" "netsvc" {
         media = {
           name = "media"
         }
-        gtd = {
-          name = "gtd_default"
+        util = {
+          name = "util"
         }
       }
 
