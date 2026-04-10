@@ -5,8 +5,9 @@ terraform {
       version = "~> 1.45"
     }
     synology = {
-      source  = "synology-community/synology"
-      version = "<= 0.6.7"
+      source = "synology-community/synology"
+      # Version 0.6.10 fails to check response
+      version = "<= 0.6.9"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"

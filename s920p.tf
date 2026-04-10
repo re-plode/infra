@@ -1,3 +1,12 @@
+resource "terraform_data" "force_run" {
+  input = timestamp()
+
+  # Comment this to force replacement
+  lifecycle {
+    ignore_changes = [input]
+  }
+}
+
 # This doesn't work, so use a fake project to init
 # resource "synology_container_network" "netsvc" {
 #   name    = "netsvc"
@@ -12,8 +21,8 @@ resource "synology_container_project" "init" {
     netsvc = {
       name = "netsvc"
     }
-    mmclients = {
-      name = "mmclients"
+    media = {
+      name = "media"
     }
   }
 
@@ -25,8 +34,8 @@ resource "synology_container_project" "init" {
         netsvc = {
           name = "netsvc"
         }
-        mmclients = {
-          name = "mmclients"
+        media = {
+          name = "media"
         }
       }
     }
@@ -48,20 +57,12 @@ resource "synology_container_project" "netsvc" {
       name     = "netsvc"
       external = true
     }
-    mmclients = {
-      name     = "mmclients"
-      external = true
-    }
     media = {
-      name     = "media_default"
+      name     = "media"
       external = true
     }
     gtd = {
       name     = "gtd_default"
-      external = true
-    }
-    servarr = {
-      name     = "servarr_default"
       external = true
     }
   }
@@ -76,17 +77,11 @@ resource "synology_container_project" "netsvc" {
         netsvc = {
           name = "netsvc"
         }
-        mmclients = {
-          name = "mmclients"
-        }
         media = {
-          name = "media_default"
+          name = "media"
         }
         gtd = {
           name = "gtd_default"
-        }
-        servarr = {
-          name = "servarr_default"
         }
       }
 
@@ -184,7 +179,7 @@ resource "synology_container_project" "netsvc" {
         "pangolin.public-resources.adguard-local.targets[0].hostname"             = "172.17.0.1"
         "pangolin.public-resources.adguard-local.targets[0].port"                 = "3000"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.enabled"  = "true"
-        "pangolin.public-resources.adguard-local.targets[0].healthcheck.method"   = "http"
+        "pangolin.public-resources.adguard-local.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.port"     = "3000"
       }
@@ -228,13 +223,445 @@ resource "synology_container_project" "netsvc" {
   }
 }
 
+resource "synology_container_project" "mmproviders" {
+  name = "mmproviders"
+  run  = true
+
+  networks = {
+    media = {
+      name     = "media"
+      external = true
+    }
+  }
+
+  services = {
+    nzb = {
+      image   = "linuxserver/sabnzbd:4.5.5"
+      restart = "unless-stopped"
+
+      environment = {
+        PUID = local.s920p_media_uid
+        PGID = local.s920p_media_gid
+      }
+
+      labels = {
+        "traefik.enable"                            = "true"
+        "traefik.http.routers.nzb.rule"             = "Host(`nzb.replo.de`)"
+        "traefik.http.routers.nzb.entrypoints"      = "websecure"
+        "traefik.http.routers.nzb.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.nzb.name"                            = "SABnzbd"
+        "pangolin.public-resources.nzb.full-domain"                     = "nzb.replo.de"
+        "pangolin.public-resources.nzb.protocol"                        = "http"
+        "pangolin.public-resources.nzb.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.nzb.targets[0].method"               = "http"
+        "pangolin.public-resources.nzb.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.nzb.targets[0].port"                 = "8081"
+        "pangolin.public-resources.nzb.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.nzb.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.nzb.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.nzb.targets[0].healthcheck.port"     = "8081"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:8080 || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/private/sabnzbd/completed"
+        target = "/downloads"
+        }, {
+        type   = "bind"
+        source = "/volume1/private/sabnzbd/incomplete"
+        target = "/incomplete-downloads"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/sabnzbd"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 8080
+        published = 8081
+        protocol  = "tcp"
+      }]
+    }
+
+    radarr = {
+      image   = "linuxserver/radarr:6.1.1"
+      restart = "unless-stopped"
+
+      environment = {
+        PUID = local.s920p_media_uid
+        PGID = local.s920p_media_gid
+      }
+
+      labels = {
+        "traefik.enable"                               = "true"
+        "traefik.http.routers.radarr.rule"             = "Host(`radarr.replo.de`)"
+        "traefik.http.routers.radarr.entrypoints"      = "websecure"
+        "traefik.http.routers.radarr.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.radarr.name"                            = "Radarr"
+        "pangolin.public-resources.radarr.full-domain"                     = "radarr.replo.de"
+        "pangolin.public-resources.radarr.protocol"                        = "http"
+        "pangolin.public-resources.radarr.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.radarr.targets[0].method"               = "http"
+        "pangolin.public-resources.radarr.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.radarr.targets[0].port"                 = "7878"
+        "pangolin.public-resources.radarr.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.radarr.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.radarr.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.radarr.targets[0].healthcheck.port"     = "7878"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:7878 || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/private/sabnzbd/completed"
+        target = "/downloads"
+        }, {
+        type   = "bind"
+        source = "/volume1/media/radarr"
+        target = "/mnt/radarr"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/radarr"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 7878
+        published = 7878
+        protocol  = "tcp"
+      }]
+    }
+
+    sonarr = {
+      image   = "linuxserver/sonarr:4.0.17"
+      restart = "unless-stopped"
+
+      environment = {
+        PUID = local.s920p_media_uid
+        PGID = local.s920p_media_gid
+      }
+
+      labels = {
+        "traefik.enable"                               = "true"
+        "traefik.http.routers.sonarr.rule"             = "Host(`sonarr.replo.de`)"
+        "traefik.http.routers.sonarr.entrypoints"      = "websecure"
+        "traefik.http.routers.sonarr.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.sonarr.name"                            = "Sonarr"
+        "pangolin.public-resources.sonarr.full-domain"                     = "sonarr.replo.de"
+        "pangolin.public-resources.sonarr.protocol"                        = "http"
+        "pangolin.public-resources.sonarr.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.sonarr.targets[0].method"               = "http"
+        "pangolin.public-resources.sonarr.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.sonarr.targets[0].port"                 = "8989"
+        "pangolin.public-resources.sonarr.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.sonarr.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.sonarr.targets[0].healthcheck.path"     = "/ping"
+        "pangolin.public-resources.sonarr.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.sonarr.targets[0].healthcheck.port"     = "8989"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:8989 || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/private/sabnzbd/completed"
+        target = "/downloads"
+        }, {
+        type   = "bind"
+        source = "/volume1/private/seedhost/downloads/tv"
+        target = "/seedhost"
+        }, {
+        type   = "bind"
+        source = "/volume1/media/sonarr"
+        target = "/mnt/sonarr"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/sonarr"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 8989
+        published = 8989
+        protocol  = "tcp"
+      }]
+    }
+
+    seerr = {
+      image   = "seerr/seerr:v3.1.0"
+      restart = "unless-stopped"
+      user    = "${local.s920p_media_uid}:${local.s920p_media_gid}"
+
+      environment = {
+        TZ = local.tz
+      }
+
+      labels = {
+        "traefik.enable"                              = "true"
+        "traefik.http.routers.seerr.rule"             = "Host(`seerr.replo.de`)"
+        "traefik.http.routers.seerr.entrypoints"      = "websecure"
+        "traefik.http.routers.seerr.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.seerr.name"                            = "Seerr"
+        "pangolin.public-resources.seerr.full-domain"                     = "seerr.replo.de"
+        "pangolin.public-resources.seerr.protocol"                        = "http"
+        "pangolin.public-resources.seerr.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.seerr.targets[0].method"               = "http"
+        "pangolin.public-resources.seerr.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.seerr.targets[0].port"                 = "5055"
+        "pangolin.public-resources.seerr.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.seerr.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.seerr.targets[0].healthcheck.path"     = "/api/v1/status"
+        "pangolin.public-resources.seerr.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.seerr.targets[0].healthcheck.port"     = "5055"
+      }
+
+      healthcheck = {
+        interval     = "15s"
+        start_period = "20s"
+        retries      = 3
+        timeout      = "3s"
+        test         = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume2/var/seerr"
+        target = "/app/config"
+      }]
+
+      ports = [{
+        target    = 5055
+        published = 5055
+        protocol  = "tcp"
+      }]
+    }
+
+    tube = {
+      # TODO: use latest version tag after next release after sha256:1f6090ad9940bb6907f6c542ae0c18ecd3df08cd6cfece6617a424adbfbe3740
+      image   = "keglin/pinchflat:latest"
+      restart = "unless-stopped"
+
+      environment = {
+        TZ = local.tz
+      }
+
+      labels = {
+        "traefik.enable"                             = "true"
+        "traefik.http.routers.tube.rule"             = "Host(`tube.replo.de`)"
+        "traefik.http.routers.tube.entrypoints"      = "websecure"
+        "traefik.http.routers.tube.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.tube.name"                            = "Pinchflat"
+        "pangolin.public-resources.tube.full-domain"                     = "tube.replo.de"
+        "pangolin.public-resources.tube.protocol"                        = "http"
+        "pangolin.public-resources.tube.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.tube.targets[0].method"               = "http"
+        "pangolin.public-resources.tube.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.tube.targets[0].port"                 = "8945"
+        "pangolin.public-resources.tube.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.tube.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.tube.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.tube.targets[0].healthcheck.port"     = "8945"
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/media/pinchflat"
+        target = "/downloads"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/pinchflat"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 8945
+        published = 8945
+        protocol  = "tcp"
+      }]
+    }
+
+    cast = {
+      image   = "advplyr/audiobookshelf:2.33.1"
+      restart = "unless-stopped"
+
+      environment = {
+        TZ = local.tz
+      }
+
+      labels = {
+        "traefik.enable"                             = "true"
+        "traefik.http.routers.cast.rule"             = "Host(`cast.replo.de`)"
+        "traefik.http.routers.cast.entrypoints"      = "websecure"
+        "traefik.http.routers.cast.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.cast.name"                            = "Audiobookshelf"
+        "pangolin.public-resources.cast.full-domain"                     = "cast.replo.de"
+        "pangolin.public-resources.cast.protocol"                        = "http"
+        "pangolin.public-resources.cast.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.cast.targets[0].method"               = "http"
+        "pangolin.public-resources.cast.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.cast.targets[0].port"                 = "13378"
+        "pangolin.public-resources.cast.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.cast.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.cast.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.cast.targets[0].healthcheck.port"     = "13378"
+        "pangolin.public-resources.cast.rules[0].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[0].match"                  = "path"
+        "pangolin.public-resources.cast.rules[0].value"                  = "/api/*"
+        "pangolin.public-resources.cast.rules[1].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[1].match"                  = "path"
+        "pangolin.public-resources.cast.rules[1].value"                  = "/login"
+        "pangolin.public-resources.cast.rules[2].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[2].match"                  = "path"
+        "pangolin.public-resources.cast.rules[2].value"                  = "/auth/*"
+        "pangolin.public-resources.cast.rules[3].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[3].match"                  = "path"
+        "pangolin.public-resources.cast.rules[3].value"                  = "/feed*"
+        "pangolin.public-resources.cast.rules[4].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[4].match"                  = "path"
+        "pangolin.public-resources.cast.rules[4].value"                  = "/socket.io/"
+        "pangolin.public-resources.cast.rules[5].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[5].match"                  = "path"
+        "pangolin.public-resources.cast.rules[5].value"                  = "/status"
+        "pangolin.public-resources.cast.rules[6].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[6].match"                  = "path"
+        "pangolin.public-resources.cast.rules[6].value"                  = "/logout"
+        "pangolin.public-resources.cast.rules[7].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[7].match"                  = "path"
+        "pangolin.public-resources.cast.rules[7].value"                  = "/ping"
+        "pangolin.public-resources.cast.rules[8].action"                 = "allow"
+        "pangolin.public-resources.cast.rules[8].match"                  = "path"
+        "pangolin.public-resources.cast.rules[8].value"                  = "/public/*"
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/media/audiobookshelf/audiobooks"
+        target = "/audiobooks"
+        }, {
+        type   = "bind"
+        source = "/volume1/media/audiobookshelf/podcasts"
+        target = "/podcasts"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/audiobookshelf/config"
+        target = "/config"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/audiobookshelf/metadata"
+        target = "/metadata"
+      }]
+
+      ports = [{
+        target    = 80
+        published = 13378
+        protocol  = "tcp"
+      }]
+    }
+
+    libation = {
+      image   = "rmcrackan/libation:13.3.3"
+      restart = "unless-stopped"
+      user    = "${local.s920p_media_uid}:${local.s920p_media_gid}"
+
+      environment = {
+        SLEEP_TIME = "30m"
+      }
+
+      labels = {
+        "traefik.enable" = "false"
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/media/audiobookshelf"
+        target = "/data"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/libation"
+        target = "/config"
+      }]
+    }
+  }
+
+  depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.force_run
+    ]
+  }
+}
+
 resource "synology_container_project" "mmclients" {
   name = "mmclients"
   run  = true
 
   networks = {
-    mmclients = {
-      name     = "mmclients"
+    media = {
+      name     = "media"
       external = true
     }
   }
@@ -264,14 +691,17 @@ resource "synology_container_project" "mmclients" {
         "pangolin.public-resources.jelly.targets[0].hostname"             = "172.17.0.1"
         "pangolin.public-resources.jelly.targets[0].port"                 = "8096"
         "pangolin.public-resources.jelly.targets[0].healthcheck.enabled"  = "true"
-        "pangolin.public-resources.jelly.targets[0].healthcheck.method"   = "http"
+        "pangolin.public-resources.jelly.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.jelly.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.jelly.targets[0].healthcheck.port"     = "8096"
+        "pangolin.public-resources.jelly.rules[0].action"                 = "allow"
+        "pangolin.public-resources.jelly.rules[0].match"                  = "path"
+        "pangolin.public-resources.jelly.rules[0].value"                  = "/system/info/public"
       }
 
       networks = {
-        mmclients = {
-          name = "mmclients"
+        media = {
+          name = "media"
         }
       }
 
@@ -343,7 +773,7 @@ resource "synology_container_project" "mmclients" {
         "pangolin.public-resources.stash.targets[0].hostname"             = "172.17.0.1"
         "pangolin.public-resources.stash.targets[0].port"                 = "9999"
         "pangolin.public-resources.stash.targets[0].healthcheck.enabled"  = "true"
-        "pangolin.public-resources.stash.targets[0].healthcheck.method"   = "http"
+        "pangolin.public-resources.stash.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.stash.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.stash.targets[0].healthcheck.port"     = "9999"
       }
@@ -355,8 +785,8 @@ resource "synology_container_project" "mmclients" {
       }
 
       networks = {
-        mmclients = {
-          name = "mmclients"
+        media = {
+          name = "media"
         }
       }
 
