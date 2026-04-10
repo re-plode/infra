@@ -921,11 +921,11 @@ resource "synology_container_project" "util" {
       restart = "unless-stopped"
 
       environment = {
-          DATABASE_URL = "postgres://miniflux:miniflux@pg/miniflux?sslmode=disable"
-          RUN_MIGRATIONS = "1"
-          BASE_URL = "https://rss.replo.de"
+          DATABASE_URL                       = "postgres://miniflux:miniflux@pg/miniflux?sslmode=disable"
+          RUN_MIGRATIONS                     = "1"
+          BASE_URL                           = "https://rss.replo.de"
           INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1"
-          FETCHER_ALLOW_PRIVATE_NETWORKS = "1"
+          FETCHER_ALLOW_PRIVATE_NETWORKS     = "1"
       }
 
       labels = {
