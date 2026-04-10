@@ -917,7 +917,7 @@ resource "synology_container_project" "util" {
 
   services = {
     kan = {
-      image   = "kanboard/kanboard:v1.2.4"
+      image   = "kanboard/kanboard:v1.2.5"
       restart = "unless-stopped"
 
       labels = {
