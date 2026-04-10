@@ -18,11 +18,17 @@ resource "synology_container_project" "init" {
   run  = true
 
   networks = {
+    appsvc = {
+      name = "appsvc"
+    }
     netsvc = {
       name = "netsvc"
     }
     media = {
       name = "media"
+    }
+    util = {
+      name = "util"
     }
   }
 
@@ -31,11 +37,17 @@ resource "synology_container_project" "init" {
       image = "hello-world:latest"
 
       networks = {
+        appsvc = {
+          name = "appsvc"
+        }
         netsvc = {
           name = "netsvc"
         }
         media = {
           name = "media"
+        }
+        util = {
+          name = "util"
         }
       }
     }
@@ -53,6 +65,10 @@ resource "synology_container_project" "netsvc" {
   run  = true
 
   networks = {
+    appsvc = {
+      name     = "appsvc"
+      external = true
+    }
     netsvc = {
       name     = "netsvc"
       external = true
@@ -74,6 +90,9 @@ resource "synology_container_project" "netsvc" {
       user    = "root"
 
       networks = {
+        appsvc = {
+          name = "appsvc"
+        }
         netsvc = {
           name = "netsvc"
         }
@@ -210,6 +229,62 @@ resource "synology_container_project" "netsvc" {
         target    = 80
         published = 3000
         protocol  = "tcp"
+      }]
+    }
+  }
+
+  depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.force_run
+    ]
+  }
+}
+
+resource "synology_container_project" "appsvc" {
+  name = "appsvc"
+  run  = true
+
+  networks = {
+    appsvc = {
+      name     = "appsvc"
+      external = true
+    }
+  }
+
+  services = {
+    pg = {
+      image   = "postgres:17.9"
+      restart = "unless-stopped"
+
+      environment = {
+        POSTGRES_USER = "miniflux"
+        # TODO: fix this password
+        POSTGRES_PASSWORD = "miniflux"
+        POSTGRES_DB = "miniflux"
+      }
+
+      labels = {
+        "traefik.enable" = "false"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD", "pg_isready", "-U", "miniflux"]
+      }
+
+      networks = {
+        appsvc = {
+          name = "appsvc"
+        }
+      }
+
+      volumes = [{
+        type      = "bind"
+        source    = "/volume2/var/postgres-17"
+        target    = "/var/lib/postgresql/data"
       }]
     }
   }
@@ -817,6 +892,94 @@ resource "synology_container_project" "mmclients" {
   }
 
   depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.force_run
+    ]
+  }
+}
+
+resource "synology_container_project" "util" {
+  name = "util"
+  run  = true
+
+  networks = {
+    appsvc = {
+      name     = "appsvc"
+      external = true
+    }
+    util = {
+      name     = "util"
+      external = true
+    }
+  }
+
+  services = {
+    rss = {
+      image   = "miniflux/miniflux:2.2.19"
+      restart = "unless-stopped"
+
+      environment = {
+          DATABASE_URL = "postgres://miniflux:miniflux@pg/miniflux?sslmode=disable"
+          RUN_MIGRATIONS = "1"
+          BASE_URL = "https://rss.replo.de"
+          INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1"
+          FETCHER_ALLOW_PRIVATE_NETWORKS = "1"
+      }
+
+      labels = {
+        "traefik.enable"                            = "true"
+        "traefik.http.routers.rss.rule"             = "Host(`rss.replo.de`)"
+        "traefik.http.routers.rss.entrypoints"      = "websecure"
+        "traefik.http.routers.rss.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.rss.name"                            = "Miniflux"
+        "pangolin.public-resources.rss.full-domain"                     = "rss.replo.de"
+        "pangolin.public-resources.rss.protocol"                        = "http"
+        "pangolin.public-resources.rss.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.rss.targets[0].method"               = "http"
+        "pangolin.public-resources.rss.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.rss.targets[0].port"                 = "8091"
+        "pangolin.public-resources.rss.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.rss.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.rss.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.rss.targets[0].healthcheck.port"     = "8091"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/healthcheck || exit 1"]
+      }
+
+      networks = {
+        appsvc = {
+          name = "appsvc"
+        }
+        util = {
+          name = "util"
+        }
+      }
+
+      volumes = [{
+        type      = "bind"
+        source    = "/volume2/var/postgres-17"
+        target    = "/var/lib/postgresql/data"
+      }]
+
+      ports = [{
+        target    = 8080
+        published = 8091
+        protocol  = "tcp"
+      }]
+    }
+  }
+
+  depends_on = [
+    synology_container_project.init,
+    synology_container_project.appsvc
+  ]
 
   lifecycle {
     replace_triggered_by = [
