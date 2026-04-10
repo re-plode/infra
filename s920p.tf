@@ -947,7 +947,7 @@ resource "synology_container_project" "util" {
         "pangolin.public-resources.rss.targets[0].healthcheck.port"     = "8091"
         "pangolin.public-resources.rss.rules[0].action"                 = "allow"
         "pangolin.public-resources.rss.rules[0].match"                  = "path"
-        "pangolin.public-resources.rss.rules[0].value"                  = "/reader/*"
+        "pangolin.public-resources.rss.rules[0].value"                  = "/reader/api/*"
       }
 
       healthcheck = {
