@@ -78,12 +78,3 @@ resource "mailgun_domain_credential" "noreply_rcheung_com" {
     ignore_changes = [password]
   }
 }
-
-resource "terraform_data" "force_run" {
-  input = timestamp()
-
-  # Comment this to force replacement
-  lifecycle {
-    ignore_changes = [input]
-  }
-}

@@ -324,6 +324,12 @@ resource "docker_container" "newt" {
     ipv4_address = "172.254.0.5"
   }
 
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+
   lifecycle {
     prevent_destroy = true
   }
@@ -367,6 +373,55 @@ resource "docker_container" "wg-easy" {
   networks_advanced {
     name         = docker_network.netsvc.name
     ipv4_address = "172.254.0.3"
+  }
+
+  labels {
+    label = "pangolin.public-resources.wg.name"
+    value = "Wireguard"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.full-domain"
+    value = "wg.replo.de"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.protocol"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.auth.sso-enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].method"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].hostname"
+    value = "172.254.0.3"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].port"
+    value = "51822"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].healthcheck.enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].healthcheck.method"
+    value = "GET"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].healthcheck.hostname"
+    value = "172.254.0.3"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].healthcheck.path"
+    value = "/"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.targets[0].healthcheck.port"
+    value = "51822"
   }
 
   ports {

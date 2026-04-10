@@ -55,6 +55,8 @@ locals {
   cloudflare_rcheung_com_zone_id = "e4edb9787160b70638898ebfd69c0fd0"
   cloudflare_replo_de_zone_id    = "866a9591267d97262251a392a85dbd7c"
 
+  tz = "Europe/Berlin"
+
   cloudflare_ips = [
     "173.245.48.0/20",
     "103.21.244.0/22",
