@@ -262,7 +262,7 @@ resource "synology_container_project" "appsvc" {
         POSTGRES_USER = "miniflux"
         # TODO: fix this password
         POSTGRES_PASSWORD = "miniflux"
-        POSTGRES_DB = "miniflux"
+        POSTGRES_DB       = "miniflux"
       }
 
       labels = {
@@ -282,9 +282,9 @@ resource "synology_container_project" "appsvc" {
       }
 
       volumes = [{
-        type      = "bind"
-        source    = "/volume2/var/postgres-17"
-        target    = "/var/lib/postgresql/data"
+        type   = "bind"
+        source = "/volume2/var/postgres-17"
+        target = "/var/lib/postgresql/data"
       }]
     }
   }
@@ -961,12 +961,6 @@ resource "synology_container_project" "util" {
           name = "util"
         }
       }
-
-      volumes = [{
-        type      = "bind"
-        source    = "/volume2/var/postgres-17"
-        target    = "/var/lib/postgresql/data"
-      }]
 
       ports = [{
         target    = 8080
