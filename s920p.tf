@@ -916,6 +916,58 @@ resource "synology_container_project" "util" {
   }
 
   services = {
+    kan = {
+      image   = "kanboard/kanboard:v1.2.1"
+      restart = "unless-stopped"
+
+      labels = {
+        "traefik.enable"                            = "true"
+        "traefik.http.routers.kan.rule"             = "Host(`kan.replo.de`)"
+        "traefik.http.routers.kan.entrypoints"      = "websecure"
+        "traefik.http.routers.kan.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.kan.name"                            = "Kanboard"
+        "pangolin.public-resources.kan.full-domain"                     = "kan.replo.de"
+        "pangolin.public-resources.kan.protocol"                        = "http"
+        "pangolin.public-resources.kan.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.kan.targets[0].method"               = "http"
+        "pangolin.public-resources.kan.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.kan.targets[0].port"                 = "8082"
+        "pangolin.public-resources.kan.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.kan.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.kan.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.kan.targets[0].healthcheck.port"     = "8082"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:80 || exit 1"]
+      }
+
+      networks = {
+        util = {
+          name = "util"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume2/var/kanboard/data"
+        target = "/var/www/app/data"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/kanboard/plugins"
+        target = "/var/www/app/plugins"
+      }]
+
+      ports = [{
+        target    = 80
+        published = 8082
+        protocol  = "tcp"
+      }]
+    }
+
     rss = {
       image   = "miniflux/miniflux:2.2.19"
       restart = "unless-stopped"
