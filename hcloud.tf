@@ -286,6 +286,55 @@ resource "docker_container" "adguardhome" {
 
   network_mode = "host"
 
+  labels {
+    label = "pangolin.public-resources.dns.name"
+    value = "AdGuard"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.full-domain"
+    value = "dns.replo.de"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.protocol"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.auth.sso-enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].method"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].hostname"
+    value = "172.254.0.1"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].port"
+    value = "3000"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.method"
+    value = "GET"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.hostname"
+    value = "172.254.0.1"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.path"
+    value = "/"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.port"
+    value = "3000"
+  }
+
   volumes {
     container_path = "/opt/adguardhome/work"
     host_path      = "/var/lib/containers/adguardhome/work"
