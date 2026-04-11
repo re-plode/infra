@@ -112,6 +112,15 @@ resource "hcloud_volume" "internal_net_vol" {
   }
 }
 
+resource "hcloud_primary_ip" "internal_net_ip" {
+  name              = "internal-net-ip"
+  type              = "ipv4"
+  assignee_id       = hcloud_server.internal_net.id
+  assignee_type     = "server"
+  delete_protection = true
+  auto_delete       = false
+}
+
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
   firewall_id = hcloud_firewall.internal_net_firewall.id
   server_ids  = [hcloud_server.internal_net.id]
