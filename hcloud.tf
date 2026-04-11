@@ -92,6 +92,9 @@ resource "hcloud_server" "internal_net" {
     hcloud_ssh_key.github.id
   ]
 
+  delete_protection  = true
+  rebuild_protection = true
+
   lifecycle {
     prevent_destroy = true
   }
