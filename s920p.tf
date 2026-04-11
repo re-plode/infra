@@ -937,7 +937,7 @@ resource "synology_container_project" "rss" {
 
   networks = {
     rss = {
-      name = "rss"
+      name     = "rss"
       external = true
     }
   }
