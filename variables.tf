@@ -6,11 +6,6 @@ variable "dsm_host" {
   type = string
 }
 
-variable "wg_easy_init_password" {
-  type      = string
-  sensitive = true
-}
-
 variable "cloudflare_dns_api_token" {
   type      = string
   sensitive = true

@@ -412,7 +412,7 @@ resource "docker_container" "wg-easy" {
     "PORT=51822",
     "INIT_ENABLED=true",
     "INIT_USERNAME=root",
-    "INIT_PASSWORD=${var.wg_easy_init_password}",
+    "INIT_PASSWORD=${data.sops_file.secrets.data["wg_easy.init_password"]}",
     "INIT_HOST=replo.de",
     "INIT_PORT=51821",
     "INIT_DNS=172.254.0.1",

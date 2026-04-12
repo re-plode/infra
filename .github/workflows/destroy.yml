@@ -15,7 +15,6 @@ jobs:
       TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
       TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
-      TF_VAR_wg_easy_init_password: ${{ secrets.WG_EASY_INIT_PASSWORD }}
     steps:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
