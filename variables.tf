@@ -5,13 +5,6 @@ variable "ssh_identity" {
 variable "dsm_host" {
   type = string
 }
-variable "dsm_user" {
-  type = string
-}
-variable "dsm_password" {
-  type      = string
-  sensitive = true
-}
 
 variable "hcloud_newt_id" {
   type = string

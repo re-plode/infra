@@ -67,8 +67,8 @@ provider "mailgun" {
 
 provider "synology" {
   host            = "https://${var.dsm_host}:5001"
-  user            = var.dsm_user
-  password        = var.dsm_password
+  user            = data.sops_file.secrets.data["dsm.username"]
+  password        = data.sops_file.secrets.data["dsm.password"]
   skip_cert_check = true
   session_cache = {
     mode = "memory"

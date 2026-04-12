@@ -9,9 +9,6 @@ export AWS_ENDPOINT_URL_S3=
 export TF_VAR_tf_passphrase=
 
 export TF_VAR_ssh_identity=
-export TF_VAR_dsm_host=
-export TF_VAR_dsm_user=
-export TF_VAR_dsm_password=
 
 export TF_VAR_hcloud_newt_id=
 export TF_VAR_hcloud_newt_secret=
