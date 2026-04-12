@@ -9,6 +9,7 @@ pkgs.mkShell {
     shfmt
     opentofu
     awscli
-    awscli2
+    age
+    sops
   ];
 }

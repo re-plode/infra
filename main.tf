@@ -71,7 +71,7 @@ resource "mailgun_domain" "rcheung_com" {
 resource "mailgun_domain_credential" "noreply_rcheung_com" {
   domain   = "mg.rcheung.com"
   login    = "noreply"
-  password = var.mailgun_smtp_password
+  password = data.sops_file.secrets.data["mailgun.smtp_password"]
   region   = "us"
 
   lifecycle {

@@ -23,17 +23,17 @@ jobs:
       TF_VAR_s920p_newt_secret: ${{ secrets.S920P_NEWT_SECRET }}
       TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
       TF_VAR_wg_easy_init_password: ${{ secrets.WG_EASY_INIT_PASSWORD }}
-      TF_VAR_mailgun_api_key: ${{ secrets.MAILGUN_API_KEY }}
-      TF_VAR_mailgun_smtp_password: ${{ secrets.MAILGUN_SMTP_PASSWORD }}
     steps:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
       - uses: actions/checkout@v6
       - run: |
-          mkdir -p ~/.ssh/
+          mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
+          echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
           echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
           chmod 600 ~/.ssh/id_ed25519_github
         env:
+          AGE_KEY: ${{ secrets.AGE_KEY }}
           SSH_KEY: ${{secrets.SSH_KEY}}
       - uses: tailscale/github-action@v4
         with:

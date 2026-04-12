@@ -79,7 +79,7 @@ resource "hcloud_server" "internal_net" {
   location    = "nbg1"
   backups     = false
 
-  user_data = file("config/cloudinit.yml")
+  user_data = file("config/cloudinit/hcloud.yml")
 
   public_net {
     ipv4_enabled = true

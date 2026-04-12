@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 0.5"
+    }
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
@@ -58,7 +62,7 @@ terraform {
 }
 
 provider "mailgun" {
-  api_key = var.mailgun_api_key
+  api_key = data.sops_file.secrets.data["mailgun.api_key"]
 }
 
 provider "synology" {
