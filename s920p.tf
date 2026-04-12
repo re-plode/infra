@@ -168,8 +168,8 @@ resource "synology_container_project" "netsvc" {
 
       environment = {
         PANGOLIN_ENDPOINT = "https://replo.de"
-        NEWT_ID           = "${var.s920p_newt_id}"
-        NEWT_SECRET       = "${var.s920p_newt_secret}"
+        NEWT_ID           = "${data.sops_file.secrets.data["pangolin.s920p_newt_id"]}"
+        NEWT_SECRET       = "${data.sops_file.secrets.data["pangolin.s920p_newt_secret"]}"
         DOCKER_SOCKET     = "/var/run/docker.sock"
       }
 

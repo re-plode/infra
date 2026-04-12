@@ -14,10 +14,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET }}
       TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
-      TF_VAR_hcloud_newt_id: ${{ vars.HCLOUD_NEWT_ID }}
-      TF_VAR_hcloud_newt_secret: ${{ secrets.HCLOUD_NEWT_SECRET }}
-      TF_VAR_s920p_newt_id: ${{ vars.S920P_NEWT_ID }}
-      TF_VAR_s920p_newt_secret: ${{ secrets.S920P_NEWT_SECRET }}
       TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
       TF_VAR_wg_easy_init_password: ${{ secrets.WG_EASY_INIT_PASSWORD }}
     steps:

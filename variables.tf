@@ -6,22 +6,6 @@ variable "dsm_host" {
   type = string
 }
 
-variable "hcloud_newt_id" {
-  type = string
-}
-variable "hcloud_newt_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "s920p_newt_id" {
-  type = string
-}
-variable "s920p_newt_secret" {
-  type      = string
-  sensitive = true
-}
-
 variable "wg_easy_init_password" {
   type      = string
   sensitive = true

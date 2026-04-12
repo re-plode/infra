@@ -375,8 +375,8 @@ resource "docker_container" "newt" {
 
   env = [
     "PANGOLIN_ENDPOINT=https://replo.de",
-    "NEWT_ID=${var.hcloud_newt_id}",
-    "NEWT_SECRET=${var.hcloud_newt_secret}",
+    "NEWT_ID=${data.sops_file.secrets.data["pangolin.hcloud_newt_id"]}",
+    "NEWT_SECRET=${data.sops_file.secrets.data["pangolin.hcloud_newt_secret"]}",
     "DOCKER_SOCKET=/var/run/docker.sock"
   ]
 
