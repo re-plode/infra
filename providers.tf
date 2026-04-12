@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 0.5"
+    }
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
@@ -58,13 +62,13 @@ terraform {
 }
 
 provider "mailgun" {
-  api_key = var.mailgun_api_key
+  api_key = data.sops_file.secrets.data["mailgun.api_key"]
 }
 
 provider "synology" {
   host            = "https://${var.dsm_host}:5001"
-  user            = var.dsm_user
-  password        = var.dsm_password
+  user            = data.sops_file.secrets.data["dsm.username"]
+  password        = data.sops_file.secrets.data["dsm.password"]
   skip_cert_check = true
   session_cache = {
     mode = "memory"

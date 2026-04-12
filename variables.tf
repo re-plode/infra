@@ -5,48 +5,6 @@ variable "ssh_identity" {
 variable "dsm_host" {
   type = string
 }
-variable "dsm_user" {
-  type = string
-}
-variable "dsm_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "hcloud_newt_id" {
-  type = string
-}
-variable "hcloud_newt_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "s920p_newt_id" {
-  type = string
-}
-variable "s920p_newt_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "wg_easy_init_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "cloudflare_dns_api_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "mailgun_api_key" {
-  type      = string
-  sensitive = true
-}
-variable "mailgun_smtp_password" {
-  type      = string
-  sensitive = true
-}
 
 variable "tf_passphrase" {
   default   = "changeme!"

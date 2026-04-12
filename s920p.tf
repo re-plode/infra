@@ -142,7 +142,7 @@ resource "synology_container_project" "netsvc" {
       }
 
       environment = {
-        CF_DNS_API_TOKEN = "${var.cloudflare_dns_api_token}"
+        CF_DNS_API_TOKEN = "${data.sops_file.secrets.data["cloudflare.dns_api_token"]}"
       }
 
       labels = {
@@ -192,8 +192,8 @@ resource "synology_container_project" "netsvc" {
 
       environment = {
         PANGOLIN_ENDPOINT = "https://replo.de"
-        NEWT_ID           = "${var.s920p_newt_id}"
-        NEWT_SECRET       = "${var.s920p_newt_secret}"
+        NEWT_ID           = "${data.sops_file.secrets.data["pangolin.s920p_newt_id"]}"
+        NEWT_SECRET       = "${data.sops_file.secrets.data["pangolin.s920p_newt_secret"]}"
         DOCKER_SOCKET     = "/var/run/docker.sock"
       }
 
@@ -1010,7 +1010,7 @@ resource "synology_container_project" "rss" {
       restart = "unless-stopped"
 
       environment = {
-        DATABASE_URL                       = "postgres://miniflux:miniflux@pg/miniflux?sslmode=disable"
+        DATABASE_URL                       = "postgres://miniflux:${data.sops_file.secrets.data["miniflux.database_password"]}@pg/miniflux?sslmode=disable"
         RUN_MIGRATIONS                     = "1"
         BASE_URL                           = "https://rss.replo.de"
         INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1"

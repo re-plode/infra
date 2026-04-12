@@ -1,5 +1,8 @@
 .envrc
 
+config/secrets.json
+config/age/*
+
 **/.terraform/*
 *.tfstate
 *.tfstate.*
