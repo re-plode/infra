@@ -21,6 +21,23 @@ resource "synology_container_project" "init" {
     appsvc = {
       name = "appsvc"
     }
+    dnssvc = {
+      name   = "dnssvc"
+      driver = "macvlan"
+      driver_opts = {
+        parent = "eth1.20"
+      }
+
+      ipam = {
+        config = [{
+          subnet  = "10.42.21.0/24"
+          gateway = "10.42.21.1"
+          aux_addresses = {
+            host = "10.42.21.2"
+          }
+        }]
+      }
+    }
     netsvc = {
       name = "netsvc"
     }
@@ -42,6 +59,9 @@ resource "synology_container_project" "init" {
       networks = {
         appsvc = {
           name = "appsvc"
+        }
+        dnssvc = {
+          name = "dnssvc"
         }
         netsvc = {
           name = "netsvc"
@@ -73,6 +93,10 @@ resource "synology_container_project" "netsvc" {
   networks = {
     appsvc = {
       name     = "appsvc"
+      external = true
+    }
+    dnssvc = {
+      name     = "dnssvc"
       external = true
     }
     netsvc = {
@@ -217,6 +241,10 @@ resource "synology_container_project" "netsvc" {
       }
 
       networks = {
+        # dnssvc = {
+        #   name         = "dnssvc"
+        #   ipv4_address = "10.42.21.3"
+        # }
         netsvc = {
           name = "netsvc"
         }
