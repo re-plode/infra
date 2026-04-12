@@ -22,6 +22,39 @@ terraform {
       version = "~> 0.9.0"
     }
   }
+
+  backend "s3" {
+    bucket = "infra"
+    key    = "terraform.tfstate"
+
+    region                      = "auto"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+
+  encryption {
+    key_provider "pbkdf2" "pbkdf2_provider" {
+      passphrase = var.tf_passphrase
+    }
+
+    method "aes_gcm" "aes_gcm_method" {
+      keys = key_provider.pbkdf2.pbkdf2_provider
+    }
+
+    state {
+      method   = method.aes_gcm.aes_gcm_method
+      enforced = true
+    }
+
+    plan {
+      method   = method.aes_gcm.aes_gcm_method
+      enforced = true
+    }
+  }
 }
 
 provider "mailgun" {
