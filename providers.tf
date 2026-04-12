@@ -34,11 +34,26 @@ terraform {
     skip_requesting_account_id  = true
     skip_s3_checksum            = true
     use_path_style              = true
+  }
 
-    access_key = var.cloudflare_r2_key
-    secret_key = var.cloudflare_r2_secret
+  encryption {
+    key_provider "pbkdf2" "pbkdf2_provider" {
+      passphrase = var.tf_passphrase
+    }
 
-    endpoints = { s3 = var.cloudflare_r2_endpoint }
+    method "aes_gcm" "aes_gcm_method" {
+      keys = key_provider.pbkdf2.pbkdf2_provider
+    }
+
+    state {
+      method   = method.aes_gcm.aes_gcm_method
+      enforced = true
+    }
+
+    plan {
+      method   = method.aes_gcm.aes_gcm_method
+      enforced = true
+    }
   }
 }
 

@@ -9,20 +9,39 @@ jobs:
     env:
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_R2_ENDPOINT: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
+      AWS_ENDPOINT_URL_S3: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET }}
+      TF_VAR_ssh_identity: id_ed25519_github
+      TF_VAR_dsm_host: ${{ vars.DSM_HOST }}
+      TF_VAR_dsm_user: ${{ vars.DSM_USER }}
+      TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
+      TF_VAR_hcloud_newt_id: ${{ vars.HCLOUD_NEWT_ID }}
+      TF_VAR_hcloud_newt_secret: ${{ secrets.HCLOUD_NEWT_SECRET }}
+      TF_VAR_s920p_newt_id: ${{ vars.S920P_NEWT_ID }}
+      TF_VAR_s920p_newt_secret: ${{ secrets.S920P_NEWT_SECRET }}
+      TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+      TF_VAR_wg_easy_init_password: ${{ secrets.WG_EASY_INIT_PASSWORD }}
+      TF_VAR_mailgun_api_key: ${{ secrets.MAILGUN_API_KEY }}
+      TF_VAR_mailgun_smtp_password: ${{ secrets.MAILGUN_SMTP_PASSWORD }}
     steps:
+      - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
+        if: runner.debug == '1'
       - uses: actions/checkout@v6
-      - uses: opentofu/setup-opentofu@v2
-      - uses: aws-actions/configure-aws-credentials@v6
+      - run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
+          chmod 600 ~/.ssh/id_ed25519_github
+        env:
+          SSH_KEY: ${{secrets.SSH_KEY}}
+      - uses: tailscale/github-action@v4
         with:
-          aws-access-key-id: ${{ secrets.CLOUDFLARE_R2_KEY }}
-          aws-secret-access-key: ${{ secrets.CLOUDFLARE_R2_SECRET }}
-          aws-region: auto
-        continue-on-error: true
-      - run: ./bin/get-tfstate.sh
-        continue-on-error: true
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:github
+          ping: ${{ vars.DSM_HOST }}
+      - uses: opentofu/setup-opentofu@v2
       - run: tofu init
       - run: tofu validate -no-color
-      - run: tofu plan -destroy -exclude=hcloud_volume.internal_net_vol -out=out.tfplan
+      - run: tofu plan -destroy -out=out.tfplan
       - run: tofu apply -auto-approve out.tfplan
-      - run: ./bin/put-tfstate.sh
