@@ -79,7 +79,7 @@ resource "hcloud_server" "internal_net" {
   location    = "nbg1"
   backups     = false
 
-  user_data = file("config/cloudinit.yml")
+  user_data = file("config/cloudinit/hcloud.yml")
 
   public_net {
     ipv4_enabled = true
@@ -375,8 +375,8 @@ resource "docker_container" "newt" {
 
   env = [
     "PANGOLIN_ENDPOINT=https://replo.de",
-    "NEWT_ID=${var.hcloud_newt_id}",
-    "NEWT_SECRET=${var.hcloud_newt_secret}",
+    "NEWT_ID=${data.sops_file.secrets.data["pangolin.hcloud_newt_id"]}",
+    "NEWT_SECRET=${data.sops_file.secrets.data["pangolin.hcloud_newt_secret"]}",
     "DOCKER_SOCKET=/var/run/docker.sock"
   ]
 
@@ -412,7 +412,7 @@ resource "docker_container" "wg-easy" {
     "PORT=51822",
     "INIT_ENABLED=true",
     "INIT_USERNAME=root",
-    "INIT_PASSWORD=${var.wg_easy_init_password}",
+    "INIT_PASSWORD=${data.sops_file.secrets.data["wg_easy.init_password"]}",
     "INIT_HOST=replo.de",
     "INIT_PORT=51821",
     "INIT_DNS=172.254.0.1",
