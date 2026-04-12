@@ -92,6 +92,9 @@ resource "hcloud_server" "internal_net" {
     hcloud_ssh_key.github.id
   ]
 
+  delete_protection  = true
+  rebuild_protection = true
+
   lifecycle {
     prevent_destroy = true
   }
@@ -107,6 +110,15 @@ resource "hcloud_volume" "internal_net_vol" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "hcloud_primary_ip" "internal_net_ip" {
+  name              = "internal-net-ip"
+  type              = "ipv4"
+  assignee_id       = hcloud_server.internal_net.id
+  assignee_type     = "server"
+  delete_protection = true
+  auto_delete       = false
 }
 
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
@@ -285,6 +297,55 @@ resource "docker_container" "adguardhome" {
   restart  = "unless-stopped"
 
   network_mode = "host"
+
+  labels {
+    label = "pangolin.public-resources.dns.name"
+    value = "AdGuard"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.full-domain"
+    value = "dns.replo.de"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.protocol"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.auth.sso-enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].method"
+    value = "http"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].hostname"
+    value = "172.254.0.1"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].port"
+    value = "3000"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.enabled"
+    value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.method"
+    value = "GET"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.hostname"
+    value = "172.254.0.1"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.path"
+    value = "/"
+  }
+  labels {
+    label = "pangolin.public-resources.dns.targets[0].healthcheck.port"
+    value = "3000"
+  }
 
   volumes {
     container_path = "/opt/adguardhome/work"

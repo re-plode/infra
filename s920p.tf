@@ -44,8 +44,11 @@ resource "synology_container_project" "init" {
     media = {
       name = "media"
     }
-    util = {
-      name = "util"
+    rss = {
+      name = "rss"
+    }
+    kan = {
+      name = "kan"
     }
   }
 
@@ -66,8 +69,11 @@ resource "synology_container_project" "init" {
         media = {
           name = "media"
         }
-        util = {
-          name = "util"
+        rss = {
+          name = "rss"
+        }
+        kan = {
+          name = "kan"
         }
       }
     }
@@ -101,8 +107,12 @@ resource "synology_container_project" "netsvc" {
       name     = "media"
       external = true
     }
-    util = {
-      name     = "util"
+    rss = {
+      name     = "rss"
+      external = true
+    }
+    kan = {
+      name     = "kan"
       external = true
     }
   }
@@ -123,8 +133,11 @@ resource "synology_container_project" "netsvc" {
         media = {
           name = "media"
         }
-        util = {
-          name = "util"
+        rss = {
+          name = "rss"
+        }
+        kan = {
+          name = "kan"
         }
       }
 
@@ -257,62 +270,6 @@ resource "synology_container_project" "netsvc" {
         target    = 80
         published = 3000
         protocol  = "tcp"
-      }]
-    }
-  }
-
-  depends_on = [synology_container_project.init]
-
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.force_run
-    ]
-  }
-}
-
-resource "synology_container_project" "appsvc" {
-  name = "appsvc"
-  run  = true
-
-  networks = {
-    appsvc = {
-      name     = "appsvc"
-      external = true
-    }
-  }
-
-  services = {
-    pg = {
-      image   = "postgres:17.9"
-      restart = "unless-stopped"
-
-      environment = {
-        POSTGRES_USER = "miniflux"
-        # TODO: fix this password
-        POSTGRES_PASSWORD = "miniflux"
-        POSTGRES_DB       = "miniflux"
-      }
-
-      labels = {
-        "traefik.enable" = "false"
-      }
-
-      healthcheck = {
-        interval     = "10s"
-        start_period = "30s"
-        test         = ["CMD", "pg_isready", "-U", "miniflux"]
-      }
-
-      networks = {
-        appsvc = {
-          name = "appsvc"
-        }
-      }
-
-      volumes = [{
-        type   = "bind"
-        source = "/volume2/var/postgres-17"
-        target = "/var/lib/postgresql/data"
       }]
     }
   }
@@ -928,17 +885,13 @@ resource "synology_container_project" "mmclients" {
   }
 }
 
-resource "synology_container_project" "util" {
-  name = "util"
+resource "synology_container_project" "kan" {
+  name = "kan"
   run  = true
 
   networks = {
-    appsvc = {
-      name     = "appsvc"
-      external = true
-    }
-    util = {
-      name     = "util"
+    kan = {
+      name     = "kan"
       external = true
     }
   }
@@ -974,8 +927,8 @@ resource "synology_container_project" "util" {
       }
 
       networks = {
-        util = {
-          name = "util"
+        kan = {
+          name = "kan"
         }
       }
 
@@ -993,6 +946,62 @@ resource "synology_container_project" "util" {
         target    = 80
         published = 8082
         protocol  = "tcp"
+      }]
+    }
+  }
+
+  depends_on = [synology_container_project.init]
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.force_run
+    ]
+  }
+}
+
+resource "synology_container_project" "rss" {
+  name = "rss"
+  run  = true
+
+  networks = {
+    rss = {
+      name     = "rss"
+      external = true
+    }
+  }
+
+  services = {
+    pg = {
+      image   = "postgres:17.9"
+      restart = "unless-stopped"
+
+      environment = {
+        POSTGRES_USER = "miniflux"
+        # TODO: fix this password
+        POSTGRES_PASSWORD = "miniflux"
+        POSTGRES_DB       = "miniflux"
+      }
+
+      labels = {
+        "traefik.enable" = "false"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD", "pg_isready", "-U", "miniflux"]
+      }
+
+      networks = {
+        rss = {
+          name = "rss"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume2/var/postgres-17"
+        target = "/var/lib/postgresql/data"
       }]
     }
 
@@ -1037,11 +1046,8 @@ resource "synology_container_project" "util" {
       }
 
       networks = {
-        appsvc = {
-          name = "appsvc"
-        }
-        util = {
-          name = "util"
+        rss = {
+          name = "rss"
         }
       }
 
@@ -1053,10 +1059,7 @@ resource "synology_container_project" "util" {
     }
   }
 
-  depends_on = [
-    synology_container_project.init,
-    synology_container_project.appsvc
-  ]
+  depends_on = [synology_container_project.init]
 
   lifecycle {
     replace_triggered_by = [
