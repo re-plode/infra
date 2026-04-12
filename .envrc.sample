@@ -6,8 +6,6 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 export AWS_ENDPOINT_URL_S3=
 
-export TF_VAR_tf_passphrase=
-
 export TF_VAR_ssh_identity=
 
 export TF_VAR_cloudflare_dns_api_token=

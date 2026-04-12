@@ -11,11 +11,6 @@ variable "cloudflare_dns_api_token" {
   sensitive = true
 }
 
-variable "tf_passphrase" {
-  default   = "changeme!"
-  sensitive = true
-}
-
 locals {
   s920p_media_uid = "1027"
   s920p_media_gid = "65536"
