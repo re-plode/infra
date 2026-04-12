@@ -12,6 +12,7 @@ jobs:
       AWS_ENDPOINT_URL_S3: ${{ vars.CLOUDFLARE_R2_ENDPOINT }}
       AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET }}
+      TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
       TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
     steps:

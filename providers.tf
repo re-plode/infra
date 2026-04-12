@@ -42,7 +42,7 @@ terraform {
 
   encryption {
     key_provider "pbkdf2" "pbkdf2_provider" {
-      passphrase = data.sops_file.secrets.data["tf.encryption_passphrase"]
+      passphrase = var.tf_passphrase
     }
 
     method "aes_gcm" "aes_gcm_method" {
