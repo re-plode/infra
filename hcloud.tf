@@ -1,22 +1,11 @@
-resource "hcloud_ssh_key" "fedora" {
-  name       = "russellc@fedora"
-  public_key = file("config/ssh/id_ed25519_fedora.pub")
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-resource "hcloud_ssh_key" "ipadpro" {
-  name       = "russellc@ipadpro"
-  public_key = file("config/ssh/id_ed25519_ipadpro.pub")
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-resource "hcloud_ssh_key" "github" {
-  name       = "russellc@github"
-  public_key = file("config/ssh/id_ed25519_github.pub")
+resource "hcloud_ssh_key" "ssh_keys" {
+  for_each = tomap({
+    "russellc@fedora"  = "config/ssh/id_ed25519_fedora.pub"
+    "russellc@ipadpro" = "config/ssh/id_ed25519_ipadpro.pub"
+    "russellc@github"  = "config/ssh/id_ed25519_github.pub"
+  })
+  name       = each.key
+  public_key = file(each.value)
 
   lifecycle {
     prevent_destroy = true
@@ -87,9 +76,9 @@ resource "hcloud_server" "internal_net" {
   }
 
   ssh_keys = [
-    hcloud_ssh_key.fedora.id,
-    hcloud_ssh_key.ipadpro.id,
-    hcloud_ssh_key.github.id
+    hcloud_ssh_key.ssh_keys["russellc@fedora"].id,
+    hcloud_ssh_key.ssh_keys["russellc@ipadpro"].id,
+    hcloud_ssh_key.ssh_keys["russellc@github"].id
   ]
 
   delete_protection  = true
@@ -156,14 +145,23 @@ resource "docker_network" "netsvc" {
   }
 }
 
-resource "docker_image" "pangolin" {
+resource "docker_image" "images" {
+  for_each = tomap({
+    "fosrl/pangolin"          = "1.17.0"
+    "fosrl/gerbil"            = "1.3.1"
+    "traefik"                 = "3.6.13"
+    "fosrl/newt"              = "1.11.0"
+    "adguard/adguardhome"     = "v0.107.73"
+    "ghcr.io/wg-easy/wg-easy" = "15.2.2"
+  })
   provider = docker.internal-net
-  name     = "fosrl/pangolin:1.17.0"
+  name     = "${each.key}:${each.value}"
 }
+
 resource "docker_container" "pangolin" {
   provider = docker.internal-net
   name     = "pangolin"
-  image    = docker_image.pangolin.image_id
+  image    = docker_image.images["fosrl/pangolin"].image_id
   restart  = "unless-stopped"
 
   networks_advanced {
@@ -188,14 +186,10 @@ resource "docker_container" "pangolin" {
   }
 }
 
-resource "docker_image" "gerbil" {
-  provider = docker.internal-net
-  name     = "fosrl/gerbil:1.3.1"
-}
 resource "docker_container" "gerbil" {
   provider = docker.internal-net
   name     = "gerbil"
-  image    = docker_image.gerbil.image_id
+  image    = docker_image.images["fosrl/gerbil"].image_id
   restart  = "unless-stopped"
 
   command = [
@@ -250,14 +244,10 @@ resource "docker_container" "gerbil" {
   }
 }
 
-resource "docker_image" "traefik" {
-  provider = docker.internal-net
-  name     = "traefik:3.6.13"
-}
 resource "docker_container" "traefik" {
   provider     = docker.internal-net
   name         = "traefik"
-  image        = docker_image.traefik.image_id
+  image        = docker_image.images["traefik"].image_id
   restart      = "unless-stopped"
   network_mode = "container:${docker_container.gerbil.id}"
 
@@ -286,14 +276,39 @@ resource "docker_container" "traefik" {
   }
 }
 
-resource "docker_image" "adguardhome" {
+resource "docker_container" "newt" {
   provider = docker.internal-net
-  name     = "adguard/adguardhome:v0.107.73"
+  name     = "newt"
+  image    = docker_image.images["fosrl/newt"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "PANGOLIN_ENDPOINT=https://replo.de",
+    "NEWT_ID=${data.sops_file.secrets.data["pangolin.hcloud_newt_id"]}",
+    "NEWT_SECRET=${data.sops_file.secrets.data["pangolin.hcloud_newt_secret"]}",
+    "DOCKER_SOCKET=/var/run/docker.sock"
+  ]
+
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.5"
+  }
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
+
 resource "docker_container" "adguardhome" {
   provider = docker.internal-net
   name     = "adguardhome"
-  image    = docker_image.adguardhome.image_id
+  image    = docker_image.images["adguard/adguardhome"].image_id
   restart  = "unless-stopped"
 
   network_mode = "host"
@@ -363,47 +378,10 @@ resource "docker_container" "adguardhome" {
   }
 }
 
-resource "docker_image" "newt" {
-  provider = docker.internal-net
-  name     = "fosrl/newt:1.11.0"
-}
-resource "docker_container" "newt" {
-  provider = docker.internal-net
-  name     = "newt"
-  image    = docker_image.newt.image_id
-  restart  = "unless-stopped"
-
-  env = [
-    "PANGOLIN_ENDPOINT=https://replo.de",
-    "NEWT_ID=${data.sops_file.secrets.data["pangolin.hcloud_newt_id"]}",
-    "NEWT_SECRET=${data.sops_file.secrets.data["pangolin.hcloud_newt_secret"]}",
-    "DOCKER_SOCKET=/var/run/docker.sock"
-  ]
-
-  networks_advanced {
-    name         = docker_network.netsvc.name
-    ipv4_address = "172.254.0.5"
-  }
-
-  volumes {
-    container_path = "/var/run/docker.sock"
-    host_path      = "/var/run/docker.sock"
-    read_only      = true
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "docker_image" "wg-easy" {
-  provider = docker.internal-net
-  name     = "ghcr.io/wg-easy/wg-easy:15.2.2"
-}
 resource "docker_container" "wg-easy" {
   provider = docker.internal-net
   name     = "wg-easy"
-  image    = docker_image.wg-easy.image_id
+  image    = docker_image.images["ghcr.io/wg-easy/wg-easy"].image_id
   restart  = "unless-stopped"
 
   env = [
