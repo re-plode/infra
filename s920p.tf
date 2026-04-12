@@ -982,7 +982,7 @@ resource "synology_container_project" "rss" {
       restart = "unless-stopped"
 
       environment = {
-        DATABASE_URL                       = "postgres://miniflux:miniflux@pg/miniflux?sslmode=disable"
+        DATABASE_URL                       = "postgres://miniflux:${data.sops_file.secrets.data["miniflux.database_password"]}@pg/miniflux?sslmode=disable"
         RUN_MIGRATIONS                     = "1"
         BASE_URL                           = "https://rss.replo.de"
         INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1"
