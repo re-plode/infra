@@ -118,7 +118,7 @@ resource "synology_container_project" "netsvc" {
       }
 
       environment = {
-        CF_DNS_API_TOKEN = "${var.cloudflare_dns_api_token}"
+        CF_DNS_API_TOKEN = "${data.sops_file.secrets.data["cloudflare.dns_api_token"]}"
       }
 
       labels = {

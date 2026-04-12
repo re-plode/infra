@@ -6,11 +6,6 @@ variable "dsm_host" {
   type = string
 }
 
-variable "cloudflare_dns_api_token" {
-  type      = string
-  sensitive = true
-}
-
 variable "tf_passphrase" {
   default   = "changeme!"
   sensitive = true

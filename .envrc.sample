@@ -10,6 +10,4 @@ export TF_VAR_tf_passphrase=
 
 export TF_VAR_ssh_identity=
 
-export TF_VAR_cloudflare_dns_api_token=
-
 use_nix

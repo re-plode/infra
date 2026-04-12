@@ -35,7 +35,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET }}
       TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
-      TF_VAR_cloudflare_dns_api_token: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
     steps:
       - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
         if: runner.debug == '1'
@@ -43,8 +42,8 @@ jobs:
       - run: |
           mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
           echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
-          chmod 600 ~/.ssh/id_ed25519_github
+          echo "$SSH_KEY" > ~/.ssh/$TF_VAR_ssh_identity
+          chmod 600 ~/.ssh/$TF_VAR_ssh_identity
         env:
           AGE_KEY: ${{ secrets.AGE_KEY }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
