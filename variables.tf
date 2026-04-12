@@ -34,6 +34,17 @@ variable "wg_easy_init_password" {
   sensitive = true
 }
 
+variable "cloudflare_r2_endpoint" {
+  type = string
+}
+variable "cloudflare_r2_key" {
+  type      = string
+  sensitive = true
+}
+variable "cloudflare_r2_secret" {
+  type      = string
+  sensitive = true
+}
 variable "cloudflare_dns_api_token" {
   type      = string
   sensitive = true
