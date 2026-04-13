@@ -523,7 +523,7 @@ resource "docker_container" "authentik_srv" {
   dynamic "labels" {
     for_each = tomap({
       "pangolin.public-resources.ak.name"                            = "Authentik"
-      "pangolin.public-resources.ak.full-domain"                     = "ak.replo.de"
+      "pangolin.public-resources.ak.full-domain"                     = "auth.replo.de"
       "pangolin.public-resources.ak.protocol"                        = "http"
       "pangolin.public-resources.ak.auth.sso-enabled"                = "false"
       "pangolin.public-resources.ak.targets[0].method"               = "http"
