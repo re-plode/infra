@@ -62,13 +62,13 @@ terraform {
 }
 
 provider "mailgun" {
-  api_key = data.sops_file.secrets.data["mailgun.api_key"]
+  api_key = sensitive(data.sops_file.secrets.data["mailgun.api_key"])
 }
 
 provider "synology" {
   host            = "https://${var.dsm_host}:5001"
-  user            = data.sops_file.secrets.data["dsm.username"]
-  password        = data.sops_file.secrets.data["dsm.password"]
+  user            = sensitive(data.sops_file.secrets.data["dsm.username"])
+  password        = sensitive(data.sops_file.secrets.data["dsm.password"])
   skip_cert_check = true
   session_cache = {
     mode = "memory"

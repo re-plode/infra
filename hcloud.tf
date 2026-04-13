@@ -294,8 +294,8 @@ resource "docker_container" "newt" {
 
   env = [
     "PANGOLIN_ENDPOINT=https://replo.de",
-    "NEWT_ID=${data.sops_file.secrets.data["pangolin.hcloud_newt_id"]}",
-    "NEWT_SECRET=${data.sops_file.secrets.data["pangolin.hcloud_newt_secret"]}",
+    "NEWT_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_id"])}",
+    "NEWT_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_secret"])}",
     "DOCKER_SOCKET=/var/run/docker.sock"
   ]
 
@@ -372,7 +372,7 @@ resource "docker_container" "wg-easy" {
     "PORT=51822",
     "INIT_ENABLED=true",
     "INIT_USERNAME=root",
-    "INIT_PASSWORD=${data.sops_file.secrets.data["wg_easy.init_password"]}",
+    "INIT_PASSWORD=${sensitive(data.sops_file.secrets.data["wg_easy.init_password"])}",
     "INIT_HOST=replo.de",
     "INIT_PORT=51821",
     "INIT_DNS=172.254.0.1",
@@ -484,7 +484,7 @@ resource "docker_container" "authentik_pg" {
 
   env = [
     "POSTGRES_DB=authentik",
-    "POSTGRES_PASSWORD=${data.sops_file.secrets.data["authentik.database_password"]}",
+    "POSTGRES_PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
     "POSTGRES_USER=authentik"
   ]
 
@@ -544,9 +544,9 @@ resource "docker_container" "authentik_srv" {
   env = [
     "AUTHENTIK_POSTGRESQL__HOST=authentik_pg",
     "AUTHENTIK_POSTGRESQL__NAME=authentik",
-    "AUTHENTIK_POSTGRESQL__PASSWORD=${data.sops_file.secrets.data["authentik.database_password"]}",
+    "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
     "AUTHENTIK_POSTGRESQL__USER=authentik",
-    "AUTHENTIK_SECRET_KEY=${data.sops_file.secrets.data["authentik.secret_key"]}"
+    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}"
   ]
 
   ports {
@@ -595,9 +595,9 @@ resource "docker_container" "authentik_wrk" {
   env = [
     "AUTHENTIK_POSTGRESQL__HOST=authentik_pg",
     "AUTHENTIK_POSTGRESQL__NAME=authentik",
-    "AUTHENTIK_POSTGRESQL__PASSWORD=${data.sops_file.secrets.data["authentik.database_password"]}",
+    "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
     "AUTHENTIK_POSTGRESQL__USER=authentik",
-    "AUTHENTIK_SECRET_KEY=${data.sops_file.secrets.data["authentik.secret_key"]}"
+    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}"
   ]
 
   volumes {

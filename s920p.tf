@@ -7,6 +7,38 @@ resource "terraform_data" "force_run" {
   }
 }
 
+resource "synology_filestation_file" "var" {
+  path    = "/var/traefik/config/dsm.toml"
+  content = <<EOT
+[http]
+  [http.routers]
+    [http.routers.router0]
+      entryPoints = ["websecure"]
+      service = "service-photos"
+      rule = "Host(`photos.replo.de`)"
+      [http.routers.router0.tls]
+        certResolver = "cloudflare"
+
+    [http.routers.router1]
+      entryPoints = ["websecure"]
+      service = "service-dsm"
+      rule = "Host(`dsm.replo.de`)"
+      [http.routers.router1.tls]
+        certResolver = "cloudflare"
+
+  [http.services]
+    [http.services.service-dsm]
+      [http.services.service-dsm.loadBalancer]
+        [[http.services.service-dsm.loadBalancer.servers]]
+          url = "http://10.42.20.78:5000/"
+
+    [http.services.service-photos]
+      [http.services.service-photos.loadBalancer]
+        [[http.services.service-photos.loadBalancer.servers]]
+          url = "http://10.42.20.78:5080/"
+EOT
+}
+
 # This doesn't work, so use a fake project to init
 # resource "synology_container_network" "netsvc" {
 #   name    = "netsvc"
@@ -118,7 +150,7 @@ resource "synology_container_project" "netsvc" {
       }
 
       environment = {
-        CF_DNS_API_TOKEN = "${data.sops_file.secrets.data["cloudflare.dns_api_token"]}"
+        CF_DNS_API_TOKEN = sensitive(data.sops_file.secrets.data["cloudflare.dns_api_token"])
       }
 
       labels = {
@@ -168,8 +200,8 @@ resource "synology_container_project" "netsvc" {
 
       environment = {
         PANGOLIN_ENDPOINT = "https://replo.de"
-        NEWT_ID           = "${data.sops_file.secrets.data["pangolin.s920p_newt_id"]}"
-        NEWT_SECRET       = "${data.sops_file.secrets.data["pangolin.s920p_newt_secret"]}"
+        NEWT_ID           = sensitive(data.sops_file.secrets.data["pangolin.s920p_newt_id"])
+        NEWT_SECRET       = sensitive(data.sops_file.secrets.data["pangolin.s920p_newt_secret"])
         DOCKER_SOCKET     = "/var/run/docker.sock"
       }
 
