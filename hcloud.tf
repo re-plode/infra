@@ -160,6 +160,7 @@ resource "docker_image" "images" {
     "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
     "postgres"                   = "16-alpine"
     "ghcr.io/goauthentik/server" = "2026.2.2"
+    "henrygd/beszel"             = "0.18.7"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -622,6 +623,54 @@ resource "docker_container" "authentik_wrk" {
   }
 
   depends_on = [docker_container.authentik_pg]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "docker_container" "beszel" {
+  provider = docker.internal-net
+  name     = "beszel"
+  image    = docker_image.images["henrygd/beszel"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "APP_URL=https://up.replo.de",
+  ]
+
+  dynamic "labels" {
+    for_each = tomap({
+      "pangolin.public-resources.up.name"                            = "Beszel"
+      "pangolin.public-resources.up.full-domain"                     = "up.replo.de"
+      "pangolin.public-resources.up.protocol"                        = "http"
+      "pangolin.public-resources.up.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.up.targets[0].method"               = "http"
+      "pangolin.public-resources.up.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.up.targets[0].port"                 = "8090"
+      "pangolin.public-resources.up.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.up.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.up.targets[0].healthcheck.hostname" = "172.17.0.1"
+      "pangolin.public-resources.up.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.up.targets[0].healthcheck.port"     = "8090"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  volumes {
+    container_path = "/beszel_data"
+    host_path      = "/var/lib/containers/beszel"
+    read_only      = false
+  }
+
+  ports {
+    internal = 8090
+    external = 8090
+    protocol = "tcp"
+  }
 
   lifecycle {
     prevent_destroy = true
