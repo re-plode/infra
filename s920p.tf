@@ -1024,7 +1024,7 @@ resource "synology_container_project" "rss" {
         OAUTH2_CLIENT_ID                   = sensitive(data.sops_file.secrets.data["miniflux.oauth_client_id"])
         OAUTH2_CLIENT_SECRET               = sensitive(data.sops_file.secrets.data["miniflux.oauth_client_secret"])
         OAUTH2_REDIRECT_URL                = "https://rss.replo.de/oauth2/oidc/callback"
-        OAUTH2_OIDC_DISCOVERY_ENDPOINT     = "https://replo.de/application/o/rss/"
+        OAUTH2_OIDC_DISCOVERY_ENDPOINT     = "https://auth.replo.de/application/o/rss/"
         OAUTH2_USER_CREATION               = "1"
       }
 
