@@ -920,6 +920,7 @@ resource "synology_container_project" "kan" {
         "pangolin.public-resources.kan.targets[0].port"                 = "8082"
         "pangolin.public-resources.kan.targets[0].healthcheck.enabled"  = "true"
         "pangolin.public-resources.kan.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.kan.targets[0].healthcheck.path"     = "/healthcheck.php"
         "pangolin.public-resources.kan.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.kan.targets[0].healthcheck.port"     = "8082"
       }
@@ -927,7 +928,7 @@ resource "synology_container_project" "kan" {
       healthcheck = {
         interval     = "10s"
         start_period = "30s"
-        test         = ["CMD-SHELL", "curl --fail http://localhost:80 || exit 1"]
+        test         = ["CMD-SHELL", "curl --fail http://localhost:80/healthcheck.php || exit 1"]
       }
 
       networks = {
