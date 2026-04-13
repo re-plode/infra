@@ -156,6 +156,7 @@ resource "docker_image" "images" {
     "fosrl/gerbil"               = "1.3.1"
     "traefik"                    = "3.6.13"
     "fosrl/newt"                 = "1.11.0"
+    "fosrl/pangolin-cli"         = "0.5.3"
     "adguard/adguardhome"        = "v0.107.73"
     "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
     "postgres"                   = "16-alpine"
@@ -311,6 +312,36 @@ resource "docker_container" "newt" {
     host_path      = "/var/run/docker.sock"
     read_only      = true
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "docker_container" "pangolin_cli" {
+  provider = docker.internal-net
+  name     = "pangolin_cli"
+  image    = docker_image.images["fosrl/pangolin-cli"].image_id
+  restart  = "unless-stopped"
+
+  capabilities {
+    add = ["CAP_NET_ADMIN"]
+  }
+
+  network_mode = "host"
+
+  env = [
+    "PANGOLIN_ENDPOINT=https://replo.de",
+    "CLIENT_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_id"])}",
+    "CLIENT_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_secret"])}"
+  ]
+
+  volumes {
+    container_path = "/dev/net/tun"
+    host_path      = "/dev/net/tun"
+  }
+
+  depends_on = [docker_container.pangolin]
 
   lifecycle {
     prevent_destroy = true
