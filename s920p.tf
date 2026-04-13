@@ -982,11 +982,17 @@ resource "synology_container_project" "rss" {
       restart = "unless-stopped"
 
       environment = {
-        DATABASE_URL                       = "postgres://miniflux:${data.sops_file.secrets.data["miniflux.database_password"]}@pg/miniflux?sslmode=disable"
+        DATABASE_URL                       = sensitive("postgres://miniflux:${data.sops_file.secrets.data["miniflux.database_password"]}@pg/miniflux?sslmode=disable")
         RUN_MIGRATIONS                     = "1"
         BASE_URL                           = "https://rss.replo.de"
         INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1"
         FETCHER_ALLOW_PRIVATE_NETWORKS     = "1"
+        OAUTH2_PROVIDER                    = "oidc"
+        OAUTH2_CLIENT_ID                   = sensitive(data.sops_file.secrets.data["miniflux.oauth_client_id"])
+        OAUTH2_CLIENT_SECRET               = sensitive(data.sops_file.secrets.data["miniflux.oauth_client_secret"])
+        OAUTH2_REDIRECT_URL                = "https://rss.replo.de/oauth2/oidc/callback"
+        OAUTH2_OIDC_DISCOVERY_ENDPOINT     = "https://auth.replo.de/application/o/rss/"
+        OAUTH2_USER_CREATION               = "1"
       }
 
       labels = {
