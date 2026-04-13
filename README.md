@@ -12,9 +12,8 @@
 $ task
 $ cp .envrc.sample .envrc
 $ direnv allow .
+$ sops edit config/secrets.enc.json
 $ tofu init
-$ ./bin/get-tfstate.sh
 $ tofu plan
 $ tofu apply
-$ ./bin/put-tfstate.sh
 ```

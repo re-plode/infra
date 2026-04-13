@@ -276,6 +276,31 @@ resource "synology_container_project" "netsvc" {
         protocol  = "tcp"
       }]
     }
+
+    beszel_agent = {
+      image   = "henrygd/beszel-agent:0.18.7"
+      restart = "unless-stopped"
+
+      labels = {
+        "traefik.enable" = "false"
+      }
+
+      network_mode = "host"
+
+      environment = {
+        HUB_URL = "https://up.replo.de"
+        KEY     = sensitive(data.sops_file.secrets.data["beszel.pub_key"])
+        TOKEN   = sensitive(data.sops_file.secrets.data["beszel.s920p_token"])
+        LISTEN  = "45876"
+      }
+
+      volumes = [{
+        type      = "bind"
+        source    = "/var/run/docker.sock"
+        target    = "/var/run/docker.sock"
+        read_only = true
+      }]
+    }
   }
 
   depends_on = [synology_container_project.init]

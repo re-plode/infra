@@ -161,6 +161,7 @@ resource "docker_image" "images" {
     "postgres"                   = "16-alpine"
     "ghcr.io/goauthentik/server" = "2026.2.2"
     "henrygd/beszel"             = "0.18.7"
+    "henrygd/beszel-agent"       = "0.18.7"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -671,8 +672,26 @@ resource "docker_container" "beszel" {
     external = 8090
     protocol = "tcp"
   }
+}
 
-  lifecycle {
-    prevent_destroy = true
+resource "docker_container" "beszel_agent" {
+  provider = docker.internal-net
+  name     = "beszel_agent"
+  image    = docker_image.images["henrygd/beszel-agent"].image_id
+  restart  = "unless-stopped"
+
+  network_mode = "host"
+
+  env = [
+    "HUB_URL=https://up.replo.de",
+    "KEY=${sensitive(data.sops_file.secrets.data["beszel.pub_key"])}",
+    "TOKEN=${sensitive(data.sops_file.secrets.data["beszel.hcloud_token"])}",
+    "LISTEN=45876",
+  ]
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
   }
 }
