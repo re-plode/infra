@@ -3,6 +3,7 @@ resource "hcloud_ssh_key" "ssh_keys" {
     "russellc@fedora"  = "config/ssh/id_ed25519_fedora.pub"
     "russellc@ipadpro" = "config/ssh/id_ed25519_ipadpro.pub"
     "russellc@github"  = "config/ssh/id_ed25519_github.pub"
+    "russellc@mbpnix"  = "config/ssh/id_ed25519_mbpnix.pub"
   })
   name       = each.key
   public_key = file(each.value)
@@ -78,15 +79,16 @@ resource "hcloud_server" "internal_net" {
   ssh_keys = [
     hcloud_ssh_key.ssh_keys["russellc@fedora"].id,
     hcloud_ssh_key.ssh_keys["russellc@ipadpro"].id,
-    hcloud_ssh_key.ssh_keys["russellc@github"].id
+    hcloud_ssh_key.ssh_keys["russellc@github"].id,
+    hcloud_ssh_key.ssh_keys["russellc@mbpnix"].id
   ]
 
   delete_protection  = true
   rebuild_protection = true
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "hcloud_volume" "internal_net_vol" {
@@ -114,9 +116,9 @@ resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
   firewall_id = hcloud_firewall.internal_net_firewall.id
   server_ids  = [hcloud_server.internal_net.id]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
@@ -124,9 +126,9 @@ resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   server_id = hcloud_server.internal_net.id
   automount = true
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_network" "pangolin" {
