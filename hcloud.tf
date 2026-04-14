@@ -110,6 +110,10 @@ resource "hcloud_primary_ip" "internal_net_ip" {
   assignee_type     = "server"
   delete_protection = true
   auto_delete       = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
@@ -150,6 +154,8 @@ resource "docker_image" "images" {
     "fosrl/gerbil"               = "1.3.1"
     "traefik"                    = "3.6.13"
     "fosrl/newt"                 = "1.11.0"
+    "fosrl/olm"                  = "1.4.4"
+    "fosrl/pangolin-cli"         = "0.5.2"
     "adguard/adguardhome"        = "v0.107.73"
     "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
     "postgres"                   = "16-alpine"
@@ -250,6 +256,64 @@ resource "docker_container" "gerbil" {
   }
 }
 
+resource "docker_container" "newt" {
+  provider = docker.internal-net
+  name     = "newt"
+  image    = docker_image.images["fosrl/newt"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "PANGOLIN_ENDPOINT=https://replo.de",
+    "NEWT_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_id"])}",
+    "NEWT_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_secret"])}",
+    "DOCKER_SOCKET=/var/run/docker.sock"
+  ]
+
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.5"
+  }
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "docker_container" "olm" {
+  provider = docker.internal-net
+  name     = "olm"
+  image    = docker_image.images["fosrl/olm"].image_id
+  restart  = "unless-stopped"
+
+  network_mode = "host"
+
+  env = [
+    "PANGOLIN_ENDPOINT=https://replo.de",
+    "OLM_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_id"])}",
+    "OLM_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_secret"])}",
+  ]
+
+  capabilities {
+    add = ["CAP_NET_ADMIN"]
+  }
+
+  volumes {
+    container_path = "/dev/net/tun"
+    host_path      = "/dev/net/tun"
+    read_only      = false
+  }
+
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
+}
+
 resource "docker_container" "traefik" {
   provider     = docker.internal-net
   name         = "traefik"
@@ -276,35 +340,6 @@ resource "docker_container" "traefik" {
   }
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "docker_container" "newt" {
-  provider = docker.internal-net
-  name     = "newt"
-  image    = docker_image.images["fosrl/newt"].image_id
-  restart  = "unless-stopped"
-
-  env = [
-    "PANGOLIN_ENDPOINT=https://replo.de",
-    "NEWT_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_id"])}",
-    "NEWT_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_secret"])}",
-    "DOCKER_SOCKET=/var/run/docker.sock"
-  ]
-
-  networks_advanced {
-    name         = docker_network.netsvc.name
-    ipv4_address = "172.254.0.5"
-  }
-
-  volumes {
-    container_path = "/var/run/docker.sock"
-    host_path      = "/var/run/docker.sock"
-    read_only      = true
-  }
 
   lifecycle {
     prevent_destroy = true
