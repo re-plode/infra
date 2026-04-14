@@ -1,6 +1,9 @@
 #cloud-config
 mounts:
 - [/dev/disk/by-partuuid/3bfa35a9-44dd-405c-bbe5-6350d1a9d6dd, /var/lib/containers, ext4]
+package_reboot_if_required: true
+package_update: true
+package_upgrade: true
 runcmd:
 - sed -i 's/^#DNSStubListener=yes$/DNSStubListener=no/' /etc/systemd/resolved.conf
 - systemctl restart systemd-resolved
