@@ -311,6 +311,36 @@ resource "synology_container_project" "netsvc" {
         read_only = true
       }]
     }
+
+    diun = {
+      image   = "crazymax/diun:4.31.0"
+      restart = "unless-stopped"
+
+      labels = {
+        "traefik.enable" = "false",
+        "diun.enable"    = "true"
+      }
+
+      environment = {
+        TZ                    = local.tz
+        DIUN_WATCH_WORKERS    = "20"
+        DIUN_WATCH_SCHEDULE   = "0 */6 * * *"
+        DIUN_WATCH_JITTER     = "30s"
+        DIUN_PROVIDERS_DOCKER = "true"
+      }
+
+      volumes = [{
+        type      = "bind"
+        source    = "/var/run/docker.sock"
+        target    = "/var/run/docker.sock"
+        read_only = true
+        }, {
+        type      = "bind"
+        source    = "/volume2/var/diun"
+        target    = "/data"
+        read_only = false
+      }]
+    }
   }
 
   depends_on = [synology_container_project.init]

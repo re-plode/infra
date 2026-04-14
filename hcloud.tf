@@ -162,6 +162,7 @@ resource "docker_image" "images" {
     "ghcr.io/goauthentik/server" = "2026.2.2"
     "henrygd/beszel"             = "0.18.7"
     "henrygd/beszel-agent"       = "0.18.7"
+    "crazymax/diun"              = "4.31.0"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -727,5 +728,37 @@ resource "docker_container" "beszel_agent" {
     container_path = "/extra-filesystems/sdb__internal-net-vol"
     host_path      = "/var/lib/containers"
     read_only      = true
+  }
+}
+
+resource "docker_container" "diun" {
+  provider = docker.internal-net
+  name     = "diun"
+  image    = docker_image.images["crazymax/diun"].image_id
+  command  = ["serve"]
+  restart  = "unless-stopped"
+
+  env = [
+    "TZ=${local.tz}",
+    "DIUN_WATCH_WORKERS=20",
+    "DIUN_WATCH_SCHEDULE=0 */6 * * *",
+    "DIUN_WATCH_JITTER=30s",
+    "DIUN_PROVIDERS_DOCKER=true"
+  ]
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+  volumes {
+    container_path = "/data"
+    host_path      = "/var/lib/containers/diun"
+    read_only      = false
   }
 }
