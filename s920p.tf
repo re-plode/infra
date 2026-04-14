@@ -299,6 +299,16 @@ resource "synology_container_project" "netsvc" {
         source    = "/var/run/docker.sock"
         target    = "/var/run/docker.sock"
         read_only = true
+        }, {
+        type      = "bind"
+        source    = "/volume1"
+        target    = "/extra-filesystems/volume1"
+        read_only = true
+        }, {
+        type      = "bind"
+        source    = "/volume2"
+        target    = "/extra-filesystems/volume2"
+        read_only = true
       }]
     }
   }
@@ -1006,9 +1016,8 @@ resource "synology_container_project" "rss" {
       restart = "unless-stopped"
 
       environment = {
-        POSTGRES_USER = "miniflux"
-        # TODO: fix this password
-        POSTGRES_PASSWORD = "miniflux"
+        POSTGRES_USER     = "miniflux"
+        POSTGRES_PASSWORD = sensitive(data.sops_file.secrets.data["miniflux.database_password"])
         POSTGRES_DB       = "miniflux"
       }
 

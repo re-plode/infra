@@ -723,4 +723,9 @@ resource "docker_container" "beszel_agent" {
     host_path      = "/var/run/docker.sock"
     read_only      = true
   }
+  volumes {
+    container_path = "/extra-filesystems/sdb__internal-net-vol"
+    host_path      = "/var/lib/containers"
+    read_only      = true
+  }
 }
