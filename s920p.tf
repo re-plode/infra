@@ -306,13 +306,13 @@ resource "synology_container_project" "netsvc" {
         read_only = true
         }, {
         type      = "bind"
-        source    = "/volume1"
-        target    = "/extra-filesystems/volume1"
+        source    = "/"
+        target    = "/extra-filesystems/root__md0"
         read_only = true
         }, {
         type      = "bind"
-        source    = "/volume2"
-        target    = "/extra-filesystems/volume2"
+        source    = "/volume1"
+        target    = "/extra-filesystems/volume1__volume1"
         read_only = true
       }]
     }
@@ -327,11 +327,18 @@ resource "synology_container_project" "netsvc" {
       }
 
       environment = {
-        TZ                    = local.tz
-        DIUN_WATCH_WORKERS    = "20"
-        DIUN_WATCH_SCHEDULE   = "0 */6 * * *"
-        DIUN_WATCH_JITTER     = "30s"
-        DIUN_PROVIDERS_DOCKER = "true"
+        TZ                       = local.tz
+        DIUN_WATCH_WORKERS       = "20"
+        DIUN_WATCH_SCHEDULE      = "0 */6 * * *"
+        DIUN_WATCH_JITTER        = "30s"
+        DIUN_PROVIDERS_DOCKER    = "true"
+        DIUN_NOTIF_MAIL_HOST     = "mail-eu.smtp2go.com"
+        DIUN_NOTIF_MAIL_PORT     = "587"
+        DIUN_NOTIF_MAIL_SSL      = "true"
+        DIUN_NOTIF_MAIL_USERNAME = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
+        DIUN_NOTIF_MAIL_PASSWORD = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
+        DIUN_NOTIF_MAIL_FROM     = "noreply@replo.de"
+        DIUN_NOTIF_MAIL_TO       = "root@replo.de"
       }
 
       volumes = [{
@@ -991,6 +998,16 @@ resource "synology_container_project" "kan" {
     kan = {
       image   = "kanboard/kanboard:v1.2.52"
       restart = "unless-stopped"
+
+      environment = {
+        SMTP_HOSTNAME   = "mail-eu.smtp2go.com"
+        SMTP_PORT       = "587"
+        SMTP_ENCRYPTION = "tls"
+        SMTP_USERNAME   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
+        SMTP_PASSWORD   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
+        SMTP_HELO       = "replo.de"
+        MAIL_FROM       = "noreply@replo.de"
+      }
 
       labels = {
         "traefik.enable"                            = "true"
