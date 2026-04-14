@@ -161,6 +161,7 @@ resource "synology_container_project" "netsvc" {
         # "traefik.http.middlewares.ipallowlist.ipallowlist.sourcerange" = "10.42.0.0/16"
         # "traefik.http.routers.dashboard.middlewares"                   = "ipallowlist"
         "traefik.http.services.dashboard.loadbalancer.server.port" = "8080"
+        "diun.enable"                                              = "true"
       }
 
       volumes = [{
@@ -207,6 +208,7 @@ resource "synology_container_project" "netsvc" {
 
       labels = {
         "traefik.enable" = "false"
+        "diun.enable"    = "true"
       }
 
       networks = {
@@ -246,6 +248,8 @@ resource "synology_container_project" "netsvc" {
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.port"     = "3000"
+
+        "diun.enable" = "true"
       }
 
       networks = {
@@ -283,6 +287,7 @@ resource "synology_container_project" "netsvc" {
 
       labels = {
         "traefik.enable" = "false"
+        "diun.enable"    = "true"
       }
 
       network_mode = "host"
@@ -390,6 +395,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.nzb.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.nzb.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.nzb.targets[0].healthcheck.port"     = "8081"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -451,6 +458,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.radarr.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.radarr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.radarr.targets[0].healthcheck.port"     = "7878"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -513,6 +522,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.sonarr.targets[0].healthcheck.path"     = "/ping"
         "pangolin.public-resources.sonarr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.sonarr.targets[0].healthcheck.port"     = "8989"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -579,6 +590,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.seerr.targets[0].healthcheck.path"     = "/api/v1/status"
         "pangolin.public-resources.seerr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.seerr.targets[0].healthcheck.port"     = "5055"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -634,6 +647,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.tube.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.tube.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.tube.targets[0].healthcheck.port"     = "8945"
+
+        "diun.enable" = "true"
       }
 
       networks = {
@@ -711,6 +726,8 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.cast.rules[8].action"                 = "allow"
         "pangolin.public-resources.cast.rules[8].match"                  = "path"
         "pangolin.public-resources.cast.rules[8].value"                  = "/public/*"
+
+        "diun.enable" = "true"
       }
 
       networks = {
@@ -755,6 +772,7 @@ resource "synology_container_project" "mmproviders" {
 
       labels = {
         "traefik.enable" = "false"
+        "diun.enable"    = "true"
       }
 
       networks = {
@@ -826,6 +844,8 @@ resource "synology_container_project" "mmclients" {
         "pangolin.public-resources.jelly.rules[0].action"                 = "allow"
         "pangolin.public-resources.jelly.rules[0].match"                  = "path"
         "pangolin.public-resources.jelly.rules[0].value"                  = "/system/info/public"
+
+        "diun.enable" = "true"
       }
 
       networks = {
@@ -905,6 +925,8 @@ resource "synology_container_project" "mmclients" {
         "pangolin.public-resources.stash.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.stash.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.stash.targets[0].healthcheck.port"     = "9999"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -988,6 +1010,8 @@ resource "synology_container_project" "kan" {
         "pangolin.public-resources.kan.targets[0].healthcheck.path"     = "/healthcheck.php"
         "pangolin.public-resources.kan.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.kan.targets[0].healthcheck.port"     = "8082"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {
@@ -1053,6 +1077,7 @@ resource "synology_container_project" "rss" {
 
       labels = {
         "traefik.enable" = "false"
+        "diun.enable"    = "true"
       }
 
       healthcheck = {
@@ -1112,6 +1137,8 @@ resource "synology_container_project" "rss" {
         "pangolin.public-resources.rss.rules[0].action"                 = "allow"
         "pangolin.public-resources.rss.rules[0].match"                  = "path"
         "pangolin.public-resources.rss.rules[0].value"                  = "/reader/api/*"
+
+        "diun.enable" = "true"
       }
 
       healthcheck = {

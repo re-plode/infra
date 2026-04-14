@@ -73,6 +73,7 @@ resource "hcloud_server" "internal_net" {
 
   public_net {
     ipv4_enabled = true
+    ipv4         = hcloud_primary_ip.internal_net_ip.id
     ipv6_enabled = true
   }
 
@@ -106,14 +107,10 @@ resource "hcloud_volume" "internal_net_vol" {
 resource "hcloud_primary_ip" "internal_net_ip" {
   name              = "primary_ip-126634539"
   type              = "ipv4"
-  assignee_id       = hcloud_server.internal_net.id
+  location          = "nbg1"
   assignee_type     = "server"
   delete_protection = true
   auto_delete       = false
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
@@ -195,10 +192,6 @@ resource "docker_container" "pangolin" {
     timeout  = "10s"
     retries  = 15
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "gerbil" {
@@ -261,10 +254,6 @@ resource "docker_container" "gerbil" {
   }
 
   depends_on = [docker_container.pangolin]
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "newt" {
@@ -329,10 +318,6 @@ resource "docker_container" "olm" {
     host_path      = "/dev/net/tun"
     read_only      = false
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "traefik" {
@@ -366,10 +351,6 @@ resource "docker_container" "traefik" {
   }
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "adguardhome" {
@@ -412,10 +393,6 @@ resource "docker_container" "adguardhome" {
     host_path      = "/var/lib/containers/adguardhome/conf"
     read_only      = false
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "wg-easy" {
@@ -528,10 +505,6 @@ resource "docker_container" "wg-easy" {
     host_path      = "/lib/modules"
     read_only      = true
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "authentik_pg" {
@@ -568,10 +541,6 @@ resource "docker_container" "authentik_pg" {
     timeout      = "5s"
     retries      = 5
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "authentik_srv" {
@@ -640,10 +609,6 @@ resource "docker_container" "authentik_srv" {
   }
 
   depends_on = [docker_container.authentik_pg]
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "authentik_wrk" {
@@ -695,10 +660,6 @@ resource "docker_container" "authentik_wrk" {
   }
 
   depends_on = [docker_container.authentik_pg]
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "beszel" {
