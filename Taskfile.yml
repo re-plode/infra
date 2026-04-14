@@ -8,9 +8,9 @@ tasks:
     desc: Lint (check only)
     cmds:
       - tofu fmt -check -diff
-      - yamlfmt -lint .github/actions/*.yml *.yml
+      - yamlfmt -lint .github/actions/*.yml *.yml *.yaml
   lint-fix:
     desc: Lint (fix)
     cmds:
       - tofu fmt
-      - yamlfmt .github/actions/*.yml *.yml
+      - yamlfmt .github/actions/*.yml *.yml *.yaml
