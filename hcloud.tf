@@ -792,7 +792,7 @@ resource "docker_container" "diun" {
     "DIUN_WATCH_JITTER=30s",
     "DIUN_PROVIDERS_DOCKER=true",
     "DIUN_NOTIF_MAIL_HOST=mail-eu.smtp2go.com",
-    "DIUN_NOTIF_MAIL_PORT=465",
+    "DIUN_NOTIF_MAIL_PORT=587",
     "DIUN_NOTIF_MAIL_SSL=true",
     "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
     "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
