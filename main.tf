@@ -78,3 +78,25 @@ resource "mailgun_domain_credential" "noreply_rcheung_com" {
     ignore_changes = [password]
   }
 }
+
+resource "cloudflare_dns_record" "replo_de_cname_return" {
+  zone_id = local.cloudflare_replo_de_zone_id
+  content = "return.smtp2go.net"
+  name    = "em552681"
+  proxied = false
+  ttl     = 1
+  type    = "CNAME"
+}
+resource "cloudflare_dns_record" "replo_de_cname_smtp2go" {
+  for_each = tomap({
+    "em552681"           = "return.smtp2go.net"
+    "s552681._domainkey" = "dkim.smtp2go.net"
+    "link"               = "track.smtp2go.net"
+  })
+  zone_id = local.cloudflare_replo_de_zone_id
+  content = each.value
+  name    = each.key
+  proxied = false
+  ttl     = 1
+  type    = "CNAME"
+}

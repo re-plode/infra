@@ -178,6 +178,11 @@ resource "docker_container" "pangolin" {
     name = docker_network.pangolin.name
   }
 
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
+
   volumes {
     container_path = "/app/config"
     host_path      = "/var/lib/containers/pangolin/config"
@@ -191,9 +196,9 @@ resource "docker_container" "pangolin" {
     retries  = 15
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "gerbil" {
@@ -207,6 +212,11 @@ resource "docker_container" "gerbil" {
     "--generateAndSaveKeyTo=/var/config/key",
     "--remoteConfig=http://pangolin:3001/api/v1/"
   ]
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
 
   capabilities {
     add = ["CAP_NET_ADMIN", "CAP_SYS_MODULE"]
@@ -252,9 +262,9 @@ resource "docker_container" "gerbil" {
 
   depends_on = [docker_container.pangolin]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "newt" {
@@ -270,6 +280,11 @@ resource "docker_container" "newt" {
     "DOCKER_SOCKET=/var/run/docker.sock"
   ]
 
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
+
   networks_advanced {
     name         = docker_network.netsvc.name
     ipv4_address = "172.254.0.5"
@@ -281,9 +296,9 @@ resource "docker_container" "newt" {
     read_only      = true
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "olm" {
@@ -299,6 +314,11 @@ resource "docker_container" "olm" {
     "OLM_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_id"])}",
     "OLM_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_secret"])}",
   ]
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
 
   capabilities {
     add = ["CAP_NET_ADMIN"]
@@ -324,6 +344,11 @@ resource "docker_container" "traefik" {
 
   command = ["--configFile=/etc/traefik/traefik_config.yml"]
 
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
+
   volumes {
     container_path = "/etc/traefik"
     host_path      = "/var/lib/containers/traefik/etc"
@@ -342,9 +367,9 @@ resource "docker_container" "traefik" {
 
   depends_on = [docker_container.pangolin, docker_container.gerbil]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "adguardhome" {
@@ -369,6 +394,7 @@ resource "docker_container" "adguardhome" {
       "pangolin.public-resources.dns.targets[0].healthcheck.hostname" = "172.254.0.1"
       "pangolin.public-resources.dns.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.dns.targets[0].healthcheck.port"     = "3000"
+      "diun.enable"                                                   = "true"
     })
     content {
       label = labels.key
@@ -387,9 +413,9 @@ resource "docker_container" "adguardhome" {
     read_only      = false
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "wg-easy" {
@@ -428,6 +454,10 @@ resource "docker_container" "wg-easy" {
     ipv4_address = "172.254.0.3"
   }
 
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
   labels {
     label = "pangolin.public-resources.wg.name"
     value = "Wireguard"
@@ -499,9 +529,9 @@ resource "docker_container" "wg-easy" {
     read_only      = true
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "authentik_pg" {
@@ -509,6 +539,11 @@ resource "docker_container" "authentik_pg" {
   name     = "authentik_pg"
   image    = docker_image.images["postgres"].image_id
   restart  = "unless-stopped"
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
 
   networks_advanced {
     name = docker_network.authentik.name
@@ -534,9 +569,9 @@ resource "docker_container" "authentik_pg" {
     retries      = 5
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "authentik_srv" {
@@ -566,6 +601,7 @@ resource "docker_container" "authentik_srv" {
       "pangolin.public-resources.ak.targets[0].healthcheck.hostname" = "172.17.0.1"
       "pangolin.public-resources.ak.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.ak.targets[0].healthcheck.port"     = "9000"
+      "diun.enable"                                                  = "true"
     })
     content {
       label = labels.key
@@ -605,9 +641,9 @@ resource "docker_container" "authentik_srv" {
 
   depends_on = [docker_container.authentik_pg]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "authentik_wrk" {
@@ -619,6 +655,11 @@ resource "docker_container" "authentik_wrk" {
 
   user     = "root"
   shm_size = 512
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
 
   networks_advanced {
     name = docker_network.authentik.name
@@ -655,9 +696,9 @@ resource "docker_container" "authentik_wrk" {
 
   depends_on = [docker_container.authentik_pg]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "docker_container" "beszel" {
@@ -684,6 +725,7 @@ resource "docker_container" "beszel" {
       "pangolin.public-resources.up.targets[0].healthcheck.hostname" = "172.17.0.1"
       "pangolin.public-resources.up.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.up.targets[0].healthcheck.port"     = "8090"
+      "diun.enable"                                                  = "true"
     })
     content {
       label = labels.key
@@ -711,6 +753,11 @@ resource "docker_container" "beszel_agent" {
   restart  = "unless-stopped"
 
   network_mode = "host"
+
+  labels {
+    label = "diun.enable"
+    value = "true"
+  }
 
   env = [
     "HUB_URL=https://up.replo.de",
@@ -743,7 +790,14 @@ resource "docker_container" "diun" {
     "DIUN_WATCH_WORKERS=20",
     "DIUN_WATCH_SCHEDULE=0 */6 * * *",
     "DIUN_WATCH_JITTER=30s",
-    "DIUN_PROVIDERS_DOCKER=true"
+    "DIUN_PROVIDERS_DOCKER=true",
+    "DIUN_NOTIF_MAIL_HOST=mail-eu.smtp2go.com",
+    "DIUN_NOTIF_MAIL_PORT=465",
+    "DIUN_NOTIF_MAIL_SSL=true",
+    "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
+    "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
+    "DIUN_NOTIF_MAIL_FROM=noreply@replo.de",
+    "DIUN_NOTIF_MAIL_TO=root@replo.de"
   ]
 
   labels {
