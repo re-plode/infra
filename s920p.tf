@@ -1005,7 +1005,7 @@ resource "synology_container_project" "kan" {
         SMTP_ENCRYPTION = "tls"
         SMTP_USERNAME   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
         SMTP_PASSWORD   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
-        SMTP_HELO       = "replo.de"
+        SMTP_HELO       = "tls"
         MAIL_FROM       = "noreply@replo.de"
       }
 
