@@ -86,9 +86,9 @@ resource "hcloud_server" "internal_net" {
   delete_protection  = true
   rebuild_protection = true
 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "hcloud_volume" "internal_net_vol" {
@@ -104,7 +104,7 @@ resource "hcloud_volume" "internal_net_vol" {
 }
 
 resource "hcloud_primary_ip" "internal_net_ip" {
-  name              = "internal-net-ip"
+  name              = "primary_ip-126634539"
   type              = "ipv4"
   assignee_id       = hcloud_server.internal_net.id
   assignee_type     = "server"
@@ -115,20 +115,12 @@ resource "hcloud_primary_ip" "internal_net_ip" {
 resource "hcloud_firewall_attachment" "internal_net_firewall_attachment" {
   firewall_id = hcloud_firewall.internal_net_firewall.id
   server_ids  = [hcloud_server.internal_net.id]
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "hcloud_volume_attachment" "internal_net_vol_attachment" {
   volume_id = hcloud_volume.internal_net_vol.id
   server_id = hcloud_server.internal_net.id
   automount = true
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_network" "pangolin" {
