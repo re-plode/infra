@@ -283,10 +283,6 @@ resource "docker_container" "newt" {
     host_path      = "/var/run/docker.sock"
     read_only      = true
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "docker_container" "olm" {
@@ -685,7 +681,7 @@ resource "docker_container" "beszel" {
       "pangolin.public-resources.up.full-domain"                     = "up.replo.de"
       "pangolin.public-resources.up.protocol"                        = "http"
       "pangolin.public-resources.up.auth.sso-enabled"                = "true"
-      "pangolin.public-resources.up.auth.sso-roles[0]"               = "Members"
+      "pangolin.public-resources.up.auth.sso-roles[0]"               = "Member"
       "pangolin.public-resources.up.targets[0].method"               = "http"
       "pangolin.public-resources.up.targets[0].hostname"             = "172.17.0.1"
       "pangolin.public-resources.up.targets[0].port"                 = "8090"
