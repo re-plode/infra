@@ -362,6 +362,7 @@ resource "docker_container" "adguardhome" {
       "pangolin.public-resources.dns.full-domain"                     = "dns.replo.de"
       "pangolin.public-resources.dns.protocol"                        = "http"
       "pangolin.public-resources.dns.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.dns.auth.sso-roles[0]"               = "Member"
       "pangolin.public-resources.dns.targets[0].method"               = "http"
       "pangolin.public-resources.dns.targets[0].hostname"             = "172.254.0.1"
       "pangolin.public-resources.dns.targets[0].port"                 = "3000"
@@ -445,6 +446,10 @@ resource "docker_container" "wg-easy" {
   labels {
     label = "pangolin.public-resources.wg.auth.sso-enabled"
     value = "true"
+  }
+  labels {
+    label = "pangolin.public-resources.wg.auth.sso-roles[0]"
+    value = "Member"
   }
   labels {
     label = "pangolin.public-resources.wg.targets[0].method"
