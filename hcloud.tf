@@ -147,7 +147,7 @@ resource "docker_network" "authentik" {
 
 resource "docker_image" "images" {
   for_each = tomap({
-    "fosrl/pangolin"             = "1.17.0"
+    "fosrl/pangolin"             = "1.17.1"
     "fosrl/gerbil"               = "1.3.1"
     "traefik"                    = "3.6.13"
     "fosrl/newt"                 = "1.11.0"
@@ -173,11 +173,6 @@ resource "docker_container" "pangolin" {
 
   networks_advanced {
     name = docker_network.pangolin.name
-  }
-
-  labels {
-    label = "diun.enable"
-    value = "true"
   }
 
   volumes {
@@ -753,6 +748,7 @@ resource "docker_container" "diun" {
   image    = docker_image.images["crazymax/diun"].image_id
   command  = ["serve"]
   restart  = "unless-stopped"
+  hostname = "hcloud"
 
   env = [
     "TZ=${local.tz}",

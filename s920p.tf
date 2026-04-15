@@ -318,8 +318,9 @@ resource "synology_container_project" "netsvc" {
     }
 
     diun = {
-      image   = "crazymax/diun:4.31.0"
-      restart = "unless-stopped"
+      image    = "crazymax/diun:4.31.0"
+      restart  = "unless-stopped"
+      hostname = "s920p"
 
       labels = {
         "traefik.enable" = "false",
@@ -830,7 +831,7 @@ resource "synology_container_project" "mmclients" {
 
   services = {
     jelly = {
-      image   = "jellyfin/jellyfin:10.11.7"
+      image   = "jellyfin/jellyfin:10.11.8"
       restart = "unless-stopped"
       user    = "${local.s920p_media_uid}:${local.s920p_media_gid}"
 
@@ -859,8 +860,6 @@ resource "synology_container_project" "mmclients" {
         "pangolin.public-resources.jelly.rules[0].action"                 = "allow"
         "pangolin.public-resources.jelly.rules[0].match"                  = "path"
         "pangolin.public-resources.jelly.rules[0].value"                  = "/system/info/public"
-
-        "diun.enable" = "true"
       }
 
       networks = {
