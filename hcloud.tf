@@ -152,7 +152,6 @@ resource "docker_image" "images" {
     "traefik"                    = "3.6.13"
     "fosrl/newt"                 = "1.11.0"
     "fosrl/olm"                  = "1.4.4"
-    "fosrl/pangolin-cli"         = "0.5.2"
     "adguard/adguardhome"        = "v0.107.73"
     "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
     "postgres"                   = "16-alpine"
