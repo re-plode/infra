@@ -635,7 +635,15 @@ resource "docker_container" "authentik_wrk" {
     "AUTHENTIK_POSTGRESQL__NAME=authentik",
     "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
     "AUTHENTIK_POSTGRESQL__USER=authentik",
-    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}"
+    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}",
+    "AUTHENTIK_EMAIL__HOST=mail-eu.smtp2go.com",
+    "AUTHENTIK_EMAIL__PORT=587",
+    "AUTHENTIK_EMAIL__USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
+    "AUTHENTIK_EMAIL__PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
+    "AUTHENTIK_EMAIL__USE_TLS=true",
+    "AUTHENTIK_EMAIL__USE_SSL=false",
+    "AUTHENTIK_EMAIL__TIMEOUT=10",
+    "AUTHENTIK_EMAIL__FROM=noreply@replo.de"
   ]
 
   volumes {
