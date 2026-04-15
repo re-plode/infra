@@ -327,18 +327,20 @@ resource "synology_container_project" "netsvc" {
       }
 
       environment = {
-        TZ                       = local.tz
-        DIUN_WATCH_WORKERS       = "20"
-        DIUN_WATCH_SCHEDULE      = "0 */6 * * *"
-        DIUN_WATCH_JITTER        = "30s"
-        DIUN_PROVIDERS_DOCKER    = "true"
-        DIUN_NOTIF_MAIL_HOST     = "mail-eu.smtp2go.com"
-        DIUN_NOTIF_MAIL_PORT     = "587"
-        DIUN_NOTIF_MAIL_SSL      = "true"
-        DIUN_NOTIF_MAIL_USERNAME = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
-        DIUN_NOTIF_MAIL_PASSWORD = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
-        DIUN_NOTIF_MAIL_FROM     = "noreply@replo.de"
-        DIUN_NOTIF_MAIL_TO       = "root@replo.de"
+        TZ                                   = local.tz
+        DIUN_WATCH_WORKERS                   = "20"
+        DIUN_WATCH_SCHEDULE                  = "0 */6 * * *"
+        DIUN_WATCH_JITTER                    = "30s"
+        DIUN_WATCH_FIRSTCHECKNOTIF           = "true"
+        DIUN_PROVIDERS_DOCKER                = "true"
+        DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT = "true"
+        DIUN_NOTIF_MAIL_HOST                 = "mail-eu.smtp2go.com"
+        DIUN_NOTIF_MAIL_PORT                 = "587"
+        DIUN_NOTIF_MAIL_SSL                  = "false"
+        DIUN_NOTIF_MAIL_USERNAME             = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
+        DIUN_NOTIF_MAIL_PASSWORD             = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
+        DIUN_NOTIF_MAIL_FROM                 = "noreply@replo.de"
+        DIUN_NOTIF_MAIL_TO                   = "root@replo.de"
       }
 
       volumes = [{
