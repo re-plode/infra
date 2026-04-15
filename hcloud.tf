@@ -171,6 +171,11 @@ resource "docker_container" "pangolin" {
   image    = docker_image.images["fosrl/pangolin"].image_id
   restart  = "unless-stopped"
 
+  env = [
+    "SERVER_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.server_secret"])}",
+    "EMAIL_SMTP_PASS=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}"
+  ]
+
   networks_advanced {
     name = docker_network.pangolin.name
   }
@@ -672,7 +677,7 @@ resource "docker_container" "beszel" {
   restart  = "unless-stopped"
 
   env = [
-    "APP_URL=https://up.replo.de",
+    "APP_URL=https://up.replo.de"
   ]
 
   dynamic "labels" {
