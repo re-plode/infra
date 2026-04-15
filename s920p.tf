@@ -1090,7 +1090,7 @@ resource "synology_container_project" "rss" {
 
   services = {
     pg = {
-      image   = "postgres:17.9"
+      image   = "postgres:18.3-alpine"
       restart = "unless-stopped"
 
       environment = {
@@ -1101,7 +1101,6 @@ resource "synology_container_project" "rss" {
 
       labels = {
         "traefik.enable" = "false"
-        "diun.enable"    = "true"
       }
 
       healthcheck = {
@@ -1118,8 +1117,8 @@ resource "synology_container_project" "rss" {
 
       volumes = [{
         type   = "bind"
-        source = "/volume2/var/postgres-17"
-        target = "/var/lib/postgresql/data"
+        source = "/volume2/var/miniflux-pg"
+        target = "/var/lib/postgresql"
       }]
     }
 
@@ -1161,8 +1160,6 @@ resource "synology_container_project" "rss" {
         "pangolin.public-resources.rss.rules[0].action"                 = "allow"
         "pangolin.public-resources.rss.rules[0].match"                  = "path"
         "pangolin.public-resources.rss.rules[0].value"                  = "/reader/api/*"
-
-        "diun.enable" = "true"
       }
 
       healthcheck = {
