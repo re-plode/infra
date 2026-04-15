@@ -765,21 +765,18 @@ resource "docker_container" "diun" {
     "DIUN_DEFAULTS_WATCHREPO=true",
     "DIUN_DEFAULTS_MAXTAGS=1",
     "DIUN_DEFAULTS_SORTTAGS=semver",
-    "DIUN_DEFAULTS_INCLUDETAGS=^\\d+\\.\\d+\\.\\d+$",
-    "DIUN_DEFAULTS_EXCLUDETAGS=^\\w+$",
-    "DIUN_NOTIF_MAIL_HOST=mail-eu.smtp2go.com",
-    "DIUN_NOTIF_MAIL_PORT=587",
+    "DIUN_DEFAULTS_INCLUDETAGS=${local.diun_include_pattern}",
+    "DIUN_DEFAULTS_EXCLUDETAGS=${local.diun_exclude_pattern}",
+    "DIUN_NOTIF_MAIL_HOST=${var.replo_de_smtp_host}",
+    "DIUN_NOTIF_MAIL_PORT=${var.replo_de_smtp_port}",
     "DIUN_NOTIF_MAIL_SSL=false",
     "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
     "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
-    "DIUN_NOTIF_MAIL_FROM=noreply@replo.de",
-    "DIUN_NOTIF_MAIL_TO=root@replo.de"
+    "DIUN_NOTIF_MAIL_FROM=${var.replo_de_smtp_from}",
+    "DIUN_NOTIF_MAIL_TO=${var.replo_de_smtp_to}",
+    "DIUN_NOTIF_MAIL_TEMPLATETITLE=${local.diun_mail_template_title}",
+    "DIUN_NOTIF_MAIL_TEMPLATEBODY=${local.diun_mail_template_body}",
   ]
-
-  labels {
-    label = "diun.enable"
-    value = "true"
-  }
 
   volumes {
     container_path = "/var/run/docker.sock"
