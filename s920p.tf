@@ -584,7 +584,7 @@ resource "synology_container_project" "mmproviders" {
     }
 
     seerr = {
-      image   = "seerr/seerr:v3.1.0"
+      image   = "seerr/seerr:v3.2.0"
       restart = "unless-stopped"
       user    = "${local.s920p_media_uid}:${local.s920p_media_gid}"
 
@@ -922,7 +922,7 @@ resource "synology_container_project" "mmclients" {
     }
 
     stash = {
-      image     = "stashapp/stash:v0.30.1"
+      image     = "stashapp/stash:v0.31.1"
       restart   = "unless-stopped"
       mem_limit = "2048M"
       environment = {
