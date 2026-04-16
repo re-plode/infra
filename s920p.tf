@@ -386,6 +386,64 @@ resource "synology_container_project" "mmproviders" {
   }
 
   services = {
+    prowlarr = {
+      image   = "linuxserver/prowlarr:2.3.5"
+      restart = "unless-stopped"
+
+      environment = {
+        PUID = local.s920p_media_uid
+        PGID = local.s920p_media_gid
+        TZ   = local.tz
+      }
+
+      labels = {
+        "traefik.enable"                                 = "true"
+        "traefik.http.routers.prowlarr.rule"             = "Host(`prowlarr.replo.de`)"
+        "traefik.http.routers.prowlarr.entrypoints"      = "websecure"
+        "traefik.http.routers.prowlarr.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.prowlarr.name"                            = "Prowlarr"
+        "pangolin.public-resources.prowlarr.full-domain"                     = "prowlarr.replo.de"
+        "pangolin.public-resources.prowlarr.protocol"                        = "http"
+        "pangolin.public-resources.prowlarr.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.prowlarr.auth.sso-roles[0]"               = "Member"
+        "pangolin.public-resources.prowlarr.targets[0].method"               = "http"
+        "pangolin.public-resources.prowlarr.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.prowlarr.targets[0].port"                 = "9696"
+        "pangolin.public-resources.prowlarr.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.prowlarr.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.prowlarr.targets[0].healthcheck.path"     = "/ping"
+        "pangolin.public-resources.prowlarr.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.prowlarr.targets[0].healthcheck.port"     = "9696"
+
+        "diun.enable" = "true"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:9696 || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume2/var/prowlarr"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 9696
+        published = 9696
+        protocol  = "tcp"
+      }]
+    }
+
     nzb = {
       image   = "linuxserver/sabnzbd:4.5.5"
       restart = "unless-stopped"
