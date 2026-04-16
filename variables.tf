@@ -32,7 +32,7 @@ locals {
   s920p_media_uid = "1027"
   s920p_media_gid = "65536"
 
-  diun_include_pattern     = "^\\d+\\.\\d+(\\.\\d+)?$"
+  diun_include_pattern     = "^v?\\d+\\.\\d+(\\.\\d+)?$"
   diun_exclude_pattern     = "^\\w+$"
   diun_mail_template_title = <<EOT
 {{ .Entry.Image }} {{ if (eq .Entry.Status "new") }}is available{{ else }}has been updated{{ end }}
