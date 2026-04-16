@@ -642,6 +642,68 @@ resource "synology_container_project" "mmproviders" {
       }]
     }
 
+    whisparr = {
+      image   = "ghcr.io/hotio/whisparr:v3-v3.3.3"
+      restart = "unless-stopped"
+
+      environment = {
+        PUID        = local.s920p_media_uid
+        PGID        = local.s920p_media_gid
+        UMASK       = "022"
+        TZ          = local.tz
+        WEBUI_PORTS = "6969/tcp"
+      }
+
+      labels = {
+        "traefik.enable"                                 = "true"
+        "traefik.http.routers.whisparr.rule"             = "Host(`whisparr.replo.de`)"
+        "traefik.http.routers.whisparr.entrypoints"      = "websecure"
+        "traefik.http.routers.whisparr.tls.certresolver" = "cloudflare"
+
+        "pangolin.public-resources.whisparr.name"                            = "Whisparr"
+        "pangolin.public-resources.whisparr.full-domain"                     = "whisparr.replo.de"
+        "pangolin.public-resources.whisparr.protocol"                        = "http"
+        "pangolin.public-resources.whisparr.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.whisparr.auth.sso-roles[0]"               = "Member"
+        "pangolin.public-resources.whisparr.targets[0].method"               = "http"
+        "pangolin.public-resources.whisparr.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.whisparr.targets[0].port"                 = "6969"
+        "pangolin.public-resources.whisparr.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.whisparr.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.whisparr.targets[0].healthcheck.path"     = "/"
+        "pangolin.public-resources.whisparr.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.whisparr.targets[0].healthcheck.port"     = "6969"
+      }
+
+      healthcheck = {
+        interval     = "10s"
+        start_period = "30s"
+        test         = ["CMD-SHELL", "curl --fail http://localhost:6969 || exit 1"]
+      }
+
+      networks = {
+        media = {
+          name = "media"
+        }
+      }
+
+      volumes = [{
+        type   = "bind"
+        source = "/volume1/private/"
+        target = "/data"
+        }, {
+        type   = "bind"
+        source = "/volume2/var/whisparr"
+        target = "/config"
+      }]
+
+      ports = [{
+        target    = 6969
+        published = 6969
+        protocol  = "tcp"
+      }]
+    }
+
     tube = {
       # TODO: use latest version tag after next release after sha256:1f6090ad9940bb6907f6c542ae0c18ecd3df08cd6cfece6617a424adbfbe3740
       image   = "keglin/pinchflat:latest"
