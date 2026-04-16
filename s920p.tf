@@ -557,6 +557,10 @@ resource "synology_container_project" "mmproviders" {
         target = "/downloads"
         }, {
         type   = "bind"
+        source = "/volume1/private/seedhost/downloads/movies"
+        target = "/seedhost"
+        }, {
+        type   = "bind"
         source = "/volume1/media/radarr"
         target = "/mnt/radarr"
         }, {
