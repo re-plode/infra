@@ -557,18 +557,6 @@ resource "synology_container_project" "mmproviders" {
         target = "/data"
         }, {
         type   = "bind"
-        source = "/volume1/private/sabnzbd/completed"
-        target = "/downloads"
-        }, {
-        type   = "bind"
-        source = "/volume1/private/seedhost/downloads/movies"
-        target = "/seedhost"
-        }, {
-        type   = "bind"
-        source = "/volume1/media/radarr"
-        target = "/mnt/radarr"
-        }, {
-        type   = "bind"
         source = "/volume2/var/radarr"
         target = "/config"
       }]
@@ -628,18 +616,6 @@ resource "synology_container_project" "mmproviders" {
         type   = "bind"
         source = "/volume1"
         target = "/data"
-        }, {
-        type   = "bind"
-        source = "/volume1/private/sabnzbd/completed"
-        target = "/downloads"
-        }, {
-        type   = "bind"
-        source = "/volume1/private/seedhost/downloads/tv"
-        target = "/seedhost"
-        }, {
-        type   = "bind"
-        source = "/volume1/media/sonarr"
-        target = "/mnt/sonarr"
         }, {
         type   = "bind"
         source = "/volume2/var/sonarr"
