@@ -147,18 +147,19 @@ resource "docker_network" "authentik" {
 
 resource "docker_image" "images" {
   for_each = tomap({
-    "fosrl/pangolin"             = "1.17.1"
-    "fosrl/gerbil"               = "1.3.1"
-    "traefik"                    = "3.6.13"
-    "fosrl/newt"                 = "1.11.0"
-    "fosrl/olm"                  = "1.4.4"
-    "adguard/adguardhome"        = "v0.107.74"
-    "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
-    "postgres"                   = "16-alpine"
-    "ghcr.io/goauthentik/server" = "2026.2.2"
-    "henrygd/beszel"             = "0.18.7"
-    "henrygd/beszel-agent"       = "0.18.7"
-    "crazymax/diun"              = "4.31.0"
+    "fosrl/pangolin"                  = "1.17.1"
+    "fosrl/gerbil"                    = "1.3.1"
+    "traefik"                         = "3.6.13"
+    "fosrl/newt"                      = "1.11.0"
+    "fosrl/olm"                       = "1.4.4"
+    "adguard/adguardhome"             = "v0.107.74"
+    "ghcr.io/bakito/adguardhome-sync" = "v0.9.0"
+    "ghcr.io/wg-easy/wg-easy"         = "15.2.2"
+    "postgres"                        = "16-alpine"
+    "ghcr.io/goauthentik/server"      = "2026.2.2"
+    "henrygd/beszel"                  = "0.18.7"
+    "henrygd/beszel-agent"            = "0.18.7"
+    "crazymax/diun"                   = "4.31.0"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -359,7 +360,7 @@ resource "docker_container" "adguardhome" {
   dynamic "labels" {
     for_each = tomap({
       "pangolin.public-resources.dns.name"                            = "AdGuard"
-      "pangolin.public-resources.dns.full-domain"                     = "dns.replo.de"
+      "pangolin.public-resources.dns.full-domain"                     = "dns0.replo.de"
       "pangolin.public-resources.dns.protocol"                        = "http"
       "pangolin.public-resources.dns.auth.sso-enabled"                = "true"
       "pangolin.public-resources.dns.auth.sso-roles[0]"               = "Member"
@@ -371,7 +372,6 @@ resource "docker_container" "adguardhome" {
       "pangolin.public-resources.dns.targets[0].healthcheck.hostname" = "172.254.0.1"
       "pangolin.public-resources.dns.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.dns.targets[0].healthcheck.port"     = "3000"
-      "diun.enable"                                                   = "true"
     })
     content {
       label = labels.key
@@ -387,6 +387,66 @@ resource "docker_container" "adguardhome" {
   volumes {
     container_path = "/opt/adguardhome/conf"
     host_path      = "/var/lib/containers/adguardhome/conf"
+    read_only      = false
+  }
+}
+
+resource "docker_container" "adguardhome_sync" {
+  provider = docker.internal-net
+  name     = "adguardhome_sync"
+  image    = docker_image.images["ghcr.io/bakito/adguardhome-sync"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "ORIGIN_URL=http://172.254.0.1:3000",
+    "ORIGIN_WEB_URL=https://dns0.replo.de",
+    "ORIGIN_USERNAME=russellc",
+    "ORIGIN_PASSWORD=${sensitive(data.sops_file.secrets.data["adguardhome.password"])}",
+    "REPLICA_URL=http://10.42.20.78:3000",
+    "REPLICA_WEB_URL=https://dns1.replo.de",
+    "REPLICA_USERNAME=russellc",
+    "REPLICA_PASSWORD=${sensitive(data.sops_file.secrets.data["adguardhome.password"])}"
+  ]
+
+  networks_advanced {
+    name = docker_network.pangolin.name
+  }
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.6"
+  }
+
+  dynamic "labels" {
+    for_each = tomap({
+      "pangolin.public-resources.adguardhome-sync.name"                            = "AdGuard Sync"
+      "pangolin.public-resources.adguardhome-sync.full-domain"                     = "dns-sync.replo.de"
+      "pangolin.public-resources.adguardhome-sync.protocol"                        = "http"
+      "pangolin.public-resources.adguardhome-sync.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.adguardhome-sync.auth.sso-roles[0]"               = "Member"
+      "pangolin.public-resources.adguardhome-sync.targets[0].method"               = "http"
+      "pangolin.public-resources.adguardhome-sync.targets[0].hostname"             = "172.254.0.1"
+      "pangolin.public-resources.adguardhome-sync.targets[0].port"                 = "8080"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.hostname" = "172.254.0.1"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.port"     = "8080"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  ports {
+    internal = 8080
+    external = 8080
+    protocol = "tcp"
+  }
+
+  volumes {
+    container_path = "/config"
+    host_path      = "/var/lib/containers/adguardhome-sync"
     read_only      = false
   }
 }
@@ -427,10 +487,6 @@ resource "docker_container" "wg-easy" {
     ipv4_address = "172.254.0.3"
   }
 
-  labels {
-    label = "diun.enable"
-    value = "true"
-  }
   labels {
     label = "pangolin.public-resources.wg.name"
     value = "Wireguard"
@@ -695,7 +751,6 @@ resource "docker_container" "beszel" {
       "pangolin.public-resources.up.targets[0].healthcheck.hostname" = "172.17.0.1"
       "pangolin.public-resources.up.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.up.targets[0].healthcheck.port"     = "8090"
-      "diun.enable"                                                  = "true"
     })
     content {
       label = labels.key
@@ -723,11 +778,6 @@ resource "docker_container" "beszel_agent" {
   restart  = "unless-stopped"
 
   network_mode = "host"
-
-  labels {
-    label = "diun.enable"
-    value = "true"
-  }
 
   env = [
     "HUB_URL=https://up.replo.de",

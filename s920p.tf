@@ -232,13 +232,13 @@ resource "synology_container_project" "netsvc" {
 
       labels = {
         "traefik.enable"                                         = "true"
-        "traefik.http.routers.adguard.rule"                      = "Host(`adguard.replo.de`)"
+        "traefik.http.routers.adguard.rule"                      = "Host(`dns1.replo.de`)"
         "traefik.http.routers.adguard.entrypoints"               = "websecure"
         "traefik.http.routers.adguard.tls.certresolver"          = "cloudflare"
         "traefik.http.services.adguard.loadbalancer.server.port" = "80"
 
         "pangolin.public-resources.adguard-local.name"                            = "Adguard (local)"
-        "pangolin.public-resources.adguard-local.full-domain"                     = "adguard.replo.de"
+        "pangolin.public-resources.adguard-local.full-domain"                     = "dns1.replo.de"
         "pangolin.public-resources.adguard-local.protocol"                        = "http"
         "pangolin.public-resources.adguard-local.auth.sso-enabled"                = "true"
         "pangolin.public-resources.adguard-local.auth.sso-roles[0]"               = "Member"
