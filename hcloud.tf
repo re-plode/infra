@@ -152,7 +152,7 @@ resource "docker_image" "images" {
     "traefik"                    = "3.6.13"
     "fosrl/newt"                 = "1.11.0"
     "fosrl/olm"                  = "1.4.4"
-    "adguard/adguardhome"        = "v0.107.73"
+    "adguard/adguardhome"        = "v0.107.74"
     "ghcr.io/wg-easy/wg-easy"    = "15.2.2"
     "postgres"                   = "16-alpine"
     "ghcr.io/goauthentik/server" = "2026.2.2"

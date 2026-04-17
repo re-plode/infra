@@ -226,7 +226,7 @@ resource "synology_container_project" "netsvc" {
     }
 
     adguardhome = {
-      image   = "adguard/adguardhome:v0.107.73"
+      image   = "adguard/adguardhome:v0.107.74"
       restart = "unless-stopped"
       user    = "root"
 
