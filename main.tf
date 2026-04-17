@@ -79,19 +79,22 @@ resource "mailgun_domain_credential" "noreply_rcheung_com" {
   }
 }
 
-resource "cloudflare_dns_record" "replo_de_cname_return" {
+resource "cloudflare_dns_record" "replo_de_txt_mx" {
+  for_each = tomap({
+    "@"      = "brevo-code:803fa6d6251d53349cbefb857f15f2ae"
+    "_dmarc" = "v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com"
+  })
   zone_id = local.cloudflare_replo_de_zone_id
-  content = "return.smtp2go.net"
-  name    = "em552681"
+  content = each.value
+  name    = each.key
   proxied = false
   ttl     = 1
-  type    = "CNAME"
+  type    = "TXT"
 }
-resource "cloudflare_dns_record" "replo_de_cname_smtp2go" {
+resource "cloudflare_dns_record" "replo_de_cname_mx" {
   for_each = tomap({
-    "em552681"           = "return.smtp2go.net"
-    "s552681._domainkey" = "dkim.smtp2go.net"
-    "link"               = "track.smtp2go.net"
+    "brevo1._domainkey" = "b1.replo-de.dkim.brevo.com"
+    "brevo2._domainkey" = "b2.replo-de.dkim.brevo.com"
   })
   zone_id = local.cloudflare_replo_de_zone_id
   content = each.value

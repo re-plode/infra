@@ -343,8 +343,8 @@ resource "synology_container_project" "netsvc" {
         DIUN_NOTIF_MAIL_HOST                 = var.replo_de_smtp_host
         DIUN_NOTIF_MAIL_PORT                 = var.replo_de_smtp_port
         DIUN_NOTIF_MAIL_SSL                  = "false"
-        DIUN_NOTIF_MAIL_USERNAME             = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
-        DIUN_NOTIF_MAIL_PASSWORD             = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
+        DIUN_NOTIF_MAIL_USERNAME             = sensitive(data.sops_file.secrets.data["brevo.smtp_username"])
+        DIUN_NOTIF_MAIL_PASSWORD             = sensitive(data.sops_file.secrets.data["brevo.smtp_password"])
         DIUN_NOTIF_MAIL_FROM                 = var.replo_de_smtp_from
         DIUN_NOTIF_MAIL_TO                   = var.replo_de_smtp_to
         DIUN_NOTIF_MAIL_TEMPLATETITLE        = local.diun_mail_template_title
@@ -1140,13 +1140,13 @@ resource "synology_container_project" "kan" {
       restart = "unless-stopped"
 
       environment = {
-        SMTP_HOSTNAME   = "mail-eu.smtp2go.com"
-        SMTP_PORT       = "587"
+        SMTP_HOSTNAME   = var.replo_de_smtp_host
+        SMTP_PORT       = var.replo_de_smtp_port
         SMTP_ENCRYPTION = "tls"
-        SMTP_USERNAME   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])
-        SMTP_PASSWORD   = sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])
+        SMTP_USERNAME   = sensitive(data.sops_file.secrets.data["brevo.smtp_username"])
+        SMTP_PASSWORD   = sensitive(data.sops_file.secrets.data["brevo.smtp_password"])
         SMTP_HELO       = "tls"
-        MAIL_FROM       = "noreply@replo.de"
+        MAIL_FROM       = var.replo_de_smtp_from
       }
 
       labels = {

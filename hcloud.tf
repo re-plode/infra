@@ -172,7 +172,7 @@ resource "docker_container" "pangolin" {
 
   env = [
     "SERVER_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.server_secret"])}",
-    "EMAIL_SMTP_PASS=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}"
+    "EMAIL_SMTP_PASS=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}"
   ]
 
   networks_advanced {
@@ -636,14 +636,14 @@ resource "docker_container" "authentik_wrk" {
     "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
     "AUTHENTIK_POSTGRESQL__USER=authentik",
     "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}",
-    "AUTHENTIK_EMAIL__HOST=mail-eu.smtp2go.com",
-    "AUTHENTIK_EMAIL__PORT=587",
-    "AUTHENTIK_EMAIL__USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
-    "AUTHENTIK_EMAIL__PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
+    "AUTHENTIK_EMAIL__HOST=${var.replo_de_smtp_host}",
+    "AUTHENTIK_EMAIL__PORT=${var.replo_de_smtp_port}",
+    "AUTHENTIK_EMAIL__USERNAME=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
+    "AUTHENTIK_EMAIL__PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
     "AUTHENTIK_EMAIL__USE_TLS=true",
     "AUTHENTIK_EMAIL__USE_SSL=false",
     "AUTHENTIK_EMAIL__TIMEOUT=10",
-    "AUTHENTIK_EMAIL__FROM=noreply@replo.de"
+    "AUTHENTIK_EMAIL__FROM=${var.replo_de_smtp_from}"
   ]
 
   volumes {
@@ -772,8 +772,8 @@ resource "docker_container" "diun" {
     "DIUN_NOTIF_MAIL_HOST=${var.replo_de_smtp_host}",
     "DIUN_NOTIF_MAIL_PORT=${var.replo_de_smtp_port}",
     "DIUN_NOTIF_MAIL_SSL=false",
-    "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_username"])}",
-    "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["smtp2go.smtp_password"])}",
+    "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
+    "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
     "DIUN_NOTIF_MAIL_FROM=${var.replo_de_smtp_from}",
     "DIUN_NOTIF_MAIL_TO=${var.replo_de_smtp_to}",
     "DIUN_NOTIF_MAIL_TEMPLATETITLE=${local.diun_mail_template_title}",
