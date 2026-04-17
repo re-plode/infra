@@ -489,6 +489,10 @@ resource "synology_container_project" "mmproviders" {
 
       volumes = [{
         type   = "bind"
+        source = "/volume1/private/sabnzbd"
+        target = "/data"
+        }, {
+        type   = "bind"
         source = "/volume1/private/sabnzbd/completed"
         target = "/downloads"
         }, {
