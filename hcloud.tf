@@ -160,6 +160,7 @@ resource "docker_image" "images" {
     "henrygd/beszel"                  = "0.18.7"
     "henrygd/beszel-agent"            = "0.18.7"
     "crazymax/diun"                   = "4.31.0"
+    "caddy"                           = "2.11.2-alpine"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -839,5 +840,45 @@ resource "docker_container" "diun" {
     container_path = "/data"
     host_path      = "/var/lib/containers/diun"
     read_only      = false
+  }
+}
+
+resource "docker_container" "caddy" {
+  provider = docker.internal-net
+  name     = "caddy"
+  image    = docker_image.images["caddy"].image_id
+  restart  = "unless-stopped"
+
+  dynamic "labels" {
+    for_each = tomap({
+      "pangolin.public-resources.caddy.name"                            = "Caddy"
+      "pangolin.public-resources.caddy.full-domain"                     = "replo.de"
+      "pangolin.public-resources.caddy.protocol"                        = "http"
+      "pangolin.public-resources.caddy.auth.sso-enabled"                = "false"
+      "pangolin.public-resources.caddy.targets[0].method"               = "http"
+      "pangolin.public-resources.caddy.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.caddy.targets[0].port"                 = "8081"
+      "pangolin.public-resources.caddy.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.caddy.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.caddy.targets[0].healthcheck.hostname" = "172.17.0.1"
+      "pangolin.public-resources.caddy.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.caddy.targets[0].healthcheck.port"     = "8081"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  volumes {
+    container_path = "/usr/share/caddy"
+    host_path      = "/var/lib/containers/caddy/srv"
+    read_only      = true
+  }
+
+  ports {
+    internal = 80
+    external = 8081
+    protocol = "tcp"
   }
 }
