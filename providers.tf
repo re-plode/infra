@@ -25,6 +25,10 @@ terraform {
       source  = "wgebis/mailgun"
       version = "~> 0.9.0"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "~> 0.28.0"
+    }
   }
 
   backend "s3" {
@@ -87,4 +91,10 @@ provider "docker" {
     "UserKnownHostsFile=/dev/null"
   ]
   disable_docker_daemon_check = true
+}
+
+provider "tailscale" {
+  oauth_client_id     = sensitive(data.sops_file.secrets.data["tailscale.oauth_client_id"])
+  oauth_client_secret = sensitive(data.sops_file.secrets.data["tailscale.oauth_client_secret"])
+  tailnet             = "TF7Y4wmqJR11CNTRL"
 }

@@ -103,3 +103,36 @@ resource "cloudflare_dns_record" "replo_de_cname_mx" {
   ttl     = 1
   type    = "CNAME"
 }
+
+resource "tailscale_oauth_client" "github" {
+  description = "github"
+  scopes      = ["auth_keys"]
+  tags        = ["tag:github"]
+}
+
+resource "tailscale_dns_nameservers" "dns_ns" {
+  nameservers = [
+    "172.254.0.1",
+    "10.42.20.78"
+  ]
+}
+resource "tailscale_dns_preferences" "dns_preferences" {
+  magic_dns = false
+}
+
+data "tailscale_device" "apple_tv" {
+  name = "apple-tv.tail1d86f5.ts.net"
+}
+resource "tailscale_device_key" "apple_tv_key" {
+  device_id           = data.tailscale_device.apple_tv.node_id
+  key_expiry_disabled = true
+}
+resource "tailscale_device_subnet_routes" "apple_tv_routes" {
+  device_id = data.tailscale_device.apple_tv.node_id
+  routes = [
+    "10.42.10.0/24",
+    "10.42.20.0/24",
+    "0.0.0.0/0",
+    "::/0"
+  ]
+}
