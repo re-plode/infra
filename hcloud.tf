@@ -169,6 +169,7 @@ resource "docker_image" "images" {
     "henrygd/beszel-agent"            = "0.18.7"
     "crazymax/diun"                   = "4.31.0"
     "portainer/portainer-ce"          = "2.40.0-alpine"
+    "amir20/dozzle"                   = "v10.4.1"
     "caddy"                           = "2.11.2-alpine"
   })
   provider = docker.internal-net
@@ -934,8 +935,8 @@ resource "docker_container" "portainer" {
       "pangolin.public-resources.portainer.name"                            = "Portainer"
       "pangolin.public-resources.portainer.full-domain"                     = "port.replo.de"
       "pangolin.public-resources.portainer.protocol"                        = "http"
-      "pangolin.public-resources.up.portainer.sso-enabled"                  = "true"
-      "pangolin.public-resources.up.portainer.sso-roles[0]"                 = "Member"
+      "pangolin.public-resources.portainer.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.portainer.auth.sso-roles[0]"               = "Member"
       "pangolin.public-resources.portainer.targets[0].method"               = "http"
       "pangolin.public-resources.portainer.targets[0].hostname"             = "172.17.0.1"
       "pangolin.public-resources.portainer.targets[0].port"                 = "9001"
@@ -973,6 +974,60 @@ resource "docker_container" "portainer" {
   ports {
     internal = 8000
     external = 8000
+    protocol = "tcp"
+  }
+}
+
+resource "docker_container" "dozzle" {
+  provider = docker.internal-net
+  name     = "dozzle"
+  image    = docker_image.images["amir20/dozzle"].image_id
+  restart  = "unless-stopped"
+
+  dynamic "labels" {
+    for_each = tomap({
+      "io.portainer.accesscontrol.teams"                                 = "operators"
+      "pangolin.public-resources.dozzle.name"                            = "Dozzle"
+      "pangolin.public-resources.dozzle.full-domain"                     = "logs.replo.de"
+      "pangolin.public-resources.dozzle.protocol"                        = "http"
+      "pangolin.public-resources.dozzle.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.dozzle.auth.sso-roles[0]"               = "Member"
+      "pangolin.public-resources.dozzle.targets[0].method"               = "http"
+      "pangolin.public-resources.dozzle.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.dozzle.targets[0].port"                 = "9090"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.hostname" = "172.17.0.1"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.port"     = "9090"
+      "pangolin.public-resources.dozzle.rules[0].action"                 = "allow"
+      "pangolin.public-resources.dozzle.rules[0].match"                  = "path"
+      "pangolin.public-resources.dozzle.rules[0].value"                  = "/api/*"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  env = [
+    "DOZZLE_ADDR=:9090"
+  ]
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+  volumes {
+    container_path = "/data"
+    host_path      = "/var/lib/containers/dozzle"
+    read_only      = false
+  }
+
+  ports {
+    internal = 9090
+    external = 9090
     protocol = "tcp"
   }
 }
