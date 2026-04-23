@@ -155,7 +155,9 @@ resource "docker_image" "images" {
   for_each = tomap({
     "fosrl/pangolin"                  = "1.17.1"
     "fosrl/gerbil"                    = "1.3.1"
+    "crowdsecurity/crowdsec"          = "v1.7.7-debian"
     "traefik"                         = "3.6.13"
+    "librespace/logrotate"            = "3.21.0"
     "fosrl/newt"                      = "1.11.0"
     "fosrl/olm"                       = "1.4.4"
     "adguard/adguardhome"             = "v0.107.74"
@@ -362,6 +364,77 @@ resource "docker_container" "traefik" {
   depends_on = [docker_container.pangolin, docker_container.gerbil]
 }
 
+resource "docker_container" "crowdsec" {
+  provider = docker.internal-net
+  name     = "crowdsec"
+  image    = docker_image.images["crowdsecurity/crowdsec"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/linux",
+  ]
+
+  labels {
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
+  }
+
+  ports {
+    internal = 6060
+    external = 6060
+    protocol = "tcp"
+  }
+  ports {
+    internal = 8080
+    external = 8080
+    protocol = "tcp"
+  }
+
+  volumes {
+    container_path = "/etc/crowdsec"
+    host_path      = "/var/lib/containers/crowdsec/etc"
+    read_only      = false
+  }
+  volumes {
+    container_path = "/var/lib/crowdsec/data"
+    host_path      = "/var/lib/containers/crowdsec/db"
+    read_only      = false
+  }
+  volumes {
+    container_path = "/var/log/traefik"
+    host_path      = "/var/lib/containers/traefik/logs"
+    read_only      = true
+  }
+}
+
+# resource "docker_container" "traefik_logrotate" {
+#   provider = docker.internal-net
+#   name     = "traefik_logrotate"
+#   image    = docker_image.images["librespace/logrotate"].image_id
+#   restart  = "unless-stopped"
+
+#   labels {
+#     label = "io.portainer.accesscontrol.teams"
+#     value = "operators"
+#   }
+
+#   volumes {
+#     container_path = "/etc/logrotate.d"
+#     host_path      = "/var/lib/containers/logrotate/etc"
+#     read_only      = false
+#   }
+#   volumes {
+#     container_path = "/var/lib"
+#     host_path      = "/var/lib/containers/logrotate/var"
+#     read_only      = false
+#   }
+#   volumes {
+#     container_path = "/var/log/traefik"
+#     host_path      = "/var/lib/containers/traefik/logs"
+#     read_only      = false
+#   }
+# }
+
 resource "docker_container" "adguardhome" {
   provider = docker.internal-net
   name     = "adguardhome"
@@ -447,12 +520,12 @@ resource "docker_container" "adguardhome_sync" {
       "pangolin.public-resources.adguardhome-sync.auth.sso-roles[0]"               = "Member"
       "pangolin.public-resources.adguardhome-sync.targets[0].method"               = "http"
       "pangolin.public-resources.adguardhome-sync.targets[0].hostname"             = "172.254.0.1"
-      "pangolin.public-resources.adguardhome-sync.targets[0].port"                 = "8080"
+      "pangolin.public-resources.adguardhome-sync.targets[0].port"                 = "8082"
       "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.enabled"  = "true"
       "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.method"   = "GET"
       "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.hostname" = "172.254.0.1"
       "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.path"     = "/"
-      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.port"     = "8080"
+      "pangolin.public-resources.adguardhome-sync.targets[0].healthcheck.port"     = "8082"
     })
     content {
       label = labels.key
@@ -462,7 +535,7 @@ resource "docker_container" "adguardhome_sync" {
 
   ports {
     internal = 8080
-    external = 8080
+    external = 8082
     protocol = "tcp"
   }
 
