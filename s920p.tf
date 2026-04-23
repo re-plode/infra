@@ -381,34 +381,29 @@ resource "synology_container_project" "monsvc" {
       }]
     }
 
-    dockge = {
-      image   = "louislam/dockge:1.5.0"
+    portainer = {
+      image   = "portainer/portainer-ce:2.40.0-alpine"
       restart = "unless-stopped"
 
       labels = {
-        "traefik.enable"                                        = "true"
-        "traefik.http.routers.dockge.rule"                      = "Host(`dock.replo.de`)"
-        "traefik.http.routers.dockge.entrypoints"               = "websecure"
-        "traefik.http.routers.dockge.tls.certresolver"          = "cloudflare"
-        "traefik.http.services.dockge.loadbalancer.server.port" = "5051"
+        "traefik.enable"                                           = "true"
+        "traefik.http.routers.portainer.rule"                      = "Host(`port.replo.de`)"
+        "traefik.http.routers.portainer.entrypoints"               = "websecure"
+        "traefik.http.routers.portainer.tls.certresolver"          = "cloudflare"
+        "traefik.http.services.portainer.loadbalancer.server.port" = "9000"
 
-        "pangolin.public-resources.dockge.name"                            = "Dockge"
-        "pangolin.public-resources.dockge.full-domain"                     = "dock.replo.de"
-        "pangolin.public-resources.dockge.protocol"                        = "http"
-        "pangolin.public-resources.dockge.auth.sso-enabled"                = "true"
-        "pangolin.public-resources.dockge.auth.sso-roles[0]"               = "Member"
-        "pangolin.public-resources.dockge.targets[0].method"               = "http"
-        "pangolin.public-resources.dockge.targets[0].hostname"             = "172.17.0.1"
-        "pangolin.public-resources.dockge.targets[0].port"                 = "5051"
-        "pangolin.public-resources.dockge.targets[0].healthcheck.enabled"  = "true"
-        "pangolin.public-resources.dockge.targets[0].healthcheck.method"   = "GET"
-        "pangolin.public-resources.dockge.targets[0].healthcheck.hostname" = "172.17.0.1"
-        "pangolin.public-resources.dockge.targets[0].healthcheck.port"     = "5051"
-      }
-
-      environment = {
-        DOCKGE_PORT       = 5051
-        DOCKGE_STACKS_DIR = "/opt/stacks"
+        "pangolin.public-resources.portainer.name"                            = "Portainer"
+        "pangolin.public-resources.portainer.full-domain"                     = "port.replo.de"
+        "pangolin.public-resources.portainer.protocol"                        = "http"
+        "pangolin.public-resources.portainer.auth.sso-enabled"                = "true"
+        "pangolin.public-resources.portainer.auth.sso-roles[0]"               = "Member"
+        "pangolin.public-resources.portainer.targets[0].method"               = "http"
+        "pangolin.public-resources.portainer.targets[0].hostname"             = "172.17.0.1"
+        "pangolin.public-resources.portainer.targets[0].port"                 = "9000"
+        "pangolin.public-resources.portainer.targets[0].healthcheck.enabled"  = "true"
+        "pangolin.public-resources.portainer.targets[0].healthcheck.method"   = "GET"
+        "pangolin.public-resources.portainer.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.portainer.targets[0].healthcheck.port"     = "9000"
       }
 
       networks = {
@@ -424,19 +419,14 @@ resource "synology_container_project" "monsvc" {
         read_only = true
         }, {
         type      = "bind"
-        source    = "/volume2/docker"
-        target    = "/opt/stacks"
-        read_only = true
-        }, {
-        type      = "bind"
-        source    = "/volume2/var/dockge"
-        target    = "/app/data"
+        source    = "/volume2/var/portainer"
+        target    = "/data"
         read_only = false
       }]
 
       ports = [{
-        target    = 5051
-        published = 5051
+        target    = 9000
+        published = 9000
         protocol  = "tcp"
       }]
     }
