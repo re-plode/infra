@@ -1013,6 +1013,7 @@ resource "docker_container" "dozzle" {
 
   env = [
     "DOZZLE_ADDR=:9090",
+    "DOZZLE_REMOTE_AGENT=10.42.20.78:7007",
     "DOZZLE_NO_ANALYTICS=true"
   ]
 
