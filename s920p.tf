@@ -337,6 +337,34 @@ resource "synology_container_project" "monsvc" {
       }]
     }
 
+    dozzle_agent = {
+      image   = "amir20/dozzle:v10.4.1"
+      restart = "unless-stopped"
+      command = ["agent"]
+
+      labels = {
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
+      }
+
+      networks = {
+        netsvc = {
+          name = "netsvc"
+        }
+      }
+
+      environment = {
+        DOZZLE_NO_ANALYTICS = "true"
+      }
+
+      volumes = [{
+        type      = "bind"
+        source    = "/var/run/docker.sock"
+        target    = "/var/run/docker.sock"
+        read_only = true
+      }]
+    }
+
     diun = {
       image    = "crazymax/diun:4.31.0"
       restart  = "unless-stopped"

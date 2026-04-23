@@ -1011,7 +1011,8 @@ resource "docker_container" "dozzle" {
   }
 
   env = [
-    "DOZZLE_ADDR=:9090"
+    "DOZZLE_ADDR=:9090",
+    "DOZZLE_NO_ANALYTICS=true"
   ]
 
   volumes {
