@@ -381,35 +381,19 @@ resource "synology_container_project" "monsvc" {
       }]
     }
 
-    portainer = {
-      image   = "portainer/portainer-ce:2.40.0-alpine"
+    portainer_agent = {
+      image   = "portainer/agent:2.40.0-alpine"
       restart = "unless-stopped"
 
       labels = {
-        "traefik.enable"                                           = "true"
-        "traefik.http.routers.portainer.rule"                      = "Host(`port.replo.de`)"
-        "traefik.http.routers.portainer.entrypoints"               = "websecure"
-        "traefik.http.routers.portainer.tls.certresolver"          = "cloudflare"
-        "traefik.http.services.portainer.loadbalancer.server.port" = "9000"
-
-        "pangolin.public-resources.portainer.name"                            = "Portainer"
-        "pangolin.public-resources.portainer.full-domain"                     = "port.replo.de"
-        "pangolin.public-resources.portainer.protocol"                        = "http"
-        "pangolin.public-resources.portainer.auth.sso-enabled"                = "true"
-        "pangolin.public-resources.portainer.auth.sso-roles[0]"               = "Member"
-        "pangolin.public-resources.portainer.targets[0].method"               = "http"
-        "pangolin.public-resources.portainer.targets[0].hostname"             = "172.17.0.1"
-        "pangolin.public-resources.portainer.targets[0].port"                 = "9000"
-        "pangolin.public-resources.portainer.targets[0].healthcheck.enabled"  = "true"
-        "pangolin.public-resources.portainer.targets[0].healthcheck.method"   = "GET"
-        "pangolin.public-resources.portainer.targets[0].healthcheck.hostname" = "172.17.0.1"
-        "pangolin.public-resources.portainer.targets[0].healthcheck.port"     = "9000"
+        "traefik.enable" = "false"
       }
 
-      networks = {
-        netsvc = {
-          name = "netsvc"
-        }
+      environment = {
+        EDGE               = "1"
+        EDGE_ID            = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_id"])
+        EDGE_KEY           = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_key"])
+        EDGE_INSECURE_POLL = "1"
       }
 
       volumes = [{
@@ -422,12 +406,6 @@ resource "synology_container_project" "monsvc" {
         source    = "/volume2/var/portainer"
         target    = "/data"
         read_only = false
-      }]
-
-      ports = [{
-        target    = 9000
-        published = 9000
-        protocol  = "tcp"
       }]
     }
   }

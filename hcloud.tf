@@ -35,6 +35,12 @@ resource "hcloud_firewall" "internal_net_firewall" {
   rule {
     direction  = "in"
     protocol   = "tcp"
+    port       = "8000"
+    source_ips = local.all_ips
+  }
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
     port       = "443"
     source_ips = local.all_ips
   }
@@ -160,6 +166,7 @@ resource "docker_image" "images" {
     "henrygd/beszel"                  = "0.18.7"
     "henrygd/beszel-agent"            = "0.18.7"
     "crazymax/diun"                   = "4.31.0"
+    "portainer/portainer-ce"          = "2.40.0-alpine"
     "caddy"                           = "2.11.2-alpine"
   })
   provider = docker.internal-net
@@ -752,6 +759,9 @@ resource "docker_container" "beszel" {
       "pangolin.public-resources.up.targets[0].healthcheck.hostname" = "172.17.0.1"
       "pangolin.public-resources.up.targets[0].healthcheck.path"     = "/"
       "pangolin.public-resources.up.targets[0].healthcheck.port"     = "8090"
+      "pangolin.public-resources.up.rules[0].action"                 = "allow"
+      "pangolin.public-resources.up.rules[0].match"                  = "path"
+      "pangolin.public-resources.up.rules[0].value"                  = "/api/*"
     })
     content {
       label = labels.key
@@ -840,6 +850,60 @@ resource "docker_container" "diun" {
     container_path = "/data"
     host_path      = "/var/lib/containers/diun"
     read_only      = false
+  }
+}
+
+resource "docker_container" "portainer" {
+  provider = docker.internal-net
+  name     = "portainer"
+  image    = docker_image.images["portainer/portainer-ce"].image_id
+  restart  = "unless-stopped"
+
+  dynamic "labels" {
+    for_each = tomap({
+      "pangolin.public-resources.portainer.name"                            = "Portainer"
+      "pangolin.public-resources.portainer.full-domain"                     = "port.replo.de"
+      "pangolin.public-resources.portainer.protocol"                        = "http"
+      "pangolin.public-resources.up.portainer.sso-enabled"                  = "true"
+      "pangolin.public-resources.up.portainer.sso-roles[0]"                 = "Member"
+      "pangolin.public-resources.portainer.targets[0].method"               = "http"
+      "pangolin.public-resources.portainer.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.portainer.targets[0].port"                 = "9001"
+      "pangolin.public-resources.portainer.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.portainer.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.portainer.targets[0].healthcheck.hostname" = "172.17.0.1"
+      "pangolin.public-resources.portainer.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.portainer.targets[0].healthcheck.port"     = "9001"
+      "pangolin.public-resources.portainer.rules[0].action"                 = "allow"
+      "pangolin.public-resources.portainer.rules[0].match"                  = "path"
+      "pangolin.public-resources.portainer.rules[0].value"                  = "/api/*"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = true
+  }
+  volumes {
+    container_path = "/data"
+    host_path      = "/var/lib/containers/portainer"
+    read_only      = false
+  }
+
+  ports {
+    internal = 9000
+    external = 9001
+    protocol = "tcp"
+  }
+  ports {
+    internal = 8000
+    external = 8000
+    protocol = "tcp"
   }
 }
 
