@@ -257,6 +257,13 @@ resource "synology_container_project" "netsvc" {
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.port"     = "3000"
       }
 
+      healthcheck = {
+        test     = ["CMD", "nslookup", "replo.de", "127.0.0.1"]
+        interval = "10s"
+        timeout  = "10s"
+        retries  = 15
+      }
+
       networks = {
         netsvc = {
           name = "netsvc"

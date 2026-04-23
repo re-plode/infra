@@ -393,6 +393,13 @@ resource "docker_container" "adguardhome" {
     }
   }
 
+  healthcheck {
+    test     = ["CMD", "nslookup", "replo.de", "127.0.0.1"]
+    interval = "10s"
+    timeout  = "10s"
+    retries  = 15
+  }
+
   volumes {
     container_path = "/opt/adguardhome/work"
     host_path      = "/var/lib/containers/adguardhome/work"
