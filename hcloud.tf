@@ -184,6 +184,11 @@ resource "docker_container" "pangolin" {
     "EMAIL_SMTP_PASS=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}"
   ]
 
+  labels {
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
+  }
+
   networks_advanced {
     name = docker_network.pangolin.name
   }
@@ -215,8 +220,8 @@ resource "docker_container" "gerbil" {
   ]
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   capabilities {
@@ -278,8 +283,8 @@ resource "docker_container" "newt" {
   ]
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   networks_advanced {
@@ -309,8 +314,8 @@ resource "docker_container" "olm" {
   ]
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   capabilities {
@@ -334,8 +339,8 @@ resource "docker_container" "traefik" {
   command = ["--configFile=/etc/traefik/traefik_config.yml"]
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   volumes {
@@ -367,6 +372,7 @@ resource "docker_container" "adguardhome" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                              = "operators"
       "pangolin.public-resources.dns.name"                            = "AdGuard"
       "pangolin.public-resources.dns.full-domain"                     = "dns0.replo.de"
       "pangolin.public-resources.dns.protocol"                        = "http"
@@ -426,6 +432,7 @@ resource "docker_container" "adguardhome_sync" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                                           = "operators"
       "pangolin.public-resources.adguardhome-sync.name"                            = "AdGuard Sync"
       "pangolin.public-resources.adguardhome-sync.full-domain"                     = "dns-sync.replo.de"
       "pangolin.public-resources.adguardhome-sync.protocol"                        = "http"
@@ -495,57 +502,27 @@ resource "docker_container" "wg-easy" {
     ipv4_address = "172.254.0.3"
   }
 
-  labels {
-    label = "pangolin.public-resources.wg.name"
-    value = "Wireguard"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.full-domain"
-    value = "wg.replo.de"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.protocol"
-    value = "http"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.auth.sso-enabled"
-    value = "true"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.auth.sso-roles[0]"
-    value = "Member"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].method"
-    value = "http"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].hostname"
-    value = "172.254.0.3"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].port"
-    value = "51822"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].healthcheck.enabled"
-    value = "true"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].healthcheck.method"
-    value = "GET"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].healthcheck.hostname"
-    value = "172.254.0.3"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].healthcheck.path"
-    value = "/"
-  }
-  labels {
-    label = "pangolin.public-resources.wg.targets[0].healthcheck.port"
-    value = "51822"
+  dynamic "labels" {
+    for_each = tomap({
+      "io.portainer.accesscontrol.teams"                             = "operators"
+      "pangolin.public-resources.wg.name"                            = "Wireguard"
+      "pangolin.public-resources.wg.full-domain"                     = "wg.replo.de"
+      "pangolin.public-resources.wg.protocol"                        = "http"
+      "pangolin.public-resources.wg.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.wg.auth.sso-roles[0]"               = "Member"
+      "pangolin.public-resources.wg.targets[0].method"               = "http"
+      "pangolin.public-resources.wg.targets[0].hostname"             = "172.254.0.3"
+      "pangolin.public-resources.wg.targets[0].port"                 = "51822"
+      "pangolin.public-resources.wg.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.wg.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.wg.targets[0].healthcheck.hostname" = "172.254.0.3"
+      "pangolin.public-resources.wg.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.wg.targets[0].healthcheck.port"     = "51822"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
   }
 
   ports {
@@ -578,8 +555,8 @@ resource "docker_container" "authentik_pg" {
   restart  = "unless-stopped"
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   networks_advanced {
@@ -622,6 +599,7 @@ resource "docker_container" "authentik_srv" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                             = "operators"
       "pangolin.public-resources.ak.name"                            = "Authentik"
       "pangolin.public-resources.ak.full-domain"                     = "auth.replo.de"
       "pangolin.public-resources.ak.protocol"                        = "http"
@@ -686,8 +664,8 @@ resource "docker_container" "authentik_wrk" {
   shm_size = 512
 
   labels {
-    label = "diun.enable"
-    value = "true"
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
   }
 
   networks_advanced {
@@ -746,6 +724,7 @@ resource "docker_container" "beszel" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                             = "operators"
       "pangolin.public-resources.up.name"                            = "Beszel"
       "pangolin.public-resources.up.full-domain"                     = "up.replo.de"
       "pangolin.public-resources.up.protocol"                        = "http"
@@ -788,6 +767,11 @@ resource "docker_container" "beszel_agent" {
   image    = docker_image.images["henrygd/beszel-agent"].image_id
   restart  = "unless-stopped"
 
+  labels {
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
+  }
+
   network_mode = "host"
 
   env = [
@@ -816,6 +800,11 @@ resource "docker_container" "diun" {
   command  = ["serve"]
   restart  = "unless-stopped"
   hostname = "hcloud"
+
+  labels {
+    label = "io.portainer.accesscontrol.teams"
+    value = "operators"
+  }
 
   env = [
     "TZ=${local.tz}",
@@ -861,6 +850,7 @@ resource "docker_container" "portainer" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                                    = "operators"
       "pangolin.public-resources.portainer.name"                            = "Portainer"
       "pangolin.public-resources.portainer.full-domain"                     = "port.replo.de"
       "pangolin.public-resources.portainer.protocol"                        = "http"
@@ -915,6 +905,7 @@ resource "docker_container" "caddy" {
 
   dynamic "labels" {
     for_each = tomap({
+      "io.portainer.accesscontrol.teams"                                = "operators"
       "pangolin.public-resources.caddy.name"                            = "Caddy"
       "pangolin.public-resources.caddy.full-domain"                     = "replo.de"
       "pangolin.public-resources.caddy.protocol"                        = "http"

@@ -71,6 +71,11 @@ resource "synology_container_project" "init" {
     hello = {
       image = "hello-world:latest"
 
+      labels = {
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
+      }
+
       networks = {
         appsvc = {
           name = "appsvc"
@@ -154,6 +159,7 @@ resource "synology_container_project" "netsvc" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"           = "operators"
         "traefik.enable"                             = "true"
         "traefik.http.routers.dashboard.rule"        = "Host(`s920p.replo`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         "traefik.http.routers.dashboard.entrypoints" = "web"
@@ -206,7 +212,8 @@ resource "synology_container_project" "netsvc" {
       }
 
       labels = {
-        "traefik.enable" = "false"
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       networks = {
@@ -229,6 +236,7 @@ resource "synology_container_project" "netsvc" {
       user    = "root"
 
       labels = {
+        "io.portainer.accesscontrol.teams"                       = "operators"
         "traefik.enable"                                         = "true"
         "traefik.http.routers.adguard.rule"                      = "Host(`dns1.replo.de`)"
         "traefik.http.routers.adguard.entrypoints"               = "websecure"
@@ -305,7 +313,8 @@ resource "synology_container_project" "monsvc" {
       restart = "unless-stopped"
 
       labels = {
-        "traefik.enable" = "false"
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       network_mode = "host"
@@ -341,7 +350,8 @@ resource "synology_container_project" "monsvc" {
       hostname = "s920p"
 
       labels = {
-        "traefik.enable" = "false",
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       environment = {
@@ -386,7 +396,8 @@ resource "synology_container_project" "monsvc" {
       restart = "unless-stopped"
 
       labels = {
-        "traefik.enable" = "false"
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       environment = {
@@ -442,6 +453,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"               = "operators"
         "traefik.enable"                                 = "true"
         "traefik.http.routers.prowlarr.rule"             = "Host(`prowlarr.replo.de`)"
         "traefik.http.routers.prowlarr.entrypoints"      = "websecure"
@@ -497,6 +509,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"          = "operators"
         "traefik.enable"                            = "true"
         "traefik.http.routers.nzb.rule"             = "Host(`nzb.replo.de`)"
         "traefik.http.routers.nzb.entrypoints"      = "websecure"
@@ -555,6 +568,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"             = "operators"
         "traefik.enable"                               = "true"
         "traefik.http.routers.radarr.rule"             = "Host(`radarr.replo.de`)"
         "traefik.http.routers.radarr.entrypoints"      = "websecure"
@@ -613,6 +627,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"             = "operators"
         "traefik.enable"                               = "true"
         "traefik.http.routers.sonarr.rule"             = "Host(`sonarr.replo.de`)"
         "traefik.http.routers.sonarr.entrypoints"      = "websecure"
@@ -672,6 +687,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"            = "operators"
         "traefik.enable"                              = "true"
         "traefik.http.routers.seerr.rule"             = "Host(`seerr.replo.de`)"
         "traefik.http.routers.seerr.entrypoints"      = "websecure"
@@ -732,6 +748,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"               = "operators"
         "traefik.enable"                                 = "true"
         "traefik.http.routers.whisparr.rule"             = "Host(`whisparr.replo.de`)"
         "traefik.http.routers.whisparr.entrypoints"      = "websecure"
@@ -791,6 +808,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"           = "operators"
         "traefik.enable"                             = "true"
         "traefik.http.routers.tube.rule"             = "Host(`tube.replo.de`)"
         "traefik.http.routers.tube.entrypoints"      = "websecure"
@@ -842,6 +860,7 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"           = "operators"
         "traefik.enable"                             = "true"
         "traefik.http.routers.cast.rule"             = "Host(`cast.replo.de`)"
         "traefik.http.routers.cast.entrypoints"      = "websecure"
@@ -929,7 +948,8 @@ resource "synology_container_project" "mmproviders" {
       }
 
       labels = {
-        "traefik.enable" = "false"
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       networks = {
@@ -981,6 +1001,7 @@ resource "synology_container_project" "mmclients" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"                     = "operators"
         "traefik.enable"                                       = "true"
         "traefik.http.routers.jelly.rule"                      = "Host(`jelly.replo.de`)"
         "traefik.http.routers.jelly.entrypoints"               = "websecure"
@@ -1065,6 +1086,7 @@ resource "synology_container_project" "mmclients" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"            = "operators"
         "traefik.enable"                              = "true"
         "traefik.http.routers.stash.rule"             = "Host(`stash.replo.de`)"
         "traefik.http.routers.stash.entrypoints"      = "websecure"
@@ -1158,6 +1180,7 @@ resource "synology_container_project" "kan" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"          = "operators"
         "traefik.enable"                            = "true"
         "traefik.http.routers.kan.rule"             = "Host(`kan.replo.de`)"
         "traefik.http.routers.kan.entrypoints"      = "websecure"
@@ -1240,7 +1263,8 @@ resource "synology_container_project" "rss" {
       }
 
       labels = {
-        "traefik.enable" = "false"
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
       }
 
       healthcheck = {
@@ -1281,6 +1305,7 @@ resource "synology_container_project" "rss" {
       }
 
       labels = {
+        "io.portainer.accesscontrol.teams"          = "operators"
         "traefik.enable"                            = "true"
         "traefik.http.routers.rss.rule"             = "Host(`rss.replo.de`)"
         "traefik.http.routers.rss.entrypoints"      = "websecure"
