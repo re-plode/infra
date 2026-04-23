@@ -12,7 +12,7 @@ variable "tf_passphrase" {
 }
 
 variable "replo_de_smtp_host" {
-  default = "a864fe001@smtp-brevo.com"
+  default = "smtp-relay.brevo.com"
   type    = string
 }
 variable "replo_de_smtp_port" {

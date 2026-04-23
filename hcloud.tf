@@ -264,7 +264,7 @@ resource "docker_container" "newt" {
   restart  = "unless-stopped"
 
   env = [
-    "PANGOLIN_ENDPOINT=https://replo.de",
+    "PANGOLIN_ENDPOINT=https://access.replo.de",
     "NEWT_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_id"])}",
     "NEWT_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_newt_secret"])}",
     "DOCKER_SOCKET=/var/run/docker.sock"
