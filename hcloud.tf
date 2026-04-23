@@ -308,7 +308,7 @@ resource "docker_container" "olm" {
   network_mode = "host"
 
   env = [
-    "PANGOLIN_ENDPOINT=https://replo.de",
+    "PANGOLIN_ENDPOINT=https://access.replo.de",
     "OLM_ID=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_id"])}",
     "OLM_SECRET=${sensitive(data.sops_file.secrets.data["pangolin.hcloud_cli_secret"])}",
   ]

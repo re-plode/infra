@@ -257,17 +257,13 @@ resource "synology_container_project" "netsvc" {
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.port"     = "3000"
       }
 
+      network_mode = "host"
+
       healthcheck = {
         test     = ["CMD", "nslookup", "replo.de", "127.0.0.1"]
         interval = "10s"
         timeout  = "10s"
         retries  = 15
-      }
-
-      networks = {
-        netsvc = {
-          name = "netsvc"
-        }
       }
 
       dns = local.ext_dns
@@ -280,16 +276,6 @@ resource "synology_container_project" "netsvc" {
         type   = "bind"
         source = "/volume2/var/adguard/conf"
         target = "/opt/adguardhome/conf"
-      }]
-
-      ports = [{
-        target    = 53
-        published = 53
-        protocol  = "udp"
-        }, {
-        target    = 80
-        published = 3000
-        protocol  = "tcp"
       }]
     }
   }
