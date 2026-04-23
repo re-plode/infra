@@ -983,6 +983,7 @@ resource "docker_container" "dozzle" {
   name     = "dozzle"
   image    = docker_image.images["amir20/dozzle"].image_id
   restart  = "unless-stopped"
+  hostname = "hcloud"
 
   dynamic "labels" {
     for_each = tomap({

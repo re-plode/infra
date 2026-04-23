@@ -347,6 +347,7 @@ resource "synology_container_project" "monsvc" {
         "traefik.enable"                   = "false"
       }
 
+      hostname = "s920p"
       networks = {
         netsvc = {
           name = "netsvc"
@@ -362,6 +363,12 @@ resource "synology_container_project" "monsvc" {
         source    = "/var/run/docker.sock"
         target    = "/var/run/docker.sock"
         read_only = true
+      }]
+
+      ports = [{
+        target    = 7007
+        published = 7007
+        protocol  = "tcp"
       }]
     }
 
