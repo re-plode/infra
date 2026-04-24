@@ -153,25 +153,26 @@ resource "docker_network" "authentik" {
 
 resource "docker_image" "images" {
   for_each = tomap({
-    "fosrl/pangolin"                  = "1.17.1"
-    "fosrl/gerbil"                    = "1.3.1"
-    "crowdsecurity/crowdsec"          = "v1.7.7-debian"
-    "traefik"                         = "3.6.13"
-    "vungle/logrotate"                = "3.16"
-    "fosrl/newt"                      = "1.11.0"
-    "fosrl/olm"                       = "1.4.4"
-    "adguard/adguardhome"             = "v0.107.74"
-    "ghcr.io/bakito/adguardhome-sync" = "v0.9.0"
-    "ghcr.io/wg-easy/wg-easy"         = "15.2.2"
-    "postgres"                        = "16-alpine"
-    "ghcr.io/goauthentik/server"      = "2026.2.2"
-    "ghcr.io/pocket-id/pocket-id"     = "v2.6.2"
-    "henrygd/beszel"                  = "0.18.7"
-    "henrygd/beszel-agent"            = "0.18.7"
-    "crazymax/diun"                   = "4.31.0"
-    "portainer/portainer-ce"          = "2.40.0-alpine"
-    "amir20/dozzle"                   = "v10.4.1"
-    "caddy"                           = "2.11.2-alpine"
+    "fosrl/pangolin"                    = "1.17.1"
+    "fosrl/gerbil"                      = "1.3.1"
+    "crowdsecurity/crowdsec"            = "v1.7.7-debian"
+    "traefik"                           = "3.6.13"
+    "vungle/logrotate"                  = "3.16"
+    "fosrl/newt"                        = "1.11.0"
+    "fosrl/olm"                         = "1.4.4"
+    "adguard/adguardhome"               = "v0.107.74"
+    "ghcr.io/bakito/adguardhome-sync"   = "v0.9.0"
+    "ghcr.io/wg-easy/wg-easy"           = "15.2.2"
+    "postgres"                          = "16-alpine"
+    "ghcr.io/goauthentik/server"        = "2026.2.2"
+    "ghcr.io/pocket-id/pocket-id"       = "v2.6.2"
+    "henrygd/beszel"                    = "0.18.7"
+    "henrygd/beszel-agent"              = "0.18.7"
+    "crazymax/diun"                     = "4.31.0"
+    "portainer/portainer-ce"            = "2.40.0-alpine"
+    "amir20/dozzle"                     = "v10.4.1"
+    "quay.io/oauth2-proxy/oauth2-proxy" = "v7.15.2-alpine"
+    "caddy"                             = "2.11.2-alpine"
   })
   provider = docker.internal-net
   name     = "${each.key}:${each.value}"
@@ -1059,25 +1060,14 @@ resource "docker_container" "dozzle" {
   restart  = "unless-stopped"
   hostname = "hcloud"
 
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.7"
+  }
+
   dynamic "labels" {
     for_each = tomap({
-      "io.portainer.accesscontrol.teams"                                 = "operators"
-      "pangolin.public-resources.dozzle.name"                            = "Dozzle"
-      "pangolin.public-resources.dozzle.full-domain"                     = "logs.replo.de"
-      "pangolin.public-resources.dozzle.protocol"                        = "http"
-      "pangolin.public-resources.dozzle.auth.sso-enabled"                = "true"
-      "pangolin.public-resources.dozzle.auth.sso-roles[0]"               = "Member"
-      "pangolin.public-resources.dozzle.targets[0].method"               = "http"
-      "pangolin.public-resources.dozzle.targets[0].hostname"             = "172.17.0.1"
-      "pangolin.public-resources.dozzle.targets[0].port"                 = "9090"
-      "pangolin.public-resources.dozzle.targets[0].healthcheck.enabled"  = "true"
-      "pangolin.public-resources.dozzle.targets[0].healthcheck.method"   = "GET"
-      "pangolin.public-resources.dozzle.targets[0].healthcheck.hostname" = "172.17.0.1"
-      "pangolin.public-resources.dozzle.targets[0].healthcheck.path"     = "/"
-      "pangolin.public-resources.dozzle.targets[0].healthcheck.port"     = "9090"
-      "pangolin.public-resources.dozzle.rules[0].action"                 = "allow"
-      "pangolin.public-resources.dozzle.rules[0].match"                  = "path"
-      "pangolin.public-resources.dozzle.rules[0].value"                  = "/api/*"
+      "io.portainer.accesscontrol.teams" = "operators"
     })
     content {
       label = labels.key
@@ -1089,6 +1079,10 @@ resource "docker_container" "dozzle" {
     "DOZZLE_ADDR=:9090",
     "DOZZLE_REMOTE_AGENT=10.42.20.78:7007",
     "DOZZLE_ENABLE_ACTIONS=true",
+    "DOZZLE_AUTH_PROVIDER=forward-proxy",
+    "DOZZLE_AUTH_HEADER_USER=X-Forwarded-User",
+    "DOZZLE_AUTH_HEADER_EMAIL=X-Forwarded-Email",
+    "DOZZLE_AUTH_HEADER_NAME=X-Forwarded-Preferred-Username",
     "DOZZLE_NO_ANALYTICS=true"
   ]
 
@@ -1102,9 +1096,67 @@ resource "docker_container" "dozzle" {
     host_path      = "/var/lib/containers/dozzle"
     read_only      = false
   }
+}
+
+resource "docker_container" "dozzle_oauth_proxy" {
+  provider = docker.internal-net
+  name     = "dozzle_oauth_proxy"
+  image    = docker_image.images["quay.io/oauth2-proxy/oauth2-proxy"].image_id
+  restart  = "unless-stopped"
+  hostname = "hcloud"
+
+  networks_advanced {
+    name         = docker_network.netsvc.name
+    ipv4_address = "172.254.0.8"
+  }
+
+  dynamic "labels" {
+    for_each = tomap({
+      "io.portainer.accesscontrol.teams"                                 = "operators",
+      "pangolin.public-resources.dozzle.name"                            = "Dozzle"
+      "pangolin.public-resources.dozzle.full-domain"                     = "logs.replo.de"
+      "pangolin.public-resources.dozzle.protocol"                        = "http"
+      "pangolin.public-resources.dozzle.auth.sso-enabled"                = "true"
+      "pangolin.public-resources.dozzle.auth.sso-roles[0]"               = "Member"
+      "pangolin.public-resources.dozzle.targets[0].method"               = "http"
+      "pangolin.public-resources.dozzle.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.dozzle.targets[0].port"                 = "9090"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.hostname" = "172.254.0.7"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.path"     = "/healthcheck"
+      "pangolin.public-resources.dozzle.targets[0].healthcheck.port"     = "9090"
+      "pangolin.public-resources.dozzle.rules[0].action"                 = "allow"
+      "pangolin.public-resources.dozzle.rules[0].match"                  = "path"
+      "pangolin.public-resources.dozzle.rules[0].value"                  = "/api/*"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  env = [
+    "OAUTH2_PROXY_CLIENT_ID=${sensitive(data.sops_file.secrets.data["dozzle.oauth_client_id"])}",
+    "OAUTH2_PROXY_CLIENT_SECRET=${sensitive(data.sops_file.secrets.data["dozzle.oauth_client_secret"])}",
+    "OAUTH2_PROXY_COOKIE_SECRET=${sensitive(data.sops_file.secrets.data["dozzle.oauth_cookie_secret"])}",
+    "OAUTH2_PROXY_UPSTREAMS=http://172.254.0.7:9090",
+    "OAUTH2_PROXY_CODE_CHALLENGE_METHOD=S256",
+    "OAUTH2_PROXY_COOKIE_EXPIRE=0",
+    "OAUTH2_PROXY_COOKIE_NAME=__Host-oauth2-proxy",
+    "OAUTH2_PROXY_COOKIE_SECURE=true",
+    "OAUTH2_PROXY_EMAIL_DOMAINS=*",
+    "OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL=true",
+    "OAUTH2_PROXY_HTTP_ADDRESS=0.0.0.0:4180",
+    "OAUTH2_PROXY_OIDC_ISSUER_URL=https://id.replo.de",
+    "OAUTH2_PROXY_PROVIDER_DISPLAY_NAME=Pocket ID",
+    "OAUTH2_PROXY_PROVIDER=oidc",
+    "OAUTH2_PROXY_REVERSE_PROXY=true",
+    "OAUTH2_PROXY_SCOPE=openid email profile groups"
+  ]
 
   ports {
-    internal = 9090
+    internal = 4180
     external = 9090
     protocol = "tcp"
   }
