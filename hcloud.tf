@@ -1012,6 +1012,7 @@ resource "docker_container" "portainer" {
       "pangolin.public-resources.portainer.protocol"                        = "http"
       "pangolin.public-resources.portainer.auth.sso-enabled"                = "true"
       "pangolin.public-resources.portainer.auth.sso-roles[0]"               = "Member"
+      "pangolin.public-resources.portainer.auth.auto-login-idp"             = "2"
       "pangolin.public-resources.portainer.targets[0].method"               = "http"
       "pangolin.public-resources.portainer.targets[0].hostname"             = "172.17.0.1"
       "pangolin.public-resources.portainer.targets[0].port"                 = "9001"
