@@ -985,7 +985,8 @@ resource "docker_container" "dozzle_oauth_proxy" {
     "OAUTH2_PROXY_PROVIDER_DISPLAY_NAME=Pocket ID",
     "OAUTH2_PROXY_PROVIDER=oidc",
     "OAUTH2_PROXY_REVERSE_PROXY=true",
-    "OAUTH2_PROXY_SCOPE=openid email profile groups"
+    "OAUTH2_PROXY_SCOPE=openid email profile groups",
+    "OAUTH2_PROXY_REQUEST_LOGGING=false"
   ]
 
   ports {
