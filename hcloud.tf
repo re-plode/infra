@@ -987,6 +987,9 @@ resource "docker_container" "dozzle_oauth_proxy" {
     "OAUTH2_PROXY_REVERSE_PROXY=true",
     "OAUTH2_PROXY_SCOPE=openid email profile groups",
     "OAUTH2_PROXY_TRUSTED_PROXY_IPS=172.254.0.0/24",
+    "OAUTH2_PROXY_BANNER=-",
+    "OAUTH2_PROXY_CUSTOM_SIGN_IN_LOGO=-",
+    "OAUTH2_PROXY_FOOTER=-",
     "OAUTH2_PROXY_REQUEST_LOGGING=false"
   ]
 
