@@ -456,8 +456,8 @@ resource "synology_container_project" "monsvc" {
       }
 
       environment = {
-        LOG_LEVEL          = "DEBUG"
-        DEBUG              = "1"
+        LOG_LEVEL          = "INFO"
+        DEBUG              = "0"
         EDGE               = "1"
         EDGE_ID            = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_id"])
         EDGE_KEY           = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_key"])
@@ -861,7 +861,8 @@ resource "synology_container_project" "mmproviders" {
       restart = "unless-stopped"
 
       environment = {
-        TZ = local.tz
+        TZ        = local.tz
+        LOG_LEVEL = "info"
       }
 
       labels = {
