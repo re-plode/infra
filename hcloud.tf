@@ -165,6 +165,7 @@ resource "docker_image" "images" {
     "ghcr.io/wg-easy/wg-easy"         = "15.2.2"
     "postgres"                        = "16-alpine"
     "ghcr.io/goauthentik/server"      = "2026.2.2"
+    "ghcr.io/pocket-id/pocket-id"     = "v2.6.2"
     "henrygd/beszel"                  = "0.18.7"
     "henrygd/beszel-agent"            = "0.18.7"
     "crazymax/diun"                   = "4.31.0"
@@ -796,6 +797,74 @@ resource "docker_container" "authentik_wrk" {
   }
 
   depends_on = [docker_container.authentik_pg]
+}
+
+resource "docker_container" "pocket_id" {
+  provider = docker.internal-net
+  name     = "pocket_id"
+  image    = docker_image.images["ghcr.io/pocket-id/pocket-id"].image_id
+  restart  = "unless-stopped"
+
+  env = [
+    "APP_URL=https://id.replo.de",
+    "ENCRYPTION_KEY_FILE=/app/enc.key",
+    "SMTP_HOST=${var.replo_de_smtp_host}",
+    "SMTP_PORT=${var.replo_de_smtp_port}",
+    "SMTP_USER=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
+    "SMTP_PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
+    "SMTP_FROM=${var.replo_de_smtp_from}",
+    "SMTP_TLS=tls",
+    "EMAIL_LOGIN_NOTIFICATION_ENABLED=true",
+    "EMAIL_API_KEY_EXPIRATION_ENABLED=true",
+    "EMAIL_VERIFICATION_ENABLED=true"
+  ]
+
+  dynamic "labels" {
+    for_each = tomap({
+      "io.portainer.accesscontrol.teams"                             = "operators"
+      "pangolin.public-resources.id.name"                            = "Pocket ID"
+      "pangolin.public-resources.id.full-domain"                     = "id.replo.de"
+      "pangolin.public-resources.id.protocol"                        = "http"
+      "pangolin.public-resources.id.auth.sso-enabled"                = "false"
+      "pangolin.public-resources.id.targets[0].method"               = "http"
+      "pangolin.public-resources.id.targets[0].hostname"             = "172.17.0.1"
+      "pangolin.public-resources.id.targets[0].port"                 = "1411"
+      "pangolin.public-resources.id.targets[0].healthcheck.enabled"  = "true"
+      "pangolin.public-resources.id.targets[0].healthcheck.method"   = "GET"
+      "pangolin.public-resources.id.targets[0].healthcheck.hostname" = "172.17.0.1"
+      "pangolin.public-resources.id.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.id.targets[0].healthcheck.port"     = "1411"
+    })
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+
+  volumes {
+    container_path = "/app/enc.key"
+    host_path      = "/var/lib/containers/pocket-id/enc.key"
+    read_only      = true
+  }
+  volumes {
+    container_path = "/app/data"
+    host_path      = "/var/lib/containers/pocket-id/data"
+    read_only      = false
+  }
+
+  ports {
+    internal = 1411
+    external = 1411
+    protocol = "tcp"
+  }
+
+  healthcheck {
+    test         = ["CMD", "/app/pocket-id", "healthcheck"]
+    interval     = "1m30s"
+    start_period = "10s"
+    timeout      = "5s"
+    retries      = 2
+  }
 }
 
 resource "docker_container" "beszel" {
