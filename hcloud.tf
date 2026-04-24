@@ -412,6 +412,11 @@ resource "docker_container" "logrotate" {
   }
 
   volumes {
+    container_path = "/var/run/docker.sock"
+    host_path      = "/var/run/docker.sock"
+    read_only      = false
+  }
+  volumes {
     container_path = "/etc/logrotate.conf"
     host_path      = "/var/lib/containers/logrotate/logrotate.conf"
     read_only      = true
