@@ -230,6 +230,33 @@ resource "synology_container_project" "netsvc" {
       }]
     }
 
+    olm = {
+      image   = "fosrl/olm:1.4.4"
+      restart = "unless-stopped"
+      user    = "root"
+
+      environment = {
+        PANGOLIN_ENDPOINT = "https://access.replo.de"
+        OLM_ID            = sensitive(data.sops_file.secrets.data["pangolin.s920p_cli_id"])
+        OLM_SECRET        = sensitive(data.sops_file.secrets.data["pangolin.s920p_cli_secret"])
+      }
+
+      labels = {
+        "io.portainer.accesscontrol.teams" = "operators"
+        "traefik.enable"                   = "false"
+      }
+
+      cap_add      = ["CAP_NET_ADMIN"]
+      network_mode = "host"
+
+      volumes = [{
+        type      = "bind"
+        source    = "/dev/net/tun"
+        target    = "/dev/net/tun"
+        read_only = false
+      }]
+    }
+
     adguardhome = {
       image   = "adguard/adguardhome:v0.107.74"
       restart = "unless-stopped"
@@ -429,6 +456,8 @@ resource "synology_container_project" "monsvc" {
       }
 
       environment = {
+        LOG_LEVEL          = "DEBUG"
+        DEBUG              = "1"
         EDGE               = "1"
         EDGE_ID            = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_id"])
         EDGE_KEY           = sensitive(data.sops_file.secrets.data["portainer.s920p_edge_key"])
