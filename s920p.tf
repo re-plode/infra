@@ -744,7 +744,8 @@ resource "synology_container_project" "mmproviders" {
       user    = "${local.s920p_media_uid}:${local.s920p_media_gid}"
 
       environment = {
-        TZ = local.tz
+        TZ        = local.tz
+        LOG_LEVEL = "info"
       }
 
       labels = {
