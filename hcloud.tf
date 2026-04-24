@@ -818,7 +818,7 @@ resource "docker_container" "pocket_id" {
     "SMTP_USER=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
     "SMTP_PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
     "SMTP_FROM=${var.replo_de_smtp_from}",
-    "SMTP_TLS=tls",
+    "SMTP_TLS=starttls",
     "EMAIL_LOGIN_NOTIFICATION_ENABLED=true",
     "EMAIL_API_KEY_EXPIRATION_ENABLED=true",
     "EMAIL_VERIFICATION_ENABLED=true"
