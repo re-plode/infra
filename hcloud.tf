@@ -152,7 +152,6 @@ resource "docker_image" "images" {
     "fosrl/gerbil"                      = "1.3.1"
     "crowdsecurity/crowdsec"            = "v1.7.7-debian"
     "traefik"                           = "3.6.13"
-    "vungle/logrotate"                  = "3.16"
     "fosrl/newt"                        = "1.11.0"
     "fosrl/olm"                         = "1.4.4"
     "adguard/adguardhome"               = "v0.107.74"
@@ -397,44 +396,6 @@ resource "docker_container" "crowdsec" {
     container_path = "/var/log/traefik"
     host_path      = "/var/lib/containers/traefik/logs"
     read_only      = true
-  }
-}
-
-resource "docker_container" "logrotate" {
-  provider = docker.internal-net
-  name     = "logrotate"
-  image    = docker_image.images["vungle/logrotate"].image_id
-  restart  = "unless-stopped"
-
-  labels {
-    label = "io.portainer.accesscontrol.teams"
-    value = "operators"
-  }
-
-  volumes {
-    container_path = "/var/run/docker.sock"
-    host_path      = "/var/run/docker.sock"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/etc/logrotate.conf"
-    host_path      = "/var/lib/containers/logrotate/logrotate.conf"
-    read_only      = true
-  }
-  volumes {
-    container_path = "/etc/logrotate.d"
-    host_path      = "/var/lib/containers/logrotate/etc"
-    read_only      = true
-  }
-  volumes {
-    container_path = "/var/lib"
-    host_path      = "/var/lib/containers/logrotate/var"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/var/log/traefik"
-    host_path      = "/var/lib/containers/traefik/logs"
-    read_only      = false
   }
 }
 
