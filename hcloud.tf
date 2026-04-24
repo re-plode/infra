@@ -145,11 +145,6 @@ resource "docker_network" "netsvc" {
     subnet  = "172.254.0.0/16"
   }
 }
-resource "docker_network" "authentik" {
-  provider = docker.internal-net
-  name     = "authentik"
-  driver   = "bridge"
-}
 
 resource "docker_image" "images" {
   for_each = tomap({
@@ -163,8 +158,6 @@ resource "docker_image" "images" {
     "adguard/adguardhome"               = "v0.107.74"
     "ghcr.io/bakito/adguardhome-sync"   = "v0.9.0"
     "ghcr.io/wg-easy/wg-easy"           = "15.2.2"
-    "postgres"                          = "16-alpine"
-    "ghcr.io/goauthentik/server"        = "2026.2.2"
     "ghcr.io/pocket-id/pocket-id"       = "v2.6.2"
     "henrygd/beszel"                    = "0.18.7"
     "henrygd/beszel-agent"              = "0.18.7"
@@ -235,9 +228,6 @@ resource "docker_container" "gerbil" {
 
   networks_advanced {
     name = docker_network.pangolin.name
-  }
-  networks_advanced {
-    name = docker_network.authentik.name
   }
   networks_advanced {
     name         = docker_network.netsvc.name
@@ -637,170 +627,6 @@ resource "docker_container" "wg-easy" {
     host_path      = "/lib/modules"
     read_only      = true
   }
-}
-
-resource "docker_container" "authentik_pg" {
-  provider = docker.internal-net
-  name     = "authentik_pg"
-  image    = docker_image.images["postgres"].image_id
-  restart  = "unless-stopped"
-
-  labels {
-    label = "io.portainer.accesscontrol.teams"
-    value = "operators"
-  }
-
-  networks_advanced {
-    name = docker_network.authentik.name
-  }
-
-  env = [
-    "POSTGRES_DB=authentik",
-    "POSTGRES_PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
-    "POSTGRES_USER=authentik"
-  ]
-
-  volumes {
-    container_path = "/var/lib/postgresql/data"
-    host_path      = "/var/lib/containers/authentik_pg/data"
-    read_only      = false
-  }
-
-  healthcheck {
-    test         = ["CMD-SHELL", "pg_isready -d $POSTGRES_DB -U $POSTGRES_USER"]
-    interval     = "30s"
-    start_period = "20s"
-    timeout      = "5s"
-    retries      = 5
-  }
-}
-
-resource "docker_container" "authentik_srv" {
-  provider = docker.internal-net
-  name     = "authentik_srv"
-  image    = docker_image.images["ghcr.io/goauthentik/server"].image_id
-  command  = ["server"]
-  restart  = "unless-stopped"
-
-  shm_size = 512
-
-  networks_advanced {
-    name = docker_network.authentik.name
-  }
-
-  dynamic "labels" {
-    for_each = tomap({
-      "io.portainer.accesscontrol.teams"                             = "operators"
-      "pangolin.public-resources.ak.name"                            = "Authentik"
-      "pangolin.public-resources.ak.full-domain"                     = "auth.replo.de"
-      "pangolin.public-resources.ak.protocol"                        = "http"
-      "pangolin.public-resources.ak.auth.sso-enabled"                = "false"
-      "pangolin.public-resources.ak.targets[0].method"               = "http"
-      "pangolin.public-resources.ak.targets[0].hostname"             = "172.17.0.1"
-      "pangolin.public-resources.ak.targets[0].port"                 = "9000"
-      "pangolin.public-resources.ak.targets[0].healthcheck.enabled"  = "true"
-      "pangolin.public-resources.ak.targets[0].healthcheck.method"   = "GET"
-      "pangolin.public-resources.ak.targets[0].healthcheck.hostname" = "172.17.0.1"
-      "pangolin.public-resources.ak.targets[0].healthcheck.path"     = "/"
-      "pangolin.public-resources.ak.targets[0].healthcheck.port"     = "9000"
-      "diun.enable"                                                  = "true"
-    })
-    content {
-      label = labels.key
-      value = labels.value
-    }
-  }
-
-  env = [
-    "AUTHENTIK_POSTGRESQL__HOST=authentik_pg",
-    "AUTHENTIK_POSTGRESQL__NAME=authentik",
-    "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
-    "AUTHENTIK_POSTGRESQL__USER=authentik",
-    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}"
-  ]
-
-  ports {
-    internal = 9000
-    external = 9000
-    protocol = "tcp"
-  }
-  ports {
-    internal = 9443
-    external = 9443
-    protocol = "tcp"
-  }
-
-  volumes {
-    container_path = "/data"
-    host_path      = "/var/lib/containers/authentik/data"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/templates"
-    host_path      = "/var/lib/containers/authentik/templates"
-    read_only      = false
-  }
-
-  depends_on = [docker_container.authentik_pg]
-}
-
-resource "docker_container" "authentik_wrk" {
-  provider = docker.internal-net
-  name     = "authentik_wrk"
-  image    = docker_image.images["ghcr.io/goauthentik/server"].image_id
-  command  = ["worker"]
-  restart  = "unless-stopped"
-
-  user     = "root"
-  shm_size = 512
-
-  labels {
-    label = "io.portainer.accesscontrol.teams"
-    value = "operators"
-  }
-
-  networks_advanced {
-    name = docker_network.authentik.name
-  }
-
-  env = [
-    "AUTHENTIK_POSTGRESQL__HOST=authentik_pg",
-    "AUTHENTIK_POSTGRESQL__NAME=authentik",
-    "AUTHENTIK_POSTGRESQL__PASSWORD=${sensitive(data.sops_file.secrets.data["authentik.database_password"])}",
-    "AUTHENTIK_POSTGRESQL__USER=authentik",
-    "AUTHENTIK_SECRET_KEY=${sensitive(data.sops_file.secrets.data["authentik.secret_key"])}",
-    "AUTHENTIK_EMAIL__HOST=${var.replo_de_smtp_host}",
-    "AUTHENTIK_EMAIL__PORT=${var.replo_de_smtp_port}",
-    "AUTHENTIK_EMAIL__USERNAME=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
-    "AUTHENTIK_EMAIL__PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
-    "AUTHENTIK_EMAIL__USE_TLS=true",
-    "AUTHENTIK_EMAIL__USE_SSL=false",
-    "AUTHENTIK_EMAIL__TIMEOUT=10",
-    "AUTHENTIK_EMAIL__FROM=${var.replo_de_smtp_from}"
-  ]
-
-  volumes {
-    container_path = "/data"
-    host_path      = "/var/lib/containers/authentik/data"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/templates"
-    host_path      = "/var/lib/containers/authentik/templates"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/certs"
-    host_path      = "/var/lib/containers/authentik/certs"
-    read_only      = false
-  }
-  volumes {
-    container_path = "/var/run/docker.sock"
-    host_path      = "/var/run/docker.sock"
-    read_only      = true
-  }
-
-  depends_on = [docker_container.authentik_pg]
 }
 
 resource "docker_container" "pocket_id" {
