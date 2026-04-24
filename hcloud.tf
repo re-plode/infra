@@ -812,6 +812,7 @@ resource "docker_container" "pocket_id" {
   env = [
     "APP_URL=https://id.replo.de",
     "ENCRYPTION_KEY_FILE=/app/enc.key",
+    "UI_CONFIG_DISABLED=true",
     "SMTP_HOST=${var.replo_de_smtp_host}",
     "SMTP_PORT=${var.replo_de_smtp_port}",
     "SMTP_USER=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
