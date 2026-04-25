@@ -36,4 +36,5 @@ runs:
         oauth-secret: ${{ inputs.tailscale-oauth-secret }}
         tags: tag:github
         ping: ${{ inputs.dsm-host }}
-      timeout-minutes: 1
+        timeout: "10s"
+        retry: "2"
