@@ -8,20 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: |
-          mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
-          echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-        env:
-          AGE_KEY: ${{ secrets.AGE_KEY }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-      - uses: tailscale/github-action@v4
+      - uses: ./.github/actions/init
         with:
-          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
-          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
-          tags: tag:github
-          ping: ${{ vars.DSM_HOST }}
+          age-key: ${{ secrets.AGE_KEY }}
+          ssk-key: ${{ secrets.SSH_KEY }}
+          tailscale-oauth-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          dsm-host: ${{ vars.DSM_HOST }}
       - run: |
           sudo apt update
           sudo apt install -y ansible
