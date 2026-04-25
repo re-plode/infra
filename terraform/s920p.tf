@@ -7,10 +7,6 @@ resource "terraform_data" "force_run" {
   }
 }
 
-resource "terraform_data" "test" {
-  input = timestamp()
-}
-
 resource "synology_filestation_file" "var" {
   path    = "/var/traefik/config/dsm.toml"
   content = <<EOT
