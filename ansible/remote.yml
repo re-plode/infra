@@ -10,8 +10,8 @@
     notify:
     - Restart ssh
 
-handlers:
-- name: Restart ssh
-  ansible.builtin.service:
-    name: ssh
-    state: restarted
+  handlers:
+  - name: Restart ssh
+    ansible.builtin.service:
+      name: ssh
+      state: restarted
