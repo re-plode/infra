@@ -4,11 +4,7 @@
   
   tasks:
   - name: Disallow SSH password authentication
-    lineinfile:
-      dest=/etc/ssh/sshd_config
-      regexp="^PasswordAuthentication"
-      line="PasswordAuthentication no"
-      state=present
-    validate: sshd -t -f %s
-    notify:
-      - restart sshd
+    ansible.builtin.copy:
+      dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
+      content: "PasswordAuthentication no"
+    notify: restart ssh
