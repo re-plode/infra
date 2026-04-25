@@ -362,6 +362,11 @@ resource "docker_container" "crowdsec" {
   image    = docker_image.images["crowdsecurity/crowdsec"].image_id
   restart  = "unless-stopped"
 
+  dns = [
+    "172.254.0.1",
+    "10.42.20.78
+  ]
+
   env = [
     "COLLECTIONS=crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/linux",
   ]
