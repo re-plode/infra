@@ -40,7 +40,7 @@ jobs:
         timeout-minutes: 1
       - uses: actions/upload-artifact@v7
         with:
-          path: out.tfplan
+          path: terraform/out.tfplan
       - run: tofu apply -auto-approve out.tfplan
 
   playbook:
