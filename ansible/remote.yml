@@ -8,4 +8,10 @@
       dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
       content: "PasswordAuthentication no"
     notify:
-    - restart sshd
+    - Restart ssh
+
+handlers:
+- name: Restart ssh
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
