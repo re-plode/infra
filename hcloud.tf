@@ -364,7 +364,7 @@ resource "docker_container" "crowdsec" {
 
   dns = [
     "172.254.0.1",
-    "10.42.20.78
+    "10.42.20.78"
   ]
 
   env = [
