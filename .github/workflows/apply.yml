@@ -36,4 +36,7 @@ jobs:
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan -out=out.tfplan
+      - uses: actions/upload-artifact@v7
+        with:
+          path: out.tfplan
       - run: tofu apply -auto-approve out.tfplan
