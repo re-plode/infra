@@ -28,4 +28,5 @@ jobs:
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan -destroy -out=out.tfplan
+        timeout-minutes: 1
       - run: tofu apply -auto-approve out.tfplan
