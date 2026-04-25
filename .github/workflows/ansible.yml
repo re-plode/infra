@@ -26,4 +26,4 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
       - run: ansible-playbook -i hosts.yml remote.yml
-        working_directory: ./ansible
+        working-directory: ./ansible
