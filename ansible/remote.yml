@@ -7,4 +7,5 @@
     ansible.builtin.copy:
       dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
       content: "PasswordAuthentication no"
-    notify: restart ssh
+    notify:
+    - restart ssh
