@@ -11,7 +11,7 @@ jobs:
       - uses: ./.github/actions/init
         with:
           age-key: ${{ secrets.AGE_KEY }}
-          ssk-key: ${{ secrets.SSH_KEY }}
+          ssh-key: ${{ secrets.SSH_KEY }}
           tailscale-oauth-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
           tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           dsm-host: ${{ vars.DSM_HOST }}
