@@ -15,6 +15,7 @@ jobs:
       TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
     steps:
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/init
         with:
           age-key: ${{ secrets.AGE_KEY }}

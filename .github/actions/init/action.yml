@@ -20,7 +20,6 @@ runs:
     - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
       shell: bash
       if: runner.debug == '1'
-    - uses: actions/checkout@v6
     - run: |
         mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
         echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
