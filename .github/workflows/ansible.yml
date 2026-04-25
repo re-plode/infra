@@ -1,0 +1,32 @@
+on:
+  pull_request:
+
+name: ansible
+
+defaults:
+  run:
+    working-directory: ./ansible
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
+          echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
+          echo "$SSH_KEY" > ~/.ssh/$TF_VAR_ssh_identity
+          chmod 600 ~/.ssh/$TF_VAR_ssh_identity
+        env:
+          AGE_KEY: ${{ secrets.AGE_KEY }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:github
+          ping: ${{ vars.DSM_HOST }}
+      - run: |
+          sudo apt update
+          sudo apt install -y ansible
+      - run: ansible-playbook -i hosts.yml remote.yml
