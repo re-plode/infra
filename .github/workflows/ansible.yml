@@ -3,10 +3,6 @@ on:
 
 name: ansible
 
-defaults:
-  run:
-    working-directory: ./ansible
-
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -15,8 +11,8 @@ jobs:
       - run: |
           mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
           echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
-          echo "$SSH_KEY" > ~/.ssh/$TF_VAR_ssh_identity
-          chmod 600 ~/.ssh/$TF_VAR_ssh_identity
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
         env:
           AGE_KEY: ${{ secrets.AGE_KEY }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
@@ -30,3 +26,4 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
       - run: ansible-playbook -i hosts.yml remote.yml
+        working_directory: ./ansible
