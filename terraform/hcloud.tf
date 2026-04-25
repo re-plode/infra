@@ -1,9 +1,9 @@
 resource "hcloud_ssh_key" "ssh_keys" {
   for_each = tomap({
-    "russellc@fedora"  = "config/ssh/id_ed25519_fedora.pub"
-    "russellc@ipadpro" = "config/ssh/id_ed25519_ipadpro.pub"
-    "russellc@github"  = "config/ssh/id_ed25519_github.pub"
-    "russellc@mbpnix"  = "config/ssh/id_ed25519_mbpnix.pub"
+    "russellc@fedora"  = "../config/ssh/id_ed25519_fedora.pub"
+    "russellc@ipadpro" = "../config/ssh/id_ed25519_ipadpro.pub"
+    "russellc@github"  = "../config/ssh/id_ed25519_github.pub"
+    "russellc@mbpnix"  = "../config/ssh/id_ed25519_mbpnix.pub"
   })
   name       = each.key
   public_key = file(each.value)
@@ -75,7 +75,7 @@ resource "hcloud_server" "internal_net" {
   location    = "nbg1"
   backups     = false
 
-  user_data = file("config/cloudinit/hcloud.yml")
+  user_data = file("../config/cloudinit/hcloud.yml")
 
   public_net {
     ipv4_enabled = true

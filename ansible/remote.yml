@@ -1,0 +1,17 @@
+---
+- hosts: remote
+  remote_user: root
+  
+  tasks:
+  - name: Disallow SSH password authentication
+    ansible.builtin.copy:
+      dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
+      content: "PasswordAuthentication no"
+    notify:
+    - Restart ssh
+
+  handlers:
+  - name: Restart ssh
+    ansible.builtin.service:
+      name: ssh
+      state: restarted

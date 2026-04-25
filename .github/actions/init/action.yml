@@ -1,0 +1,40 @@
+name: 'Initialize environment'
+description: 'Set up the deployment environment'
+inputs:
+  ssh-identity:
+    required: true
+    default: 'id_ed25519'
+  age-key:
+    required: true
+  ssh-key:
+    required: true
+  tailscale-oauth-id:
+    required: true
+  tailscale-oauth-secret:
+    required: true
+  dsm-host:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
+      shell: bash
+      if: runner.debug == '1'
+    - run: |
+        mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
+        echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
+        echo "$SSH_KEY" > ~/.ssh/$SSH_IDENTITY
+        chmod 600 ~/.ssh/$SSH_IDENTITY
+      env:
+        AGE_KEY: ${{ inputs.age-key }}
+        SSH_KEY: ${{ inputs.ssh-key }}
+        SSH_IDENTITY: ${{ inputs.ssh-identity }}
+      shell: bash
+    - uses: tailscale/github-action@v4
+      with:
+        oauth-client-id: ${{ inputs.tailscale-oauth-id }}
+        oauth-secret: ${{ inputs.tailscale-oauth-secret }}
+        tags: tag:github
+        ping: ${{ inputs.dsm-host }}
+        timeout: "10s"
+        retry: "2"

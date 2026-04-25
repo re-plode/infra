@@ -15,25 +15,18 @@ jobs:
       TF_VAR_tf_passphrase: ${{ secrets.TF_PASSPHRASE }}
       TF_VAR_ssh_identity: id_ed25519_github
     steps:
-      - run: echo "TF_LOG=DEBUG" >> $GITHUB_ENV
-        if: runner.debug == '1'
       - uses: actions/checkout@v6
-      - run: |
-          mkdir -p $XDG_CONFIG_HOME/sops/age/ ~/.ssh/
-          echo "$AGE_KEY" > $XDG_CONFIG_HOME/sops/age/keys.txt
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519_github
-          chmod 600 ~/.ssh/id_ed25519_github
-        env:
-          AGE_KEY: ${{ secrets.AGE_KEY }}
-          SSH_KEY: ${{secrets.SSH_KEY}}
-      - uses: tailscale/github-action@v4
+      - uses: ./.github/actions/init
         with:
-          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
-          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
-          tags: tag:github
-          ping: ${{ vars.DSM_HOST }}
+          age-key: ${{ secrets.AGE_KEY }}
+          ssh-key: ${{ secrets.SSH_KEY }}
+          ssh-identity: id_ed25519_github
+          tailscale-oauth-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          dsm-host: ${{ vars.DSM_HOST }}
       - uses: opentofu/setup-opentofu@v2
       - run: tofu init
       - run: tofu validate -no-color
       - run: tofu plan -destroy -out=out.tfplan
+        timeout-minutes: 1
       - run: tofu apply -auto-approve out.tfplan
