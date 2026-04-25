@@ -9,6 +9,6 @@
       regexp="^PasswordAuthentication"
       line="PasswordAuthentication no"
       state=present
-      validate: sshd -t -f %s
+    validate: sshd -t -f %s
     notify:
       - restart sshd
