@@ -8,4 +8,4 @@
       dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
       content: "PasswordAuthentication no"
     notify:
-    - restart ssh
+    - restart sshd
