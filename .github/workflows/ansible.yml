@@ -1,0 +1,32 @@
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ansible/**'
+    branches:
+      - main
+
+name: ansible
+
+jobs:
+  playbook:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/init
+        with:
+          age-key: ${{ secrets.AGE_KEY }}
+          ssh-key: ${{ secrets.SSH_KEY }}
+          tailscale-oauth-id: ${{ secrets.TAILSCALE_OAUTH_ID }}
+          tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          dsm-host: ${{ vars.DSM_HOST }}
+      - run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo apt-add-repository -y ppa:ansible/ansible
+          sudo apt update
+          sudo apt install -y ansible
+      - run: ansible-playbook -i hosts.yml remote.yml

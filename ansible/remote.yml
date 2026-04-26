@@ -3,6 +3,9 @@
   remote_user: root
   
   tasks:
+  - name: Wait for server
+    ansible.builtin.wait_for_connection:
+
   - name: Disallow SSH password authentication
     ansible.builtin.copy:
       dest: /etc/ssh/sshd_config.d/disablePasswordAuth.conf
