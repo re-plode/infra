@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'ansible/**'
+      - 'config/**'
     branches:
       - main
 

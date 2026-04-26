@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'terraform/**'
+      - 'config/**'
     branches:
       - main
 
