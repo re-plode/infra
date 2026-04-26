@@ -14,7 +14,7 @@
     community.general.logrotate:
       name: traefik
       config_dir: /etc/logrotate.d
-      shred_cycles: 0
+      shred_cycles: 1
       paths:
       - /var/lib/containers/traefik/logs/access.log
       rotation_period: daily
