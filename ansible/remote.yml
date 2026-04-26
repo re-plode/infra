@@ -10,6 +10,22 @@
     notify:
     - Restart ssh
 
+  - name: Configure log rotation for Traefik
+    community.general.logrotate:
+      name: traefik
+      paths:
+      - /var/lib/containers/traefik/logs/access.log
+      rotation_period: daily
+      rotate_count: 7
+      compress: true
+      delay_compress: true
+      missing_ok: true
+      not_if_empty: true
+      create: "0640 root root"
+      shared_scripts: true
+      post_rotate:
+      - "docker kill --signal=\"USR1\" $(docker ps | grep traefik | awk '{print $1}') 2>/dev/null || true"
+
   handlers:
   - name: Restart ssh
     ansible.builtin.service:
