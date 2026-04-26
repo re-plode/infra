@@ -56,6 +56,7 @@ jobs:
           tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           dsm-host: ${{ vars.DSM_HOST }}
       - run: |
+          sudo apt-add-repository -y ppa:ansible/ansible
           sudo apt update
           sudo apt install -y ansible
       - run: ansible-playbook -i hosts.yml remote.yml
