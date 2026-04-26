@@ -2,6 +2,8 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - '.github/actions/**'
+      - '.github/workflows/ansible.yml'
       - 'ansible/**'
       - 'config/**'
     branches:
