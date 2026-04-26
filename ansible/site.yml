@@ -1,0 +1,3 @@
+---
+- import_playbook: remote.yml
+- import_playbook: local.yml
