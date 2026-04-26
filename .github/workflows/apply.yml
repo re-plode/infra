@@ -61,7 +61,5 @@ jobs:
           sudo apt-add-repository -y ppa:ansible/ansible
           sudo apt update
           sudo apt install -y ansible
-      - run: ansible-playbook -v -i hosts.yml remote.yml
+      - run: ansible-playbook -i hosts.yml remote.yml
         working-directory: ./ansible
-        env:
-          ANSIBLE_DEBUG: True
