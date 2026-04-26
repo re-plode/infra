@@ -63,3 +63,5 @@ jobs:
           sudo apt install -y ansible
       - run: ansible-playbook -v -i hosts.yml remote.yml
         working-directory: ./ansible
+        env:
+          ANSIBLE_DEBUG: True
