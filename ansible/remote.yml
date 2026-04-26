@@ -23,8 +23,7 @@
       not_if_empty: true
       create: "0640 root root"
       shared_scripts: true
-      post_rotate:
-      - "docker kill --signal=\"USR1\" $(docker ps | grep traefik | awk '{print $1}') 2>/dev/null || true"
+      post_rotate: "docker kill --signal=\"USR1\" $(docker ps | grep traefik | awk '{print $1}') 2>/dev/null || true"
 
   handlers:
   - name: Restart ssh
