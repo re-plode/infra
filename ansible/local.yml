@@ -1,0 +1,7 @@
+---
+- hosts: s920p
+  remote_user: docker
+
+  tasks:
+  - name: Wait for server
+    ansible.builtin.wait_for_connection:
