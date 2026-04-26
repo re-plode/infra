@@ -12,6 +12,7 @@
 
   - name: Configure log rotation for Traefik
     community.general.logrotate:
+      name: traefik
       paths:
       - /var/lib/containers/traefik/logs/access.log
       rotation_period: daily
