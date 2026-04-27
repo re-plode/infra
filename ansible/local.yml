@@ -8,8 +8,38 @@
 
   - name: Template /volume2/var/kanboard/data/config.php
     ansible.builtin.template:
-      src: ../files/s920p/var/kanboard/data/config.php.j2
+      src: ./files/s920p/var/kanboard/data/config.php.j2
       dest: /volume2/var/kanboard/data/config.php
       owner: 100
       group: 101
       mode: '0640'
+
+  - name: Create /volume2/docker/kan
+    ansible.builtin.file:
+      path: /volume2/docker/kan
+      state: directory
+      owner: 400000
+      group: 400000
+      mode: '0755'
+
+  - name: Template /volume2/docker/kan/compose.yaml
+    ansible.builtin.template:
+      src: ./compose/kan/compose.yaml.j2
+      dest: /volume2/docker/kan/compose.yaml
+      owner: 400000
+      group: 400000
+      mode: '0644'
+    register: kan_compose
+
+  - name: Down kan
+    community.docker.docker_compose_v2:
+      docker_cli: /usr/local/bin/docker
+      project_src: /volume2/docker/kan
+      state: absent
+    when: kan_compose is changed
+
+  - name: Up kan
+    community.docker.docker_compose_v2:
+      docker_cli: /usr/local/bin/docker
+      project_src: /volume2/docker/kan
+      state: present
