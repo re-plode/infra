@@ -151,7 +151,7 @@ resource "docker_image" "images" {
     "fosrl/pangolin"                    = "1.17.1"
     "fosrl/gerbil"                      = "1.3.1"
     "crowdsecurity/crowdsec"            = "v1.7.7-debian"
-    "traefik"                           = "3.6.13"
+    "traefik"                           = "3.6.14"
     "fosrl/newt"                        = "1.11.0"
     "fosrl/olm"                         = "1.4.4"
     "adguard/adguardhome"               = "v0.107.74"
@@ -162,7 +162,7 @@ resource "docker_image" "images" {
     "henrygd/beszel-agent"              = "0.18.7"
     "crazymax/diun"                     = "4.31.0"
     "portainer/portainer-ce"            = "2.40.0-alpine"
-    "amir20/dozzle"                     = "v10.4.1"
+    "amir20/dozzle"                     = "v10.5.0"
     "quay.io/oauth2-proxy/oauth2-proxy" = "v7.15.2-alpine"
     "caddy"                             = "2.11.2-alpine"
   })

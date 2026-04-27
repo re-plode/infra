@@ -132,7 +132,7 @@ resource "synology_container_project" "netsvc" {
 
   services = {
     traefik = {
-      image   = "traefik:3.6.13"
+      image   = "traefik:3.6.14"
       restart = "unless-stopped"
       user    = "root"
 
@@ -365,7 +365,7 @@ resource "synology_container_project" "monsvc" {
     }
 
     dozzle_agent = {
-      image   = "amir20/dozzle:v10.4.1"
+      image   = "amir20/dozzle:v10.5.0"
       restart = "unless-stopped"
       command = ["agent"]
 
