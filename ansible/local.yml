@@ -5,3 +5,11 @@
   tasks:
   - name: Wait for server
     ansible.builtin.wait_for_connection:
+
+  - name: Template /volume2/var/kanboard/data/config.php
+    ansible.builtin.template:
+      src: ../files/s920p/var/kanboard/data/config.php.j2
+      dest: /volume2/var/kanboard/data/config.php
+      owner: 100
+      group: 101
+      mode: '0640'

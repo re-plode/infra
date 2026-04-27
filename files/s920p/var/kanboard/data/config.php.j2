@@ -1,0 +1,24 @@
+<?php
+
+define('DEBUG', false);
+
+defined('ENABLE_URL_REWRITE') or define('ENABLE_URL_REWRITE', true);
+defined('LOG_DRIVER') or define('LOG_DRIVER', 'system');
+
+define('MAIL_CONFIGURATION', false);
+// Use "smtp" as the mail transport
+define('MAIL_TRANSPORT', 'smtp');
+
+// Define server settings
+define('MAIL_SMTP_HOSTNAME', 'smtp-relay.brevo.com');
+define('MAIL_SMTP_PORT', 587);
+
+// null, ssl or tls
+define('MAIL_SMTP_ENCRYPTION', 'tls');
+
+// Credentials for SMTP server authentication (optional)
+define('MAIL_SMTP_USERNAME', '{{ secrets.brevo.smtp_username }}');
+define('MAIL_SMTP_PASSWORD', '{{ secrets.brevo.smtp_password }}');
+
+define('MAIL_FROM', 'noreply@replo.de');
+
