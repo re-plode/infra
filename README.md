@@ -19,5 +19,5 @@ $ tofu init
 $ tofu plan
 $ tofu apply
 $ cd ../ansible
-$ ansible-playbook -i hosts.yml remote.yml
+$ ansible-playbook site.yml
 ```
