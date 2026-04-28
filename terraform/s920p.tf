@@ -281,6 +281,7 @@ resource "synology_container_project" "netsvc" {
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.enabled"  = "true"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.hostname" = "172.17.0.1"
+        "pangolin.public-resources.adguard-local.targets[0].healthcheck.path"     = "/login.html"
         "pangolin.public-resources.adguard-local.targets[0].healthcheck.port"     = "3000"
       }
 

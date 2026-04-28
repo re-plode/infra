@@ -427,7 +427,7 @@ resource "docker_container" "adguardhome" {
       "pangolin.public-resources.dns.targets[0].healthcheck.enabled"  = "true"
       "pangolin.public-resources.dns.targets[0].healthcheck.method"   = "GET"
       "pangolin.public-resources.dns.targets[0].healthcheck.hostname" = "172.254.0.1"
-      "pangolin.public-resources.dns.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.dns.targets[0].healthcheck.path"     = "/login.html"
       "pangolin.public-resources.dns.targets[0].healthcheck.port"     = "3000"
     })
     content {
