@@ -114,7 +114,6 @@ resource "hcloud_primary_ip" "internal_net_ip" {
   name              = "primary_ip-126634539"
   type              = "ipv4"
   location          = "nbg1"
-  assignee_type     = "server"
   delete_protection = true
   auto_delete       = false
 }

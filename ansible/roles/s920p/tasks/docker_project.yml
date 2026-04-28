@@ -1,4 +1,18 @@
-- name: Copy {{ project_name }}/var
+- name: Copy {{ project_name }}/var files
+  ansible.builtin.template:
+    src: "{{ filetree_item.src }}"
+    dest: /volume2/var/{{ filetree_item.path }}
+    owner: 100
+    group: 101
+    mode: '0640'
+  with_community.general.filetree: ../files/{{ project_name }}/var
+  loop_control:
+    label: "{{ filetree_item.path }}"
+    loop_var: filetree_item
+  when: filetree_item.state == 'file'
+  register: out_filetree
+
+- name: Copy {{ project_name }}/var templates
   ansible.builtin.template:
     src: "{{ filetree_item.src }}"
     dest: /volume2/var/{{ (filetree_item.path | splitext)[0] }}
@@ -10,7 +24,7 @@
     label: "{{ filetree_item.path }}"
     loop_var: filetree_item
   when: filetree_item.state == 'file'
-  register: out_filetree
+  register: out_filetree_tpl
 
 - name: Assert {{ project_name }} project path
   ansible.builtin.file:
@@ -34,7 +48,7 @@
     docker_cli: /usr/local/bin/docker
     project_src: /volume2/docker/{{ project_name }}
     state: absent
-  when: out_compose is changed or out_filetree is changed
+  when: out_compose is changed or out_filetree is changed or out_filetree_tpl is changed
 
 - name: Bring up {{ project_name }}
   community.docker.docker_compose_v2:

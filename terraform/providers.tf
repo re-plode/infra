@@ -8,11 +8,6 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
-    synology = {
-      source = "synology-community/synology"
-      # Version 0.6.10 fails to check response
-      version = "<= 0.6.9"
-    }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
@@ -67,16 +62,6 @@ terraform {
 
 provider "mailgun" {
   api_key = sensitive(data.sops_file.secrets.data["mailgun.api_key"])
-}
-
-provider "synology" {
-  host            = "https://${var.dsm_host}:5001"
-  user            = sensitive(data.sops_file.secrets.data["dsm.username"])
-  password        = sensitive(data.sops_file.secrets.data["dsm.password"])
-  skip_cert_check = true
-  session_cache = {
-    mode = "memory"
-  }
 }
 
 provider "docker" {
