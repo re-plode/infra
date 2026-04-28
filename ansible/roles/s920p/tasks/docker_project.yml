@@ -1,0 +1,43 @@
+- name: Copy {{ project_name }}/var
+  ansible.builtin.template:
+    src: "{{ filetree_item.src }}"
+    dest: /volume2/var/{{ (filetree_item.path | splitext)[0] }}
+    owner: 100
+    group: 101
+    mode: '0640'
+  with_community.general.filetree: ../templates/{{ project_name }}/var
+  loop_control:
+    label: "{{ filetree_item.path }}"
+    loop_var: filetree_item
+  when: filetree_item.state == 'file'
+  register: out_filetree
+
+- name: Assert {{ project_name }} project path
+  ansible.builtin.file:
+    path: /volume2/docker/{{ project_name }}
+    state: directory
+    owner: 400000
+    group: 400000
+    mode: '0755'
+
+- name: Copy {{ project_name }} compose.yml
+  ansible.builtin.template:
+    src: ./templates/{{ project_name }}/compose.yml.j2
+    dest: /volume2/docker/{{ project_name }}/compose.yml
+    owner: 400000
+    group: 400000
+    mode: '0644'
+  register: out_compose
+
+- name: Bring down {{ project_name }}
+  community.docker.docker_compose_v2:
+    docker_cli: /usr/local/bin/docker
+    project_src: /volume2/docker/{{ project_name }}
+    state: absent
+  when: out_compose is changed or out_filetree is changed
+
+- name: Bring up {{ project_name }}
+  community.docker.docker_compose_v2:
+    docker_cli: /usr/local/bin/docker
+    project_src: /volume2/docker/{{ project_name }}
+    state: present

@@ -1,0 +1,12 @@
+- ansible.builtin.wait_for_connection:
+
+- ansible.builtin.include_tasks: docker_project.yml
+  vars:
+    project_name: "{{ item }}"
+  loop:
+    - netsvc # has to come first to create networks
+    - monsvc
+    - kan
+    - rss
+    - mmclients
+    - mmproviders

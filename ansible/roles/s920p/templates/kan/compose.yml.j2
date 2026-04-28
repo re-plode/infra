@@ -1,0 +1,57 @@
+services:
+  kan:
+    deploy:
+      replicas: 1
+    environment:
+      MAIL_FROM: noreply@replo.de
+      SMTP_ENCRYPTION: tls
+      SMTP_HELO: tls
+      SMTP_HOSTNAME: smtp-relay.brevo.com
+      SMTP_PASSWORD: {{ secrets.brevo.smtp_password }}
+      SMTP_PORT: "587"
+      SMTP_USERNAME: {{ secrets.brevo.smtp_username }}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:80/healthcheck.php || exit 1
+      interval: 10s
+      start_period: 30s
+    image: kanboard/kanboard:v1.2.52
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.kan.auth.auto-login-idp: "2"
+      pangolin.public-resources.kan.auth.sso-enabled: "true"
+      pangolin.public-resources.kan.auth.sso-roles[0]: Member
+      pangolin.public-resources.kan.full-domain: kan.replo.de
+      pangolin.public-resources.kan.name: Kanboard
+      pangolin.public-resources.kan.protocol: http
+      pangolin.public-resources.kan.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.kan.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.kan.targets[0].healthcheck.method: GET
+      pangolin.public-resources.kan.targets[0].healthcheck.path: /healthcheck.php
+      pangolin.public-resources.kan.targets[0].healthcheck.port: "8082"
+      pangolin.public-resources.kan.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.kan.targets[0].method: http
+      pangolin.public-resources.kan.targets[0].port: "8082"
+      traefik.enable: "true"
+      traefik.http.routers.kan.entrypoints: websecure
+      traefik.http.routers.kan.rule: Host(`kan.replo.de`)
+      traefik.http.routers.kan.tls.certresolver: cloudflare
+    networks:
+      kan: {}
+    ports:
+      - target: 80
+        published: "8082"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume2/var/kanboard/data
+        target: /var/www/app/data
+      - type: bind
+        source: /volume2/var/kanboard/plugins
+        target: /var/www/app/plugins
+networks:
+  kan:
+    name: kan
+    external: true

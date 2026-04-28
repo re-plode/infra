@@ -1,0 +1,82 @@
+services:
+  pg:
+    deploy:
+      replicas: 1
+    environment:
+      POSTGRES_DB: miniflux
+      POSTGRES_PASSWORD: '{{ secrets.miniflux.database_password }}'
+      POSTGRES_USER: miniflux
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -U
+        - miniflux
+      interval: 10s
+      start_period: 30s
+    image: postgres:18.3-alpine
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      traefik.enable: "false"
+    networks:
+      rss: {}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume2/var/miniflux-pg
+        target: /var/lib/postgresql
+  rss:
+    deploy:
+      replicas: 1
+    environment:
+      BASE_URL: https://rss.replo.de
+      DATABASE_URL: postgres://miniflux:{{ secrets.miniflux.database_password }}@pg/miniflux?sslmode=disable
+      FETCHER_ALLOW_PRIVATE_NETWORKS: "1"
+      INTEGRATION_ALLOW_PRIVATE_NETWORKS: "1"
+      OAUTH2_CLIENT_ID: {{ secrets.miniflux.oauth_client_id }}
+      OAUTH2_CLIENT_SECRET: {{ secrets.miniflux.oauth_client_secret }}
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT: https://id.replo.de
+      OAUTH2_PROVIDER: oidc
+      OAUTH2_REDIRECT_URL: https://rss.replo.de/oauth2/oidc/callback
+      OAUTH2_USER_CREATION: "1"
+      RUN_MIGRATIONS: "1"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 --spider http://localhost:8080/healthcheck || exit 1
+      interval: 10s
+      start_period: 30s
+    image: miniflux/miniflux:2.2.19
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.rss.auth.auto-login-idp: "2"
+      pangolin.public-resources.rss.auth.sso-enabled: "true"
+      pangolin.public-resources.rss.auth.sso-roles[0]: Member
+      pangolin.public-resources.rss.full-domain: rss.replo.de
+      pangolin.public-resources.rss.name: Miniflux
+      pangolin.public-resources.rss.protocol: http
+      pangolin.public-resources.rss.rules[0].action: allow
+      pangolin.public-resources.rss.rules[0].match: path
+      pangolin.public-resources.rss.rules[0].value: /reader/api/*
+      pangolin.public-resources.rss.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.rss.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.rss.targets[0].healthcheck.method: GET
+      pangolin.public-resources.rss.targets[0].healthcheck.port: "8091"
+      pangolin.public-resources.rss.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.rss.targets[0].method: http
+      pangolin.public-resources.rss.targets[0].port: "8091"
+      traefik.enable: "true"
+      traefik.http.routers.rss.entrypoints: websecure
+      traefik.http.routers.rss.rule: Host(`rss.replo.de`)
+      traefik.http.routers.rss.tls.certresolver: cloudflare
+    networks:
+      rss: {}
+    ports:
+      - target: 8080
+        published: "8091"
+        protocol: tcp
+    restart: unless-stopped
+networks:
+  rss:
+    name: rss
+    external: true

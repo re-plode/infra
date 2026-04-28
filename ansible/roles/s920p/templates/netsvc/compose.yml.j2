@@ -1,0 +1,141 @@
+services:
+  adguardhome:
+    deploy:
+      replicas: 1
+    dns:
+      - 9.9.9.9
+      - 149.112.112.112
+    healthcheck:
+      test:
+        - CMD
+        - nslookup
+        - replo.de
+        - 127.0.0.1
+      timeout: 10s
+      interval: 10s
+      retries: 15
+    image: adguard/adguardhome:v0.107.74
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.adguard-local.auth.sso-enabled: "true"
+      pangolin.public-resources.adguard-local.auth.sso-roles[0]: Member
+      pangolin.public-resources.adguard-local.full-domain: dns1.replo.de
+      pangolin.public-resources.adguard-local.name: Adguard (local)
+      pangolin.public-resources.adguard-local.protocol: http
+      pangolin.public-resources.adguard-local.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.adguard-local.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.adguard-local.targets[0].healthcheck.method: GET
+      pangolin.public-resources.adguard-local.targets[0].healthcheck.path: /login.html
+      pangolin.public-resources.adguard-local.targets[0].healthcheck.port: "3000"
+      pangolin.public-resources.adguard-local.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.adguard-local.targets[0].method: http
+      pangolin.public-resources.adguard-local.targets[0].port: "3000"
+      traefik.enable: "true"
+      traefik.http.routers.adguard.entrypoints: websecure
+      traefik.http.routers.adguard.rule: Host(`dns1.replo.de`)
+      traefik.http.routers.adguard.tls.certresolver: cloudflare
+      traefik.http.services.adguard.loadbalancer.server.port: "80"
+    network_mode: host
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: /volume2/var/adguard/work
+        target: /opt/adguardhome/work
+      - type: bind
+        source: /volume2/var/adguard/conf
+        target: /opt/adguardhome/conf
+  newt:
+    deploy:
+      replicas: 1
+    environment:
+      DOCKER_SOCKET: /var/run/docker.sock
+      NEWT_ID: {{ secrets.pangolin.s920p_newt_id }}
+      NEWT_SECRET: {{ secrets.pangolin.s920p_newt_secret }}
+      PANGOLIN_ENDPOINT: https://access.replo.de
+    image: fosrl/newt:1.12.0
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      traefik.enable: "false"
+    networks:
+      netsvc: {}
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+  olm:
+    cap_add:
+      - CAP_NET_ADMIN
+    deploy:
+      replicas: 1
+    environment:
+      OLM_ID: {{ secrets.pangolin.s920p_cli_id }}
+      OLM_SECRET: {{ secrets.pangolin.s920p_cli_secret }}
+      PANGOLIN_ENDPOINT: https://access.replo.de
+    image: fosrl/olm:1.5.0
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      traefik.enable: "false"
+    network_mode: host
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: /dev/net/tun
+        target: /dev/net/tun
+  traefik:
+    deploy:
+      replicas: 1
+    environment:
+      CF_DNS_API_TOKEN: {{ secrets.cloudflare.dns_api_token }}
+    image: traefik:3.6.14
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      traefik.enable: "true"
+      traefik.http.routers.dashboard.entrypoints: web
+      traefik.http.routers.dashboard.rule: Host(`s920p.replo`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.services.dashboard.loadbalancer.server.port: "8080"
+    networks:
+      appsvc: {}
+      kan: {}
+      media: {}
+      netsvc: {}
+      rss: {}
+    ports:
+      - target: 80
+        published: "80"
+        protocol: tcp
+      - target: 443
+        published: "443"
+        protocol: tcp
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /volume2/var/traefik/traefik.toml
+        target: /etc/traefik/traefik.toml
+      - type: bind
+        source: /volume2/var/traefik/acme.json
+        target: /etc/traefik/acme.json
+      - type: bind
+        source: /volume2/var/traefik/config
+        target: /etc/traefik/config
+networks:
+  appsvc:
+    name: appsvc
+  kan:
+    name: kan
+  media:
+    name: media
+  netsvc:
+    name: netsvc
+  rss:
+    name: rss
