@@ -1,4 +1,4 @@
 var_dirs:
-- data
-- config
-- cache
+- backrest/data
+- backrest/config
+- backrest/cache

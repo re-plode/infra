@@ -4,7 +4,7 @@
     files_matching: "{{ project_name }}.yml"
 
 - ansible.builtin.file:
-    path: /volume2/var/{{ project_name }}/{{ var_dir | trim('/') }}
+    path: /volume2/var/{{ var_dir | trim('/') }}
     state: directory
     owner: 100
     group: 101
