@@ -708,6 +708,9 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.sonarr.targets[0].healthcheck.path"     = "/ping"
         "pangolin.public-resources.sonarr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.sonarr.targets[0].healthcheck.port"     = "8989"
+        "pangolin.public-resources.sonarr.rules[0].action"                 = "allow"
+        "pangolin.public-resources.sonarr.rules[0].match"                  = "path"
+        "pangolin.public-resources.sonarr.rules[0].value"                  = "/api/*"
       }
 
       healthcheck = {
