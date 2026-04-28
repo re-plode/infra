@@ -12,7 +12,7 @@
   loop: "{{ var_dirs }}"
   loop_control:
     loop_var: var_dir
-  when: var_dirs is not none
+  when: var_dirs is defined
 
 - name: Copy {{ project_name }}/var files
   ansible.builtin.template:
