@@ -6,13 +6,4 @@
   - ansible.builtin.wait_for_connection:
 
   - ansible.builtin.include_role:
-      name: docker_project
-    vars:
-      project_name: "{{ item }}"
-    loop:
-      - netsvc # has to come first to create networks
-      - monsvc
-      - kan
-      - rss
-      - mmclients
-      - mmproviders
+      name: s920p
