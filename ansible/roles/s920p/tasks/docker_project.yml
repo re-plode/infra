@@ -1,3 +1,13 @@
+- name: Load {{ project_name }} vars
+  ansible.builtin.include_vars:
+    dir: ../vars
+    files_matching: "{{ project_name }}.yml"
+
+- ansible.builtin.debug:
+    var: "{{ item }}"
+  loop: "{{ var_dirs }}"
+  when: var_dirs is not none
+
 - name: Copy {{ project_name }}/var files
   ansible.builtin.template:
     src: "{{ filetree_item.src }}"

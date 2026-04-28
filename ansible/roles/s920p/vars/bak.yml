@@ -1,0 +1,4 @@
+var_dirs:
+- data
+- config
+- cache

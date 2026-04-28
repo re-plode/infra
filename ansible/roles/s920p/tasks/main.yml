@@ -4,9 +4,10 @@
   vars:
     project_name: "{{ item }}"
   loop:
+    - bak
     - netsvc # has to come first to create networks
     - monsvc
-    - kan
-    - rss
     - mmclients
     - mmproviders
+    - kan
+    - rss
