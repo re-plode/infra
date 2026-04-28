@@ -918,7 +918,7 @@ resource "synology_container_project" "mmproviders" {
     }
 
     cast = {
-      image   = "advplyr/audiobookshelf:2.33.2"
+      image   = "advplyr/audiobookshelf:2.34.0"
       restart = "unless-stopped"
 
       environment = {
