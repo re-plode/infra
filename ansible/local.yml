@@ -1,9 +1,5 @@
 ---
 - hosts: s920p
   remote_user: docker
-
-  tasks:
-  - ansible.builtin.wait_for_connection:
-
-  - ansible.builtin.include_role:
-      name: s920p
+  roles:
+  - s920p
