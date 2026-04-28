@@ -1,0 +1,433 @@
+services:
+  cast:
+    deploy:
+      replicas: 1
+    environment:
+      TZ: Europe/Berlin
+    image: advplyr/audiobookshelf:2.34.0
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.cast.auth.auto-login-idp: "2"
+      pangolin.public-resources.cast.auth.sso-enabled: "true"
+      pangolin.public-resources.cast.auth.sso-roles[0]: Member
+      pangolin.public-resources.cast.full-domain: cast.replo.de
+      pangolin.public-resources.cast.name: Audiobookshelf
+      pangolin.public-resources.cast.protocol: http
+      pangolin.public-resources.cast.rules[0].action: allow
+      pangolin.public-resources.cast.rules[0].match: path
+      pangolin.public-resources.cast.rules[0].value: /api/*
+      pangolin.public-resources.cast.rules[1].action: allow
+      pangolin.public-resources.cast.rules[1].match: path
+      pangolin.public-resources.cast.rules[1].value: /login
+      pangolin.public-resources.cast.rules[2].action: allow
+      pangolin.public-resources.cast.rules[2].match: path
+      pangolin.public-resources.cast.rules[2].value: /auth/*
+      pangolin.public-resources.cast.rules[3].action: allow
+      pangolin.public-resources.cast.rules[3].match: path
+      pangolin.public-resources.cast.rules[3].value: /feed*
+      pangolin.public-resources.cast.rules[4].action: allow
+      pangolin.public-resources.cast.rules[4].match: path
+      pangolin.public-resources.cast.rules[4].value: /socket.io/
+      pangolin.public-resources.cast.rules[5].action: allow
+      pangolin.public-resources.cast.rules[5].match: path
+      pangolin.public-resources.cast.rules[5].value: /status
+      pangolin.public-resources.cast.rules[6].action: allow
+      pangolin.public-resources.cast.rules[6].match: path
+      pangolin.public-resources.cast.rules[6].value: /logout
+      pangolin.public-resources.cast.rules[7].action: allow
+      pangolin.public-resources.cast.rules[7].match: path
+      pangolin.public-resources.cast.rules[7].value: /ping
+      pangolin.public-resources.cast.rules[8].action: allow
+      pangolin.public-resources.cast.rules[8].match: path
+      pangolin.public-resources.cast.rules[8].value: /public/*
+      pangolin.public-resources.cast.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.cast.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.cast.targets[0].healthcheck.method: GET
+      pangolin.public-resources.cast.targets[0].healthcheck.port: "13378"
+      pangolin.public-resources.cast.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.cast.targets[0].method: http
+      pangolin.public-resources.cast.targets[0].port: "13378"
+      traefik.enable: "true"
+      traefik.http.routers.cast.entrypoints: websecure
+      traefik.http.routers.cast.rule: Host(`cast.replo.de`)
+      traefik.http.routers.cast.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 80
+        published: "13378"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1/media/audiobookshelf/audiobooks
+        target: /audiobooks
+      - type: bind
+        source: /volume1/media/audiobookshelf/podcasts
+        target: /podcasts
+      - type: bind
+        source: /volume2/var/audiobookshelf/config
+        target: /config
+      - type: bind
+        source: /volume2/var/audiobookshelf/metadata
+        target: /metadata
+  libation:
+    deploy:
+      replicas: 1
+    environment:
+      SLEEP_TIME: 30m
+    image: rmcrackan/libation:13.3.3
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      traefik.enable: "false"
+    networks:
+      media: {}
+    restart: unless-stopped
+    user: 1027:65536
+    volumes:
+      - type: bind
+        source: /volume1/media/audiobookshelf
+        target: /data
+      - type: bind
+        source: /volume2/var/libation
+        target: /config
+  nzb:
+    deploy:
+      replicas: 1
+    environment:
+      PGID: "65536"
+      PUID: "1027"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:8080 || exit 1
+      interval: 10s
+      start_period: 30s
+    image: linuxserver/sabnzbd:4.5.5
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.nzb.auth.auto-login-idp: "2"
+      pangolin.public-resources.nzb.auth.sso-enabled: "true"
+      pangolin.public-resources.nzb.auth.sso-roles[0]: Member
+      pangolin.public-resources.nzb.full-domain: nzb.replo.de
+      pangolin.public-resources.nzb.name: SABnzbd
+      pangolin.public-resources.nzb.protocol: http
+      pangolin.public-resources.nzb.rules[0].action: allow
+      pangolin.public-resources.nzb.rules[0].match: path
+      pangolin.public-resources.nzb.rules[0].value: /api/*
+      pangolin.public-resources.nzb.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.nzb.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.nzb.targets[0].healthcheck.method: GET
+      pangolin.public-resources.nzb.targets[0].healthcheck.port: "8081"
+      pangolin.public-resources.nzb.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.nzb.targets[0].method: http
+      pangolin.public-resources.nzb.targets[0].port: "8081"
+      traefik.enable: "true"
+      traefik.http.routers.nzb.entrypoints: websecure
+      traefik.http.routers.nzb.rule: Host(`nzb.replo.de`)
+      traefik.http.routers.nzb.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 8080
+        published: "8081"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1/private/sabnzbd
+        target: /data
+      - type: bind
+        source: /volume2/var/sabnzbd
+        target: /config
+  prowlarr:
+    deploy:
+      replicas: 1
+    environment:
+      PGID: "65536"
+      PUID: "1027"
+      TZ: Europe/Berlin
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:9696 || exit 1
+      interval: 10s
+      start_period: 30s
+    image: linuxserver/prowlarr:2.3.5
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.prowlarr.auth.auto-login-idp: "2"
+      pangolin.public-resources.prowlarr.auth.sso-enabled: "true"
+      pangolin.public-resources.prowlarr.auth.sso-roles[0]: Member
+      pangolin.public-resources.prowlarr.full-domain: prowlarr.replo.de
+      pangolin.public-resources.prowlarr.name: Prowlarr
+      pangolin.public-resources.prowlarr.protocol: http
+      pangolin.public-resources.prowlarr.rules[0].action: allow
+      pangolin.public-resources.prowlarr.rules[0].match: path
+      pangolin.public-resources.prowlarr.rules[0].value: /api/*
+      pangolin.public-resources.prowlarr.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.prowlarr.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.prowlarr.targets[0].healthcheck.method: GET
+      pangolin.public-resources.prowlarr.targets[0].healthcheck.path: /ping
+      pangolin.public-resources.prowlarr.targets[0].healthcheck.port: "9696"
+      pangolin.public-resources.prowlarr.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.prowlarr.targets[0].method: http
+      pangolin.public-resources.prowlarr.targets[0].port: "9696"
+      traefik.enable: "true"
+      traefik.http.routers.prowlarr.entrypoints: websecure
+      traefik.http.routers.prowlarr.rule: Host(`prowlarr.replo.de`)
+      traefik.http.routers.prowlarr.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 9696
+        published: "9696"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume2/var/prowlarr
+        target: /config
+  radarr:
+    deploy:
+      replicas: 1
+    environment:
+      PGID: "65536"
+      PUID: "1027"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:7878 || exit 1
+      interval: 10s
+      start_period: 30s
+    image: linuxserver/radarr:6.1.1
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.radarr.auth.auto-login-idp: "2"
+      pangolin.public-resources.radarr.auth.sso-enabled: "true"
+      pangolin.public-resources.radarr.auth.sso-roles[0]: Member
+      pangolin.public-resources.radarr.full-domain: radarr.replo.de
+      pangolin.public-resources.radarr.name: Radarr
+      pangolin.public-resources.radarr.protocol: http
+      pangolin.public-resources.radarr.rules[0].action: allow
+      pangolin.public-resources.radarr.rules[0].match: path
+      pangolin.public-resources.radarr.rules[0].value: /api/*
+      pangolin.public-resources.radarr.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.radarr.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.radarr.targets[0].healthcheck.method: GET
+      pangolin.public-resources.radarr.targets[0].healthcheck.port: "7878"
+      pangolin.public-resources.radarr.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.radarr.targets[0].method: http
+      pangolin.public-resources.radarr.targets[0].port: "7878"
+      traefik.enable: "true"
+      traefik.http.routers.radarr.entrypoints: websecure
+      traefik.http.routers.radarr.rule: Host(`radarr.replo.de`)
+      traefik.http.routers.radarr.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 7878
+        published: "7878"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1
+        target: /data
+      - type: bind
+        source: /volume2/var/radarr
+        target: /config
+  seerr:
+    deploy:
+      replicas: 1
+    environment:
+      LOG_LEVEL: info
+      TZ: Europe/Berlin
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      timeout: 3s
+      interval: 15s
+      retries: 3
+      start_period: 20s
+    image: seerr/seerr:v3.2.0
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.seerr.auth.auto-login-idp: "2"
+      pangolin.public-resources.seerr.auth.sso-enabled: "true"
+      pangolin.public-resources.seerr.auth.sso-roles[0]: Member
+      pangolin.public-resources.seerr.full-domain: seerr.replo.de
+      pangolin.public-resources.seerr.name: Seerr
+      pangolin.public-resources.seerr.protocol: http
+      pangolin.public-resources.seerr.rules[0].action: allow
+      pangolin.public-resources.seerr.rules[0].match: path
+      pangolin.public-resources.seerr.rules[0].value: /api/*
+      pangolin.public-resources.seerr.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.seerr.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.seerr.targets[0].healthcheck.method: GET
+      pangolin.public-resources.seerr.targets[0].healthcheck.path: /api/v1/status
+      pangolin.public-resources.seerr.targets[0].healthcheck.port: "5055"
+      pangolin.public-resources.seerr.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.seerr.targets[0].method: http
+      pangolin.public-resources.seerr.targets[0].port: "5055"
+      traefik.enable: "true"
+      traefik.http.routers.seerr.entrypoints: websecure
+      traefik.http.routers.seerr.rule: Host(`seerr.replo.de`)
+      traefik.http.routers.seerr.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 5055
+        published: "5055"
+        protocol: tcp
+    restart: unless-stopped
+    user: 1027:65536
+    volumes:
+      - type: bind
+        source: /volume2/var/seerr
+        target: /app/config
+  sonarr:
+    deploy:
+      replicas: 1
+    environment:
+      PGID: "65536"
+      PUID: "1027"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:8989 || exit 1
+      interval: 10s
+      start_period: 30s
+    image: linuxserver/sonarr:4.0.17
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.sonarr.auth.auto-login-idp: "2"
+      pangolin.public-resources.sonarr.auth.sso-enabled: "true"
+      pangolin.public-resources.sonarr.auth.sso-roles[0]: Member
+      pangolin.public-resources.sonarr.full-domain: sonarr.replo.de
+      pangolin.public-resources.sonarr.name: Sonarr
+      pangolin.public-resources.sonarr.protocol: http
+      pangolin.public-resources.sonarr.rules[0].action: allow
+      pangolin.public-resources.sonarr.rules[0].match: path
+      pangolin.public-resources.sonarr.rules[0].value: /api/*
+      pangolin.public-resources.sonarr.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.sonarr.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.sonarr.targets[0].healthcheck.method: GET
+      pangolin.public-resources.sonarr.targets[0].healthcheck.path: /ping
+      pangolin.public-resources.sonarr.targets[0].healthcheck.port: "8989"
+      pangolin.public-resources.sonarr.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.sonarr.targets[0].method: http
+      pangolin.public-resources.sonarr.targets[0].port: "8989"
+      traefik.enable: "true"
+      traefik.http.routers.sonarr.entrypoints: websecure
+      traefik.http.routers.sonarr.rule: Host(`sonarr.replo.de`)
+      traefik.http.routers.sonarr.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 8989
+        published: "8989"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1
+        target: /data
+      - type: bind
+        source: /volume2/var/sonarr
+        target: /config
+  tube:
+    deploy:
+      replicas: 1
+    environment:
+      LOG_LEVEL: info
+      TZ: Europe/Berlin
+    image: keglin/pinchflat:latest
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.tube.auth.auto-login-idp: "2"
+      pangolin.public-resources.tube.auth.sso-enabled: "true"
+      pangolin.public-resources.tube.auth.sso-roles[0]: Member
+      pangolin.public-resources.tube.full-domain: tube.replo.de
+      pangolin.public-resources.tube.name: Pinchflat
+      pangolin.public-resources.tube.protocol: http
+      pangolin.public-resources.tube.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.tube.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.tube.targets[0].healthcheck.method: GET
+      pangolin.public-resources.tube.targets[0].healthcheck.port: "8945"
+      pangolin.public-resources.tube.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.tube.targets[0].method: http
+      pangolin.public-resources.tube.targets[0].port: "8945"
+      traefik.enable: "true"
+      traefik.http.routers.tube.entrypoints: websecure
+      traefik.http.routers.tube.rule: Host(`tube.replo.de`)
+      traefik.http.routers.tube.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 8945
+        published: "8945"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1/media/pinchflat
+        target: /downloads
+      - type: bind
+        source: /volume2/var/pinchflat
+        target: /config
+  whisparr:
+    deploy:
+      replicas: 1
+    environment:
+      PGID: "65536"
+      PUID: "1027"
+      TZ: Europe/Berlin
+      UMASK: "022"
+      WEBUI_PORTS: 6969/tcp
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:6969 || exit 1
+      interval: 10s
+      start_period: 30s
+    image: ghcr.io/hotio/whisparr:v3-v3.3.3
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.whisparr.auth.auto-login-idp: "2"
+      pangolin.public-resources.whisparr.auth.sso-enabled: "true"
+      pangolin.public-resources.whisparr.auth.sso-roles[0]: Member
+      pangolin.public-resources.whisparr.full-domain: whisparr.replo.de
+      pangolin.public-resources.whisparr.name: Whisparr
+      pangolin.public-resources.whisparr.protocol: http
+      pangolin.public-resources.whisparr.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.whisparr.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.whisparr.targets[0].healthcheck.method: GET
+      pangolin.public-resources.whisparr.targets[0].healthcheck.path: /
+      pangolin.public-resources.whisparr.targets[0].healthcheck.port: "6969"
+      pangolin.public-resources.whisparr.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.whisparr.targets[0].method: http
+      pangolin.public-resources.whisparr.targets[0].port: "6969"
+      traefik.enable: "true"
+      traefik.http.routers.whisparr.entrypoints: websecure
+      traefik.http.routers.whisparr.rule: Host(`whisparr.replo.de`)
+      traefik.http.routers.whisparr.tls.certresolver: cloudflare
+    networks:
+      media: {}
+    ports:
+      - target: 6969
+        published: "6969"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume1/private/
+        target: /data
+      - type: bind
+        source: /volume2/var/whisparr
+        target: /config
+networks:
+  media:
+    name: media
+    external: true
