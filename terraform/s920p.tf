@@ -531,6 +531,9 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.prowlarr.targets[0].healthcheck.path"     = "/ping"
         "pangolin.public-resources.prowlarr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.prowlarr.targets[0].healthcheck.port"     = "9696"
+        "pangolin.public-resources.prowlarr.rules[0].action"                 = "allow"
+        "pangolin.public-resources.prowlarr.rules[0].match"                  = "path"
+        "pangolin.public-resources.prowlarr.rules[0].value"                  = "/api/*"
       }
 
       healthcheck = {
@@ -587,6 +590,9 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.nzb.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.nzb.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.nzb.targets[0].healthcheck.port"     = "8081"
+        "pangolin.public-resources.nzb.rules[0].action"                 = "allow"
+        "pangolin.public-resources.nzb.rules[0].match"                  = "path"
+        "pangolin.public-resources.nzb.rules[0].value"                  = "/api/*"
       }
 
       healthcheck = {
@@ -647,6 +653,9 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.radarr.targets[0].healthcheck.method"   = "GET"
         "pangolin.public-resources.radarr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.radarr.targets[0].healthcheck.port"     = "7878"
+        "pangolin.public-resources.radarr.rules[0].action"                 = "allow"
+        "pangolin.public-resources.radarr.rules[0].match"                  = "path"
+        "pangolin.public-resources.radarr.rules[0].value"                  = "/api/*"
       }
 
       healthcheck = {
@@ -773,6 +782,9 @@ resource "synology_container_project" "mmproviders" {
         "pangolin.public-resources.seerr.targets[0].healthcheck.path"     = "/api/v1/status"
         "pangolin.public-resources.seerr.targets[0].healthcheck.hostname" = "172.17.0.1"
         "pangolin.public-resources.seerr.targets[0].healthcheck.port"     = "5055"
+        "pangolin.public-resources.seerr.rules[0].action"                 = "allow"
+        "pangolin.public-resources.seerr.rules[0].match"                  = "path"
+        "pangolin.public-resources.seerr.rules[0].value"                  = "/api/*"
       }
 
       healthcheck = {
