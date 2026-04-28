@@ -200,7 +200,7 @@ resource "synology_container_project" "netsvc" {
     }
 
     newt = {
-      image   = "fosrl/newt:1.11.0"
+      image   = "fosrl/newt:1.12.0"
       restart = "unless-stopped"
       user    = "root"
 
@@ -231,7 +231,7 @@ resource "synology_container_project" "netsvc" {
     }
 
     olm = {
-      image   = "fosrl/olm:1.4.4"
+      image   = "fosrl/olm:1.5.0"
       restart = "unless-stopped"
       user    = "root"
 
