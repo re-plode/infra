@@ -108,6 +108,7 @@ services:
       bak_default: {}
       immich_default: {}
       hoard_default: {}
+      llm_default: {}
     ports:
       - target: 80
         published: "80"
@@ -150,4 +151,7 @@ networks:
     external: true
   hoard_default:
     name: hoard_default
+    external: true
+  llm_default:
+    name: llm_default
     external: true

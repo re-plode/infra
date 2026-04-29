@@ -1,0 +1,33 @@
+# docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+name: llm
+
+services:
+  ollama:
+    image: ollama/ollama:0.22.0
+    labels:
+      io.portainer.accesscontrol.teams: operators
+      pangolin.public-resources.llm.auth.auto-login-idp: "2"
+      pangolin.public-resources.llm.auth.sso-enabled: "true"
+      pangolin.public-resources.llm.auth.sso-roles[0]: Member
+      pangolin.public-resources.llm.full-domain: llm.replo.de
+      pangolin.public-resources.llm.name: Ollama
+      pangolin.public-resources.llm.protocol: http
+      pangolin.public-resources.llm.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.llm.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.llm.targets[0].healthcheck.method: GET
+      pangolin.public-resources.llm.targets[0].healthcheck.path: /
+      pangolin.public-resources.llm.targets[0].healthcheck.port: "11434"
+      pangolin.public-resources.llm.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.llm.targets[0].method: http
+      pangolin.public-resources.llm.targets[0].port: "11434"
+      traefik.enable: "true"
+      traefik.http.routers.llm.entrypoints: websecure
+      traefik.http.routers.llm.rule: Host(`llm.replo.de`)
+      traefik.http.routers.llm.tls.certresolver: cloudflare
+    ports:
+      - 11434:11434
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /volume2/var/ollama
+        target: /root/.ollama

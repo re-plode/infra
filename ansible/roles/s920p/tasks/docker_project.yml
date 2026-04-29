@@ -9,10 +9,9 @@
     owner: 100
     group: 101
     mode: '0755'
-  loop: "{{ var_dirs }}"
+  loop: "{{ var_dirs | default([]) }}"
   loop_control:
     loop_var: var_dir
-  when: var_dirs is defined
 
 - name: Copy {{ project_name }}/var files
   ansible.builtin.template:
