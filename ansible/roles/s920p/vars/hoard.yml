@@ -1,0 +1,5 @@
+var_dirs:
+- karakeep/data
+- karakeep/meilisearch
+env_files:
+- env

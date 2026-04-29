@@ -1,12 +1,3 @@
-resource "terraform_data" "force_run" {
-  input = timestamp()
-
-  # Comment this to force replacement
-  lifecycle {
-    ignore_changes = [input]
-  }
-}
-
 resource "b2_application_key" "s920p_bak" {
   key_name = "s920p-bak"
   capabilities = [

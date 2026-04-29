@@ -50,14 +50,19 @@
 
 - name: Copy {{ project_name }} compose.yml
   ansible.builtin.template:
-    src: ./templates/{{ project_name }}/compose.yml.j2
-    dest: /volume2/docker/{{ project_name }}/compose.yml
+    src: "{{ fileglob_item }}"
+    dest: /volume2/docker/{{ project_name }}/{{ (fileglob_item | basename | splitext)[0] }}
     owner: 400000
     group: 400000
     mode: '0644'
+  loop_control:
+    loop_var: fileglob_item
+  with_fileglob:
+    - "templates/{{ project_name }}/*.j2"
 
 - name: Bring up {{ project_name }}
   community.docker.docker_compose_v2:
     docker_cli: /usr/local/bin/docker
     project_src: /volume2/docker/{{ project_name }}
+    env_files: "{{ env_files | default([]) }}"
     state: present

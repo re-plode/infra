@@ -106,6 +106,8 @@ services:
       netsvc: {}
       rss: {}
       bak_default: {}
+      immich_default: {}
+      hoard_default: {}
     ports:
       - target: 80
         published: "80"
@@ -142,4 +144,10 @@ networks:
     name: rss
   bak_default:
     name: bak_default
+    external: true
+  immich_default:
+    name: immich_default
+    external: true
+  hoard_default:
+    name: hoard_default
     external: true

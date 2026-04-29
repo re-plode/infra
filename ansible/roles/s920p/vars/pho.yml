@@ -1,0 +1,4 @@
+var_dirs:
+- immich/postgres
+env_files:
+- env
