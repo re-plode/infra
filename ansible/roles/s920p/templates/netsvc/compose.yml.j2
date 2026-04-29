@@ -105,6 +105,7 @@ services:
       media: {}
       netsvc: {}
       rss: {}
+      bak_default: {}
     ports:
       - target: 80
         published: "80"
@@ -139,3 +140,6 @@ networks:
     name: netsvc
   rss:
     name: rss
+  bak_default:
+    name: bak_default
+    external: true

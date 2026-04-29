@@ -1,3 +1,19 @@
+- name: Load {{ project_name }} vars
+  ansible.builtin.include_vars:
+    dir: ../vars
+    files_matching: "{{ project_name }}.yml"
+
+- ansible.builtin.file:
+    path: /volume2/var/{{ var_dir | trim('/') }}
+    state: directory
+    owner: 100
+    group: 101
+    mode: '0755'
+  loop: "{{ var_dirs }}"
+  loop_control:
+    loop_var: var_dir
+  when: var_dirs is defined
+
 - name: Copy {{ project_name }}/var files
   ansible.builtin.template:
     src: "{{ filetree_item.src }}"
@@ -10,7 +26,6 @@
     label: "{{ filetree_item.path }}"
     loop_var: filetree_item
   when: filetree_item.state == 'file'
-  register: out_filetree
 
 - name: Copy {{ project_name }}/var templates
   ansible.builtin.template:
@@ -24,7 +39,6 @@
     label: "{{ filetree_item.path }}"
     loop_var: filetree_item
   when: filetree_item.state == 'file'
-  register: out_filetree_tpl
 
 - name: Assert {{ project_name }} project path
   ansible.builtin.file:
@@ -41,14 +55,6 @@
     owner: 400000
     group: 400000
     mode: '0644'
-  register: out_compose
-
-- name: Bring down {{ project_name }}
-  community.docker.docker_compose_v2:
-    docker_cli: /usr/local/bin/docker
-    project_src: /volume2/docker/{{ project_name }}
-    state: absent
-  when: out_compose is changed or out_filetree is changed or out_filetree_tpl is changed
 
 - name: Bring up {{ project_name }}
   community.docker.docker_compose_v2:
