@@ -6,6 +6,10 @@ services:
       - /volume2/var/backrest/data:/data
       - /volume2/var/backrest/config:/config
       - /volume2/var/backrest/cache:/cache
+      - /volume1/photo:/userdata/photo
+      - /volume1/homes:/userdata/homes
+      - /volume2/var:/userdata/var
+      - /volume2/@database:/userdata/@database
     environment:
       - BACKREST_DATA=/data # path for backrest data. restic binary and the database are placed here.
       - BACKREST_CONFIG=/config/config.json # path for the backrest config file.

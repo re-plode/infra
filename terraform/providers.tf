@@ -24,6 +24,10 @@ terraform {
       source  = "tailscale/tailscale"
       version = "~> 0.28.0"
     }
+    b2 = {
+      source  = "Backblaze/b2"
+      version = "~> 0.12.1"
+    }
   }
 
   backend "s3" {
@@ -82,4 +86,9 @@ provider "tailscale" {
   oauth_client_id     = sensitive(data.sops_file.secrets.data["tailscale.oauth_client_id"])
   oauth_client_secret = sensitive(data.sops_file.secrets.data["tailscale.oauth_client_secret"])
   tailnet             = "TF7Y4wmqJR11CNTRL"
+}
+
+provider "b2" {
+  application_key    = sensitive(data.sops_file.secrets.data["backblaze.application_key"])
+  application_key_id = sensitive(data.sops_file.secrets.data["backblaze.key_id"])
 }
