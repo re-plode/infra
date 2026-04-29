@@ -35,25 +35,8 @@ services:
       DIUN_DEFAULTS_MAXTAGS: "1"
       DIUN_DEFAULTS_SORTTAGS: semver
       DIUN_DEFAULTS_WATCHREPO: "true"
-      DIUN_NOTIF_MAIL_FROM: noreply@replo.de
-      DIUN_NOTIF_MAIL_HOST: smtp-relay.brevo.com
-      DIUN_NOTIF_MAIL_PASSWORD: {{ secrets.brevo.smtp_password }}
-      DIUN_NOTIF_MAIL_PORT: "587"
-      DIUN_NOTIF_MAIL_SSL: "false"
-      DIUN_NOTIF_MAIL_TEMPLATEBODY: |
-        {% raw %}Docker tag {{ if .Entry.Image.HubLink }}[**{{ .Entry.Image }}**]({{ .Entry.Image.HubLink }}){{ else }}**{{ .Entry.Image }}**{{ end }}
-        which you subscribed to through {{ .Entry.Provider }} provider {{ if (eq .Entry.Status "new") }}is available{{ else }}has been updated{{ end }}
-        on **{{ .Entry.Image.Domain }}** registry (triggered by _{{ escapeMarkdown .Meta.Hostname }}_ host).
-
-        This image has been {{ if (eq .Entry.Status "new") }}created{{ else }}updated{{ end }} at
-        <code>{{ .Entry.Manifest.Created.Format "Jan 02, 2006 15:04:05 UTC" }}</code> with digest <code>{{ .Entry.Manifest.Digest }}</code>
-        for <code>{{ .Entry.Manifest.Platform }}</code> platform.{% endraw %}
-
-      DIUN_NOTIF_MAIL_TEMPLATETITLE: |
-        {% raw %}{{ .Entry.Image }} {{ if (eq .Entry.Status "new") }}is available{{ else }}has been updated{{ end }}{% endraw %}
-
-      DIUN_NOTIF_MAIL_TO: root@replo.de
-      DIUN_NOTIF_MAIL_USERNAME: {{ secrets.brevo.smtp_username }}
+      DIUN_NOTIF_PUSHOVER_TOKEN: {{ secrets.pushover.diun_api_key }}
+      DIUN_NOTIF_PUSHOVER_RECIPIENT: {{ secrets.pushover.user_key }}
       DIUN_PROVIDERS_DOCKER: "true"
       DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
       DIUN_WATCH_FIRSTCHECKNOTIF: "true"

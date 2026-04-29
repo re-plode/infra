@@ -776,15 +776,8 @@ resource "docker_container" "diun" {
     "DIUN_DEFAULTS_SORTTAGS=semver",
     "DIUN_DEFAULTS_INCLUDETAGS=${local.diun_include_pattern}",
     "DIUN_DEFAULTS_EXCLUDETAGS=${local.diun_exclude_pattern}",
-    "DIUN_NOTIF_MAIL_HOST=${var.replo_de_smtp_host}",
-    "DIUN_NOTIF_MAIL_PORT=${var.replo_de_smtp_port}",
-    "DIUN_NOTIF_MAIL_SSL=false",
-    "DIUN_NOTIF_MAIL_USERNAME=${sensitive(data.sops_file.secrets.data["brevo.smtp_username"])}",
-    "DIUN_NOTIF_MAIL_PASSWORD=${sensitive(data.sops_file.secrets.data["brevo.smtp_password"])}",
-    "DIUN_NOTIF_MAIL_FROM=${var.replo_de_smtp_from}",
-    "DIUN_NOTIF_MAIL_TO=${var.replo_de_smtp_to}",
-    "DIUN_NOTIF_MAIL_TEMPLATETITLE=${local.diun_mail_template_title}",
-    "DIUN_NOTIF_MAIL_TEMPLATEBODY=${local.diun_mail_template_body}",
+    "DIUN_NOTIF_PUSHOVER_TOKEN=${sensitive(data.sops_file.secrets.data["pushover.diun_api_key"])}",
+    "DIUN_NOTIF_PUSHOVER_RECIPIENT=${sensitive(data.sops_file.secrets.data["pushover.user_key"])}"
   ]
 
   volumes {
