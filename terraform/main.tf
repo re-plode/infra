@@ -82,7 +82,7 @@ resource "mailgun_domain_credential" "noreply_rcheung_com" {
 resource "cloudflare_dns_record" "replo_de_txt_mx" {
   for_each = tomap({
     "@"      = "brevo-code:803fa6d6251d53349cbefb857f15f2ae"
-    "_dmarc" = "v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com"
+    "_dmarc" = "v=DMARC1;p=none;rua=mailto:rua@dmarc.brevo.com,mailto:postmaster@replo.de;ruf=mailto:admin@replo.de"
   })
   zone_id = local.cloudflare_replo_de_zone_id
   content = each.value
