@@ -2,3 +2,4 @@ var_dirs:
 - ollama
 - openwebui
 env_files:
+- openwebui_env
