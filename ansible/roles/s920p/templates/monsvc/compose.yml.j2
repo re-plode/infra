@@ -7,25 +7,23 @@ services:
       KEY: {{ secrets.beszel.pub_key }}
       LISTEN: "45876"
       TOKEN: {{ secrets.beszel.s920p_token }}
+      SMART_DEVICES: /dev/sata1:sat,/dev/sata2:sat,/dev/sata3:sat,/dev/sata4:sat
     image: henrygd/beszel-agent:0.18.7
     labels:
       io.portainer.accesscontrol.teams: operators
       traefik.enable: "false"
     network_mode: host
+    cap_add:
+      - SYS_RAWIO
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
-        read_only: true
-      - type: bind
-        source: /
-        target: /extra-filesystems/root__md0
-        read_only: true
-      - type: bind
-        source: /volume1
-        target: /extra-filesystems/volume1__volume1
-        read_only: true
+      - /dev/sata1:/dev/sata1
+      - /dev/sata2:/dev/sata2
+      - /dev/sata3:/dev/sata3
+      - /dev/sata4:/dev/sata4
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/extra-filesystems/root__md0:ro
+      - /volume1:/extra-filesystems/volume1__volume1:ro
   diun:
     deploy:
       replicas: 1

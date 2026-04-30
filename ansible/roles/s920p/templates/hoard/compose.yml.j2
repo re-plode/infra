@@ -34,6 +34,9 @@ services:
       pangolin.public-resources.hoard.targets[0].hostname: 172.17.0.1
       pangolin.public-resources.hoard.targets[0].method: http
       pangolin.public-resources.hoard.targets[0].port: "3030"
+      pangolin.public-resources.hoard.rules[0].action: allow
+      pangolin.public-resources.hoard.rules[0].match: path
+      pangolin.public-resources.hoard.rules[0].value: /api/*
       traefik.enable: "true"
       traefik.http.routers.hoard.entrypoints: websecure
       traefik.http.routers.hoard.rule: Host(`hoard.replo.de`)
@@ -49,6 +52,8 @@ services:
       - --remote-debugging-address=0.0.0.0
       - --remote-debugging-port=9222
       - --hide-scrollbars
+    labels:
+      traefik.enable: "false"
   meilisearch:
     image: getmeili/meilisearch:v1.41.0
     restart: unless-stopped
@@ -59,6 +64,8 @@ services:
     volumes:
       # - meilisearch:/meili_data
       - /volume2/var/karakeep/meilisearch:/meili_data
+    labels:
+      traefik.enable: "false"
 
 # volumes:
   # meilisearch:

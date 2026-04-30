@@ -45,6 +45,12 @@ services:
       pangolin.public-resources.pho.targets[0].hostname: 172.17.0.1
       pangolin.public-resources.pho.targets[0].method: http
       pangolin.public-resources.pho.targets[0].port: "2283"
+      pangolin.public-resources.pho.rules[0].action: "allow"
+      pangolin.public-resources.pho.rules[0].match: "path"
+      pangolin.public-resources.pho.rules[0].value: "/api/*"
+      pangolin.public-resources.pho.rules[1].action: "allow"
+      pangolin.public-resources.pho.rules[1].match: "path"
+      pangolin.public-resources.pho.rules[1].value: "/.well-known/immich"
       traefik.enable: "true"
       traefik.http.routers.pho.entrypoints: websecure
       traefik.http.routers.pho.rule: Host(`pho.replo.de`)
@@ -65,6 +71,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    labels:
+      traefik.enable: "false"
 
   redis:
     container_name: immich_redis
@@ -90,6 +98,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    labels:
+      traefik.enable: "false"
 
 volumes:
   model-cache:

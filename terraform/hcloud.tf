@@ -567,7 +567,7 @@ resource "docker_container" "wg-easy" {
       "pangolin.public-resources.wg.targets[0].healthcheck.enabled"  = "true"
       "pangolin.public-resources.wg.targets[0].healthcheck.method"   = "GET"
       "pangolin.public-resources.wg.targets[0].healthcheck.hostname" = "172.254.0.3"
-      "pangolin.public-resources.wg.targets[0].healthcheck.path"     = "/"
+      "pangolin.public-resources.wg.targets[0].healthcheck.path"     = "/login"
       "pangolin.public-resources.wg.targets[0].healthcheck.port"     = "51822"
     })
     content {
