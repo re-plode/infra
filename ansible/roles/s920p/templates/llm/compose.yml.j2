@@ -8,10 +8,8 @@ services:
       io.portainer.accesscontrol.teams: operators
       traefik.enable: "true"
       traefik.http.routers.llm.entrypoints: websecure
-      traefik.http.routers.llm.middlewares: llm-stripprefix
-      traefik.http.routers.llm.rule: Host(`llm.replo.de`) && PathPrefix(`/ollama`)
+      traefik.http.routers.llm.rule: Host(`ollama.llm.replo.de`)
       traefik.http.routers.llm.tls.certresolver: cloudflare
-      traefik.http.middlewares.llm-stripprefix.stripprefix.prefixes: /ollama
     ports:
       - 11434:11434
     restart: unless-stopped
@@ -40,21 +38,10 @@ services:
       pangolin.public-resources.llm.targets[0].healthcheck.hostname: 172.17.0.1
       pangolin.public-resources.llm.targets[0].healthcheck.method: GET
       pangolin.public-resources.llm.targets[0].healthcheck.path: /
-      pangolin.public-resources.llm.targets[0].healthcheck.port: "11434"
+      pangolin.public-resources.llm.targets[0].healthcheck.port: "11435"
       pangolin.public-resources.llm.targets[0].hostname: 172.17.0.1
       pangolin.public-resources.llm.targets[0].method: http
-      pangolin.public-resources.llm.targets[0].port: "11434"
-      pangolin.public-resources.llm.targets[0].path: /ollama
-      pangolin.public-resources.llm.targets[0].path-match: prefix
-      pangolin.public-resources.llm.targets[0].rewrite-match: stripPrefix
-      pangolin.public-resources.llm.targets[1].healthcheck.enabled: "true"
-      pangolin.public-resources.llm.targets[1].healthcheck.hostname: 172.17.0.1
-      pangolin.public-resources.llm.targets[1].healthcheck.method: GET
-      pangolin.public-resources.llm.targets[1].healthcheck.path: /
-      pangolin.public-resources.llm.targets[1].healthcheck.port: "11435"
-      pangolin.public-resources.llm.targets[1].hostname: 172.17.0.1
-      pangolin.public-resources.llm.targets[1].method: http
-      pangolin.public-resources.llm.targets[1].port: "11435"
+      pangolin.public-resources.llm.targets[0].port: "11435"
       traefik.enable: "true"
       traefik.http.routers.openwebui.entrypoints: websecure
       traefik.http.routers.openwebui.rule: Host(`llm.replo.de`)
