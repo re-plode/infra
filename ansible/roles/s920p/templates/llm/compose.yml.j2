@@ -6,10 +6,7 @@ services:
     image: ollama/ollama:0.22.0
     labels:
       io.portainer.accesscontrol.teams: operators
-      traefik.enable: "true"
-      traefik.http.routers.llm.entrypoints: websecure
-      traefik.http.routers.llm.rule: Host(`ollama.llm.replo.de`)
-      traefik.http.routers.llm.tls.certresolver: cloudflare
+      traefik.enable: "false"
     ports:
       - 11434:11434
     restart: unless-stopped

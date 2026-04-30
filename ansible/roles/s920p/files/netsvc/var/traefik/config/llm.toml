@@ -1,0 +1,21 @@
+[http]
+  [http.routers]
+    [http.routers.ollama]
+      entryPoints = ["websecure"]
+      service = "service-ollama"
+      rule = "Host(`ollama.llm.replo.de`)"
+      [http.routers.ollama.tls]
+        certResolver = "cloudflare"
+
+  [http.services]
+    [http.services.service-ollama]
+      [http.services.service-ollama.loadBalancer]
+        strategy = "leasttime"
+        [http.services.service-ollama.loadBalancer.healthCheck]
+          path = "/"
+          interval = "10s"
+          timeout = "3s"
+        [[http.services.service-ollama.loadBalancer.servers]]
+          url = "http://s920p.replo:11434/"
+        [[http.services.service-ollama.loadBalancer.servers]]
+          url = "http://desknix.replo:11434/"
