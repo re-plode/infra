@@ -9,13 +9,27 @@
 
   [http.services]
     [http.services.service-ollama]
-      [http.services.service-ollama.loadBalancer]
+      [http.services.service-ollama.failover.healthCheck]
+      [http.services.service-ollama.failover]
+        service = "service-ollama-desknix"
+        fallback = "service-ollama-s920p"
+
+    [http.services.service-ollama-desknix]
+      [http.services.service-ollama-desknix.loadBalancer]
         strategy = "leasttime"
-        [http.services.service-ollama.loadBalancer.healthCheck]
+        [http.services.service-ollama-desknix.loadBalancer.healthCheck]
           path = "/"
           interval = "10s"
           timeout = "3s"
-        [[http.services.service-ollama.loadBalancer.servers]]
-          url = "http://s920p.replo:11434/"
-        [[http.services.service-ollama.loadBalancer.servers]]
+        [[http.services.service-ollama-desknix.loadBalancer.servers]]
           url = "http://desknix.replo:11434/"
+
+    [http.services.service-ollama-s920p]
+      [http.services.service-ollama-s920p.loadBalancer]
+        strategy = "leasttime"
+        [http.services.service-ollama-s920p.loadBalancer.healthCheck]
+          path = "/"
+          interval = "10s"
+          timeout = "3s"
+        [[http.services.service-ollama-s920p.loadBalancer.servers]]
+          url = "http://s920p.replo:11434/"
