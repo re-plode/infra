@@ -107,7 +107,7 @@ services:
       rss: {}
       bak_default: {}
       immich_default: {}
-      hoard_default: {}
+      keep_default: {}
       llm_default: {}
     ports:
       - target: 80
@@ -149,8 +149,8 @@ networks:
   immich_default:
     name: immich_default
     external: true
-  hoard_default:
-    name: hoard_default
+  keep_default:
+    name: keep_default
     external: true
   llm_default:
     name: llm_default

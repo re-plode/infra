@@ -20,28 +20,28 @@ services:
       # If you want to mount a custom directory, change the volume mapping above instead.
       DATA_DIR: /data # DON'T CHANGE THIS
     labels:
-      pangolin.public-resources.hoard.auth.auto-login-idp: "2"
-      pangolin.public-resources.hoard.auth.sso-enabled: "true"
-      pangolin.public-resources.hoard.auth.sso-roles[0]: Member
-      pangolin.public-resources.hoard.full-domain: hoard.replo.de
-      pangolin.public-resources.hoard.name: Karakeep
-      pangolin.public-resources.hoard.protocol: http
-      pangolin.public-resources.hoard.targets[0].healthcheck.enabled: "true"
-      pangolin.public-resources.hoard.targets[0].healthcheck.hostname: 172.17.0.1
-      pangolin.public-resources.hoard.targets[0].healthcheck.method: GET
-      pangolin.public-resources.hoard.targets[0].healthcheck.path: /api/health
-      pangolin.public-resources.hoard.targets[0].healthcheck.port: "3030"
-      pangolin.public-resources.hoard.targets[0].hostname: 172.17.0.1
-      pangolin.public-resources.hoard.targets[0].method: http
-      pangolin.public-resources.hoard.targets[0].port: "3030"
-      pangolin.public-resources.hoard.rules[0].action: allow
-      pangolin.public-resources.hoard.rules[0].match: path
-      pangolin.public-resources.hoard.rules[0].value: /api/*
+      pangolin.public-resources.keep.auth.auto-login-idp: "2"
+      pangolin.public-resources.keep.auth.sso-enabled: "true"
+      pangolin.public-resources.keep.auth.sso-roles[0]: Member
+      pangolin.public-resources.keep.full-domain: keep.replo.de
+      pangolin.public-resources.keep.name: Karakeep
+      pangolin.public-resources.keep.protocol: http
+      pangolin.public-resources.keep.targets[0].healthcheck.enabled: "true"
+      pangolin.public-resources.keep.targets[0].healthcheck.hostname: 172.17.0.1
+      pangolin.public-resources.keep.targets[0].healthcheck.method: GET
+      pangolin.public-resources.keep.targets[0].healthcheck.path: /api/health
+      pangolin.public-resources.keep.targets[0].healthcheck.port: "3030"
+      pangolin.public-resources.keep.targets[0].hostname: 172.17.0.1
+      pangolin.public-resources.keep.targets[0].method: http
+      pangolin.public-resources.keep.targets[0].port: "3030"
+      pangolin.public-resources.keep.rules[0].action: allow
+      pangolin.public-resources.keep.rules[0].match: path
+      pangolin.public-resources.keep.rules[0].value: /api/*
       traefik.enable: "true"
-      traefik.http.routers.hoard.entrypoints: websecure
-      traefik.http.routers.hoard.rule: Host(`hoard.replo.de`)
-      traefik.http.routers.hoard.tls.certresolver: cloudflare
-      traefik.http.services.hoard.loadbalancer.server.port: "3000"
+      traefik.http.routers.keep.entrypoints: websecure
+      traefik.http.routers.keep.rule: Host(`keep.replo.de`)
+      traefik.http.routers.keep.tls.certresolver: cloudflare
+      traefik.http.services.keep.loadbalancer.server.port: "3000"
   chrome:
     image: gcr.io/zenika-hub/alpine-chrome:124
     restart: unless-stopped
