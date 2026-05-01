@@ -1,7 +1,9 @@
 - name: Load {{ project_name }} vars
-  ansible.builtin.include_vars:
-    dir: ../vars
-    files_matching: "{{ project_name }}.yml"
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+    - "../vars/{{ project_name }}.yml"
+    - ../vars/default.yml
 
 - ansible.builtin.file:
     path: /volume2/var/{{ var_dir | trim('/') }}
