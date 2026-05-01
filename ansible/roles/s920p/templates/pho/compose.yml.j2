@@ -23,7 +23,7 @@ services:
     env_file:
       - env
     ports:
-      - '2283:2283'
+      - 2283:2283
     depends_on:
       - redis
       - database
@@ -68,6 +68,8 @@ services:
       - model-cache:/cache
     env_file:
       - env
+    ports:
+      - 3003:3003
     restart: always
     healthcheck:
       disable: false

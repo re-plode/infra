@@ -1,0 +1,35 @@
+[http]
+  [http.routers]
+    [http.routers.immichml]
+      entryPoints = ["websecure"]
+      service = "service-immichml"
+      rule = "Host(`ml.pho.replo.de`)"
+      [http.routers.immichml.tls]
+        certResolver = "cloudflare"
+
+  [http.services]
+    [http.services.service-immichml]
+      [http.services.service-immichml.failover.healthCheck]
+      [http.services.service-immichml.failover]
+        service = "service-immichml-desknix"
+        fallback = "service-immichml-s920p"
+
+    [http.services.service-immichml-desknix]
+      [http.services.service-immichml-desknix.loadBalancer]
+        strategy = "leasttime"
+        [http.services.service-immichml-desknix.loadBalancer.healthCheck]
+          path = "/"
+          interval = "10s"
+          timeout = "3s"
+        [[http.services.service-immichml-desknix.loadBalancer.servers]]
+          url = "http://desknix.replo:3003/"
+
+    [http.services.service-immichml-s920p]
+      [http.services.service-immichml-s920p.loadBalancer]
+        strategy = "leasttime"
+        [http.services.service-immichml-s920p.loadBalancer.healthCheck]
+          path = "/"
+          interval = "10s"
+          timeout = "3s"
+        [[http.services.service-immichml-s920p.loadBalancer.servers]]
+          url = "http://s920p.replo:3003/"
