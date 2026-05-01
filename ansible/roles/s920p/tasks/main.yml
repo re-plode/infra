@@ -4,7 +4,6 @@
   vars:
     project_name: "{{ item }}"
   loop:
-    - netsvc # has to come first to create networks
     - monsvc
     - mmclients
     - mmproviders
@@ -14,3 +13,4 @@
     - pho
     - keep
     - llm
+    - netsvc # supposed to come first to create some networks
