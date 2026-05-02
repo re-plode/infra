@@ -51,6 +51,12 @@ services:
       pangolin.public-resources.pho.rules[1].action: "allow"
       pangolin.public-resources.pho.rules[1].match: "path"
       pangolin.public-resources.pho.rules[1].value: "/.well-known/immich"
+      pangolin.public-resources.pho.rules[2].action: "allow"
+      pangolin.public-resources.pho.rules[2].match: "path"
+      pangolin.public-resources.pho.rules[2].value: "/_app/immutable/*"
+      pangolin.public-resources.pho.rules[3].action: "allow"
+      pangolin.public-resources.pho.rules[3].match: "path"
+      pangolin.public-resources.pho.rules[3].value: "/share/*"
       traefik.enable: "true"
       traefik.http.routers.pho.entrypoints: websecure
       traefik.http.routers.pho.rule: Host(`pho.replo.de`)
