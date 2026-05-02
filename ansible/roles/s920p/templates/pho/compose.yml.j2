@@ -45,18 +45,17 @@ services:
       pangolin.public-resources.pho.targets[0].hostname: 172.17.0.1
       pangolin.public-resources.pho.targets[0].method: http
       pangolin.public-resources.pho.targets[0].port: "2283"
+
+      # https://github.com/immich-app/immich/discussions/21961#discussioncomment-16213208
       pangolin.public-resources.pho.rules[0].action: "allow"
       pangolin.public-resources.pho.rules[0].match: "path"
-      pangolin.public-resources.pho.rules[0].value: "/api/*"
+      pangolin.public-resources.pho.rules[0].value: "/.well-known/immich"
       pangolin.public-resources.pho.rules[1].action: "allow"
       pangolin.public-resources.pho.rules[1].match: "path"
-      pangolin.public-resources.pho.rules[1].value: "/.well-known/immich"
+      pangolin.public-resources.pho.rules[1].value: "/_app/immutable/*"
       pangolin.public-resources.pho.rules[2].action: "allow"
       pangolin.public-resources.pho.rules[2].match: "path"
-      pangolin.public-resources.pho.rules[2].value: "/_app/immutable/*"
-      pangolin.public-resources.pho.rules[3].action: "allow"
-      pangolin.public-resources.pho.rules[3].match: "path"
-      pangolin.public-resources.pho.rules[3].value: "/share/*"
+      pangolin.public-resources.pho.rules[2].value: "/share/*"
       traefik.enable: "true"
       traefik.http.routers.pho.entrypoints: websecure
       traefik.http.routers.pho.rule: Host(`pho.replo.de`)
