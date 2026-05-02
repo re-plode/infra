@@ -8,11 +8,13 @@ services:
       LISTEN: "45876"
       TOKEN: {{ secrets.beszel.s920p_token }}
       SMART_DEVICES: /dev/sata1:sat,/dev/sata2:sat,/dev/sata3:sat,/dev/sata4:sat
-    image: henrygd/beszel-agent:0.18.7
+      EXCLUDE_SMART: /dev/md0,/dev/md1,/dev/md2,/dev/md3
+    image: henrygd/beszel-agent:0.18.7-alpine
     labels:
       io.portainer.accesscontrol.teams: operators
       traefik.enable: "false"
     network_mode: host
+    privileged: true
     cap_add:
       - SYS_RAWIO
     restart: unless-stopped
