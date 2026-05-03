@@ -2,14 +2,7 @@ services:
   kan:
     deploy:
       replicas: 1
-    environment:
-      MAIL_FROM: noreply@replo.de
-      SMTP_ENCRYPTION: tls
-      SMTP_HELO: tls
-      SMTP_HOSTNAME: smtp-relay.brevo.com
-      SMTP_PASSWORD: {{ secrets.brevo.smtp_password }}
-      SMTP_PORT: "587"
-      SMTP_USERNAME: {{ secrets.brevo.smtp_username }}
+    env_file: .env.kanboard
     healthcheck:
       test:
         - CMD-SHELL

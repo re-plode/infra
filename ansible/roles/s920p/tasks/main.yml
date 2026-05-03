@@ -4,13 +4,13 @@
   vars:
     project_name: "{{ item }}"
   loop:
-    - monsvc
-    - mmclients
-    - mmproviders
+    # - monsvc
+    # - mmclients
+    # - mmproviders
     - kan
-    - rss
-    - bak
-    - pho
-    - keep
-    - llm
-    - netsvc # supposed to come first to create some networks
+    # - rss
+    # - bak
+    # - pho
+    # - keep
+    # - llm
+    # - netsvc # supposed to come first to create some networks
