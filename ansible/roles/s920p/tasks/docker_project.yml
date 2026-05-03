@@ -50,6 +50,30 @@
     mode: '0755'
 
 - name: Copy {{ project_name }} compose.yml
+  ansible.builtin.copy:
+    src: "files/{{ project_name }}/{{ fileglob_item | basename }}"
+    dest: /volume2/docker/{{ project_name }}
+    owner: 400000
+    group: 400000
+    mode: '0644'
+  loop_control:
+    loop_var: fileglob_item
+  with_fileglob:
+    - "files/{{ project_name }}/*.yml"
+
+- name: Copy {{ project_name }} .env files
+  ansible.builtin.copy:
+    src: "{{ fileglob_item }}"
+    dest: /volume2/docker/{{ project_name }}/{{ fileglob_item | basename }}
+    owner: 400000
+    group: 400000
+    mode: '0644'
+  loop_control:
+    loop_var: fileglob_item
+  with_fileglob:
+    - "files/{{ project_name }}/env/.*"
+
+- name: Generate {{ project_name }} .env files
   ansible.builtin.template:
     src: "{{ fileglob_item }}"
     dest: /volume2/docker/{{ project_name }}/{{ (fileglob_item | basename | splitext)[0] }}
@@ -59,11 +83,24 @@
   loop_control:
     loop_var: fileglob_item
   with_fileglob:
-    - "templates/{{ project_name }}/*.j2"
+    - "templates/{{ project_name }}/env/.*.j2"
+
+- name: Stat .env.compose
+  ansible.builtin.stat:
+    path: /volume2/docker/{{ project_name }}/.env.compose
+  register: stat
 
 - name: Bring up {{ project_name }}
   community.docker.docker_compose_v2:
     docker_cli: /usr/local/bin/docker
     project_src: /volume2/docker/{{ project_name }}
-    env_files: "{{ env_files | default([]) }}"
+    env_files: .env.compose
     state: present
+  when: stat.stat.exists is true
+
+- name: Bring up {{ project_name }}
+  community.docker.docker_compose_v2:
+    docker_cli: /usr/local/bin/docker
+    project_src: /volume2/docker/{{ project_name }}
+    state: present
+  when: stat.stat.exists is false

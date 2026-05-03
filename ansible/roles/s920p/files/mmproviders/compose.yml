@@ -1,9 +1,6 @@
 services:
   cast:
-    deploy:
-      replicas: 1
-    environment:
-      TZ: Europe/Berlin
+    env_file: .env.audiobookshelf
     image: advplyr/audiobookshelf:2.34.0
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -72,10 +69,7 @@ services:
         source: /volume2/var/audiobookshelf/metadata
         target: /metadata
   libation:
-    deploy:
-      replicas: 1
-    environment:
-      SLEEP_TIME: 30m
+    env_file: .env.libation
     image: rmcrackan/libation:13.3.6
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -92,11 +86,7 @@ services:
         source: /volume2/var/libation
         target: /config
   nzb:
-    deploy:
-      replicas: 1
-    environment:
-      PGID: "65536"
-      PUID: "1027"
+    env_file: .env.sabnzbd
     healthcheck:
       test:
         - CMD-SHELL
@@ -141,12 +131,7 @@ services:
         source: /volume2/var/sabnzbd
         target: /config
   prowlarr:
-    deploy:
-      replicas: 1
-    environment:
-      PGID: "65536"
-      PUID: "1027"
-      TZ: Europe/Berlin
+    env_file: .env.prowlarr
     healthcheck:
       test:
         - CMD-SHELL
@@ -189,11 +174,7 @@ services:
         source: /volume2/var/prowlarr
         target: /config
   radarr:
-    deploy:
-      replicas: 1
-    environment:
-      PGID: "65536"
-      PUID: "1027"
+    env_file: .env.radarr
     healthcheck:
       test:
         - CMD-SHELL
@@ -238,11 +219,7 @@ services:
         source: /volume2/var/radarr
         target: /config
   seerr:
-    deploy:
-      replicas: 1
-    environment:
-      LOG_LEVEL: info
-      TZ: Europe/Berlin
+    env_file: .env.seerr
     healthcheck:
       test:
         - CMD-SHELL
@@ -288,11 +265,7 @@ services:
         source: /volume2/var/seerr
         target: /app/config
   sonarr:
-    deploy:
-      replicas: 1
-    environment:
-      PGID: "65536"
-      PUID: "1027"
+    env_file: .env.sonarr
     healthcheck:
       test:
         - CMD-SHELL
@@ -338,11 +311,7 @@ services:
         source: /volume2/var/sonarr
         target: /config
   tube:
-    deploy:
-      replicas: 1
-    environment:
-      LOG_LEVEL: info
-      TZ: Europe/Berlin
+    env_file: .env.pinchflat
     image: keglin/pinchflat:latest
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -380,12 +349,7 @@ services:
   whisparr:
     deploy:
       replicas: 1
-    environment:
-      PGID: "65536"
-      PUID: "1027"
-      TZ: Europe/Berlin
-      UMASK: "022"
-      WEBUI_PORTS: 6969/tcp
+    env_file: .env.whisparr
     healthcheck:
       test:
         - CMD-SHELL

@@ -1,7 +1,5 @@
 services:
   adguardhome:
-    deploy:
-      replicas: 1
     dns:
       - 9.9.9.9
       - 149.112.112.112
@@ -46,13 +44,7 @@ services:
         source: /volume2/var/adguard/conf
         target: /opt/adguardhome/conf
   newt:
-    deploy:
-      replicas: 1
-    environment:
-      DOCKER_SOCKET: /var/run/docker.sock
-      NEWT_ID: {{ secrets.pangolin.s920p_newt_id }}
-      NEWT_SECRET: {{ secrets.pangolin.s920p_newt_secret }}
-      PANGOLIN_ENDPOINT: https://access.replo.de
+    env_file: .env.newt
     image: fosrl/newt:1.12.0
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -69,12 +61,7 @@ services:
   olm:
     cap_add:
       - CAP_NET_ADMIN
-    deploy:
-      replicas: 1
-    environment:
-      OLM_ID: {{ secrets.pangolin.s920p_cli_id }}
-      OLM_SECRET: {{ secrets.pangolin.s920p_cli_secret }}
-      PANGOLIN_ENDPOINT: https://access.replo.de
+    env_file: .env.olm
     image: fosrl/olm:1.5.0
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -87,10 +74,7 @@ services:
         source: /dev/net/tun
         target: /dev/net/tun
   traefik:
-    deploy:
-      replicas: 1
-    environment:
-      CF_DNS_API_TOKEN: {{ secrets.cloudflare.dns_api_token }}
+    env_file: .env.traefik
     image: traefik:3.6.14
     labels:
       io.portainer.accesscontrol.teams: operators
