@@ -103,7 +103,7 @@ services:
         - curl --fail http://localhost:8080 || exit 1
       interval: 10s
       start_period: 30s
-    image: linuxserver/sabnzbd:4.5.5
+    image: linuxserver/sabnzbd:5.0.0
     labels:
       io.portainer.accesscontrol.teams: operators
       pangolin.public-resources.nzb.auth.auto-login-idp: "2"
