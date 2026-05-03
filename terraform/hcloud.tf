@@ -748,6 +748,11 @@ resource "docker_container" "beszel_agent" {
     host_path      = "/var/lib/containers"
     read_only      = true
   }
+  volumes {
+    container_path = "/var/run/dbus/system_bus_socket"
+    host_path      = "/var/run/dbus/system_bus_socket"
+    read_only      = true
+  }
 }
 
 resource "docker_container" "diun" {
