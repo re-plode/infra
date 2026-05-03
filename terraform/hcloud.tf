@@ -736,6 +736,7 @@ resource "docker_container" "beszel_agent" {
     "KEY=${sensitive(data.sops_file.secrets.data["beszel.pub_key"])}",
     "TOKEN=${sensitive(data.sops_file.secrets.data["beszel.hcloud_token"])}",
     "LISTEN=45876",
+    "SKIP_SYSTEMD=true"
   ]
 
   volumes {
@@ -746,11 +747,6 @@ resource "docker_container" "beszel_agent" {
   volumes {
     container_path = "/extra-filesystems/sdb__internal-net-vol"
     host_path      = "/var/lib/containers"
-    read_only      = true
-  }
-  volumes {
-    container_path = "/var/run/dbus/system_bus_socket"
-    host_path      = "/var/run/dbus/system_bus_socket"
     read_only      = true
   }
 }
