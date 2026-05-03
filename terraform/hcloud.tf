@@ -161,7 +161,7 @@ resource "docker_image" "images" {
     "henrygd/beszel-agent"              = "0.18.7"
     "crazymax/diun"                     = "4.31.0"
     "portainer/portainer-ce"            = "2.40.0-alpine"
-    "amir20/dozzle"                     = "v10.5.0"
+    "amir20/dozzle"                     = "v10.5.1"
     "quay.io/oauth2-proxy/oauth2-proxy" = "v7.15.2-alpine"
     "caddy"                             = "2.11.2-alpine"
   })
