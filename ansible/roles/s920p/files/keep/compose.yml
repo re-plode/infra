@@ -10,7 +10,8 @@ services:
     ports:
       - 3030:3000
     env_file:
-      - env
+      - .env.compose
+      - .env.web
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -58,7 +59,7 @@ services:
     image: getmeili/meilisearch:v1.41.0
     restart: unless-stopped
     env_file:
-      - env
+      - .env.meilisearch
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:

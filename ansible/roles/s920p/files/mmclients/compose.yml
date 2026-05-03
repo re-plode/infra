@@ -1,9 +1,6 @@
 services:
   jelly:
-    deploy:
-      replicas: 1
-    environment:
-      JELLYFIN_PublishedServerUrl: https://jelly.replo.de
+    env_file: .env.jellyfin
     image: jellyfin/jellyfin:10.11.8
     labels:
       io.portainer.accesscontrol.teams: operators
@@ -67,11 +64,7 @@ services:
         source: /volume2/var/jellyfin/cache
         target: /cache
   stash:
-    deploy:
-      replicas: 1
-    environment:
-      STASH_CONFIG_FILE: /mnt/stash/config/config.yml
-      USER: "1027"
+    env_file: .env.stash
     healthcheck:
       test:
         - CMD-SHELL

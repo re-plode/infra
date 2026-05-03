@@ -1,11 +1,6 @@
 services:
   pg:
-    deploy:
-      replicas: 1
-    environment:
-      POSTGRES_DB: miniflux
-      POSTGRES_PASSWORD: '{{ secrets.miniflux.database_password }}'
-      POSTGRES_USER: miniflux
+    env_file: .env.pg
     healthcheck:
       test:
         - CMD
@@ -25,21 +20,8 @@ services:
       - type: bind
         source: /volume2/var/miniflux-pg
         target: /var/lib/postgresql
-  rss:
-    deploy:
-      replicas: 1
-    environment:
-      BASE_URL: https://rss.replo.de
-      DATABASE_URL: postgres://miniflux:{{ secrets.miniflux.database_password }}@pg/miniflux?sslmode=disable
-      FETCHER_ALLOW_PRIVATE_NETWORKS: "1"
-      INTEGRATION_ALLOW_PRIVATE_NETWORKS: "1"
-      OAUTH2_CLIENT_ID: {{ secrets.miniflux.oauth_client_id }}
-      OAUTH2_CLIENT_SECRET: {{ secrets.miniflux.oauth_client_secret }}
-      OAUTH2_OIDC_DISCOVERY_ENDPOINT: https://id.replo.de
-      OAUTH2_PROVIDER: oidc
-      OAUTH2_REDIRECT_URL: https://rss.replo.de/oauth2/oidc/callback
-      OAUTH2_USER_CREATION: "1"
-      RUN_MIGRATIONS: "1"
+  miniflux:
+    env_file: .env.miniflux
     healthcheck:
       test:
         - CMD-SHELL
