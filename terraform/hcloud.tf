@@ -147,7 +147,7 @@ resource "docker_network" "netsvc" {
 
 resource "docker_image" "images" {
   for_each = tomap({
-    "fosrl/pangolin"                    = "1.17.1"
+    "fosrl/pangolin"                    = "1.18.2"
     "fosrl/gerbil"                      = "1.3.1"
     "crowdsecurity/crowdsec"            = "v1.7.7-debian"
     "traefik"                           = "3.6.14"
